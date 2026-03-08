@@ -836,12 +836,17 @@ async function openArticle(id){
     G('articleMeta').innerHTML=`<span style="display:inline-block;background:${THEMES[art.theme]?.color||'#1e4d8c'};color:#fff;border-radius:99px;padding:.15rem .6rem;font-size:.72rem;font-weight:700">${esc(THEMES[art.theme]?.label||'')}</span>`;
     G('articleTitle').textContent = art.title;
     G('articleInfo').innerHTML = `<span>👤 ${esc(art.author||'管理員')}</span><span>📅 ${(art.created_at||'').slice(0,10)}</span><span>👁 ${(art.views||0)+1}</span>`;
+    const parseLine = l => {
+      // 圖片 ![alt](url)
+      return l.replace(/!\[([^\]]*)\]\((https?:\/\/[^\)]+)\)/g,
+        (_,alt,url)=>`<img src="${esc(url)}" alt="${esc(alt)}" style="max-width:100%;border-radius:.5rem;margin:.4rem 0;display:block">`);
+    };
     const html = art.body.split('\n').map(l=>{
       if(l.startsWith('## ')) return `<h2>${esc(l.slice(3))}</h2>`;
       if(l.startsWith('> ')) return `<blockquote>${esc(l.slice(2))}</blockquote>`;
-      if(l.startsWith('- ')) return `<li>${esc(l.slice(2))}</li>`;
+      if(l.startsWith('- ')) return `<li>${parseLine(esc(l.slice(2)))}</li>`;
       if(!l.trim()) return '';
-      return `<p>${esc(l)}</p>`;
+      return `<p>${parseLine(esc(l))}</p>`;
     }).join('\n').replace(/(<li>.*?<\/li>\n?)+/gs, m=>`<ul>${m}</ul>`);
     SH('articleBody', html);
     const pw = G('promptBoxWrapper');
