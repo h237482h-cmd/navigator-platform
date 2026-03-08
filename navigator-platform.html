@@ -1,0 +1,1265 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>領航者：AI 人事共創平台</title>
+<style>
+  :root{
+    --navy:#0d2b55;--navy2:#1a3f72;--navy3:#1e4d8c;
+    --accent:#3b82f6;--accent2:#60a5fa;
+    --bg:#f0f4fa;--card:#fff;--border:#d1dff5;
+    --text:#1e293b;--muted:#64748b;
+    --success:#22c55e;--danger:#ef4444;
+    --tagA:#1e4d8c;--tagB:#065f46;--tagC:#7c3aed;--tagD:#b45309;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+  nav{background:var(--navy);padding:0 1rem;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;box-shadow:0 2px 12px #0005;flex-wrap:wrap}
+  .nav-brand{display:flex;align-items:center;gap:.5rem;padding:.75rem 0;color:#fff;font-size:.85rem;font-weight:700;line-height:1.3;flex-shrink:0}
+  .nav-tabs{display:flex;flex-wrap:wrap}
+  .nav-tab{background:none;border:none;color:#93c5fd;padding:.75rem .6rem;cursor:pointer;font-size:.78rem;border-bottom:3px solid transparent;transition:.2s;white-space:nowrap}
+  .nav-tab:hover{color:#fff}.nav-tab.active{color:#fff;border-bottom-color:var(--accent2)}
+  .admin-pill{display:inline-flex;align-items:center;gap:.3rem;background:#dcfce7;color:#166534;border-radius:99px;padding:.18rem .6rem;font-size:.72rem;font-weight:700;margin-left:.5rem}
+  main{max-width:960px;margin:0 auto;padding:1.2rem 1rem}
+  .page{display:none}.page.active{display:block}
+  .hero{background:linear-gradient(135deg,var(--navy) 0%,var(--navy3) 100%);border-radius:1rem;padding:1.8rem 1.4rem;color:#fff;margin-bottom:1.2rem;position:relative;overflow:hidden}
+  .hero::before{content:'';position:absolute;right:-50px;top:-50px;width:200px;height:200px;border-radius:50%;background:#ffffff0d}
+  .hero-tag{display:inline-block;background:#ffffff20;border-radius:99px;padding:.2rem .7rem;font-size:.73rem;margin-bottom:.6rem}
+  .hero h1{font-size:clamp(1.1rem,3.5vw,1.65rem);font-weight:800;line-height:1.35;margin-bottom:.4rem}
+  .hero p{color:#93c5fd;font-size:.85rem;max-width:480px}
+  .sec-title{font-size:.95rem;font-weight:700;color:var(--navy);margin:1.3rem 0 .7rem;padding-left:.5rem;border-left:4px solid var(--accent)}
+  .announce-list{display:flex;flex-direction:column;gap:.5rem;margin-bottom:1.2rem}
+  .announce-item{background:var(--card);border:1px solid var(--border);border-radius:.6rem;padding:.7rem 1rem;display:flex;align-items:center;gap:.6rem;flex-wrap:wrap}
+  .announce-item .date{font-size:.73rem;color:var(--muted);margin-left:auto;white-space:nowrap}
+  .hot-list{display:flex;flex-direction:column;gap:.5rem;margin-bottom:1.2rem}
+  .hot-item{background:var(--card);border:1px solid var(--border);border-radius:.6rem;padding:.7rem 1rem;display:flex;align-items:center;gap:.75rem;cursor:pointer;transition:.2s}
+  .hot-item:hover{background:#eff6ff;border-color:var(--accent2)}
+  .hot-rank{width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.72rem;font-weight:800;flex-shrink:0;color:#fff}
+  .hot-info{flex:1;min-width:0}
+  .hot-info .title{font-size:.87rem;font-weight:600;color:var(--navy);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .hot-info .meta{font-size:.73rem;color:var(--muted);margin-top:.12rem}
+  .hot-views{font-size:.73rem;color:var(--muted);white-space:nowrap}
+  .theme-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:1rem;margin-bottom:1.2rem}
+  .theme-card{background:var(--card);border:1px solid var(--border);border-radius:.8rem;padding:1.1rem;cursor:pointer;transition:.2s;position:relative;overflow:hidden}
+  .theme-card::before{content:'';position:absolute;left:0;top:0;width:4px;height:100%}
+  .theme-card.A::before{background:var(--tagA)}.theme-card.B::before{background:var(--tagB)}.theme-card.C::before{background:var(--tagC)}
+  .theme-card:hover{box-shadow:0 4px 20px #3b82f625;transform:translateY(-2px)}
+  .theme-card h3{font-size:.9rem;font-weight:700;color:var(--navy);margin-bottom:.5rem;line-height:1.4}
+  .theme-posts{list-style:none;margin-top:.5rem;border-top:1px solid var(--border);padding-top:.5rem;display:flex;flex-direction:column;gap:.3rem}
+  .theme-posts li{font-size:.78rem;color:var(--navy2);display:flex;align-items:flex-start;gap:.4rem;cursor:pointer;line-height:1.4}
+  .theme-posts li:hover{color:var(--accent)}.theme-posts li::before{content:'›';color:var(--muted);flex-shrink:0}
+  .theme-count{font-size:.73rem;color:var(--muted);margin-top:.5rem}
+  .theme-more{font-size:.75rem;color:var(--accent);margin-top:.4rem;font-weight:600}
+  .forum-back{background:none;border:1.5px solid var(--border);border-radius:.5rem;padding:.35rem .8rem;cursor:pointer;font-size:.82rem;color:var(--navy);font-weight:600;transition:.2s}
+  .forum-back:hover{background:var(--bg)}
+  .post-list{display:flex;flex-direction:column;gap:.7rem}
+  .post-item{background:var(--card);border:1px solid var(--border);border-radius:.75rem;padding:1rem 1.1rem;transition:.2s}
+  .post-item:hover{box-shadow:0 3px 14px #3b82f620}
+  .post-meta{display:flex;align-items:center;gap:.5rem;margin-bottom:.45rem;flex-wrap:wrap}
+  .post-author{font-size:.75rem;color:var(--muted)}.post-date{font-size:.72rem;color:var(--muted);margin-left:auto}
+  .post-title{font-size:.95rem;font-weight:700;color:var(--navy);margin-bottom:.35rem;cursor:pointer}
+  .post-title:hover{color:var(--accent)}
+  .post-summary{font-size:.82rem;color:var(--text);line-height:1.6;margin-bottom:.6rem;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+  .post-footer{display:flex;align-items:center;gap:.7rem;flex-wrap:wrap}
+  .read-more{background:none;border:1.5px solid var(--accent);color:var(--accent);border-radius:.4rem;padding:.28rem .7rem;cursor:pointer;font-size:.78rem;font-weight:600;transition:.2s}
+  .read-more:hover{background:var(--accent);color:#fff}
+  .post-views{font-size:.73rem;color:var(--muted)}
+  .article-view{display:none}.article-view.active{display:block}
+  .article-header{background:var(--card);border:1px solid var(--border);border-radius:.8rem;padding:1.3rem;margin-bottom:1rem}
+  .article-title{font-size:clamp(1.1rem,3vw,1.5rem);font-weight:800;color:var(--navy);margin:.4rem 0 .5rem;line-height:1.4}
+  .article-body{background:var(--card);border:1px solid var(--border);border-radius:.8rem;padding:1.3rem;line-height:1.8;font-size:.88rem;color:var(--text);margin-bottom:1rem}
+  .article-body h2{font-size:1rem;font-weight:700;color:var(--navy);margin:1.1rem 0 .4rem;padding-bottom:.3rem;border-bottom:1px solid var(--border)}
+  .article-body p{margin-bottom:.75rem}.article-body ul{padding-left:1.3rem;margin-bottom:.75rem}.article-body li{margin-bottom:.3rem;font-size:.86rem}
+  .article-body blockquote{border-left:4px solid var(--accent2);padding:.5rem 1rem;background:#eff6ff;border-radius:0 .4rem .4rem 0;margin:.5rem 0;font-style:italic;color:var(--navy2)}
+  .prompt-box{background:#0f172a;border-radius:.75rem;padding:1rem 1.1rem;margin-bottom:1rem;border:1px solid #1e3a5f}
+  .prompt-box-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:.6rem}
+  .prompt-box-label{color:#60a5fa;font-size:.78rem;font-weight:700}
+  .copy-btn{background:#1e3a5f;border:1px solid #3b82f6;color:#60a5fa;border-radius:.4rem;padding:.28rem .7rem;cursor:pointer;font-size:.76rem;font-weight:600;transition:.2s}
+  .copy-btn:hover{background:#3b82f6;color:#fff}.copy-btn.copied{background:#16a34a;border-color:#16a34a;color:#fff}
+  .prompt-text{color:#e2e8f0;font-size:.82rem;font-family:'Courier New',monospace;line-height:1.7;white-space:pre-wrap;word-break:break-word}
+  .ac-section{background:var(--card);border:1px solid var(--border);border-radius:.8rem;padding:1.2rem;margin-bottom:1rem}
+  .ac-section .sec-title{margin-top:0}
+  .ac-form{margin-bottom:1rem}
+  .ac-list{display:flex;flex-direction:column;gap:.6rem}
+  .ac-item{background:var(--bg);border:1px solid var(--border);border-radius:.6rem;padding:.8rem}
+  .ac-header{display:flex;align-items:center;gap:.5rem;margin-bottom:.35rem;flex-wrap:wrap}
+  .ac-time{font-size:.7rem;color:var(--muted);margin-left:auto}
+  .ac-body{font-size:.83rem;line-height:1.6}
+  .mini-avatar{width:26px;height:26px;border-radius:50%;background:var(--navy2);color:#fff;display:flex;align-items:center;justify-content:center;font-size:.74rem;font-weight:700;flex-shrink:0}
+  .disc-detail-view{display:none}.disc-detail-view.active{display:block}
+  .disc-post{background:var(--card);border:1px solid var(--border);border-radius:.75rem;padding:1rem 1.1rem;margin-bottom:.7rem;transition:.2s}
+  .disc-post:hover{box-shadow:0 3px 14px #3b82f620}
+  .disc-meta{display:flex;align-items:center;gap:.5rem;margin-bottom:.4rem;flex-wrap:wrap}
+  .disc-tag{font-size:.68rem;font-weight:700;border-radius:99px;padding:.1rem .5rem;color:#fff;background:var(--tagD)}
+  .disc-title{font-size:.93rem;font-weight:700;color:var(--navy);margin-bottom:.3rem;cursor:pointer}
+  .disc-title:hover{color:var(--accent)}
+  .disc-preview{font-size:.82rem;color:var(--text);line-height:1.55;margin-bottom:.6rem;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+  .disc-full{background:var(--card);border:1px solid var(--border);border-radius:.8rem;padding:1.3rem;margin-bottom:1rem;font-size:.88rem;line-height:1.8}
+  .disc-full p{margin-bottom:.7rem}
+  .res-list{display:flex;flex-direction:column;gap:.55rem;margin-bottom:1rem}
+  .res-item{background:var(--card);border:1px solid var(--border);border-radius:.6rem;padding:.75rem 1rem;display:flex;align-items:center;gap:.7rem}
+  .res-item:hover{background:#eff6ff}
+  .res-item a{color:var(--navy3);font-size:.86rem;font-weight:600;text-decoration:none;flex:1;word-break:break-all}
+  .res-item a:hover{text-decoration:underline;color:var(--accent)}
+  .res-meta{font-size:.73rem;color:var(--muted)}
+  .chip{display:inline-flex;align-items:center;background:#eff6ff;color:var(--navy3);border-radius:99px;padding:.18rem .55rem;font-size:.72rem;font-weight:600}
+  .feedback-card{background:var(--card);border:1px solid var(--border);border-radius:.8rem;padding:1.3rem;max-width:600px;margin:0 auto}
+  .feedback-success{display:none;background:#f0fdf4;border:1.5px solid var(--success);border-radius:.75rem;padding:1.5rem;text-align:center;max-width:600px;margin:0 auto}
+  .feedback-success h3{color:#15803d;font-size:1rem;margin-bottom:.4rem}
+  .feedback-success p{font-size:.85rem;color:#166534}
+  .admin-layout{display:grid;grid-template-columns:180px 1fr;gap:1rem;align-items:start}
+  @media(max-width:620px){.admin-layout{grid-template-columns:1fr}}
+  .admin-sidebar{background:var(--card);border:1px solid var(--border);border-radius:.8rem;overflow:hidden;position:sticky;top:70px}
+  .admin-sidebar-item{display:flex;align-items:center;gap:.5rem;padding:.7rem .9rem;cursor:pointer;font-size:.83rem;color:var(--muted);border-left:3px solid transparent;transition:.15s}
+  .admin-sidebar-item:hover{background:var(--bg);color:var(--navy)}
+  .admin-sidebar-item.active{background:#eff6ff;color:var(--navy3);font-weight:700;border-left-color:var(--accent)}
+  .admin-panel-section{display:none}.admin-panel-section.active{display:block}
+  .admin-card{background:var(--card);border:1px solid var(--border);border-radius:.75rem;padding:1.2rem;margin-bottom:1rem}
+  .admin-header{display:flex;align-items:center;gap:.6rem;margin-bottom:.9rem;padding-bottom:.7rem;border-bottom:1px solid var(--border)}
+  .admin-header h2{font-size:.95rem;font-weight:700;color:var(--navy)}
+  .badge{display:inline-block;background:var(--navy3);color:#fff;border-radius:99px;padding:.13rem .55rem;font-size:.7rem}
+  .stat-row{display:grid;grid-template-columns:repeat(4,1fr);gap:.65rem;margin-bottom:1.2rem}
+  .stat{background:var(--navy);color:#fff;border-radius:.75rem;padding:.85rem;text-align:center}
+  .stat-num{font-size:1.4rem;font-weight:800;color:var(--accent2)}
+  .stat-label{font-size:.7rem;color:#93c5fd;margin-top:.2rem}
+  .item-actions{display:flex;gap:.4rem;margin-top:.5rem;flex-wrap:wrap}
+  .acc-table{width:100%;border-collapse:collapse;font-size:.84rem}
+  .acc-table th{background:#f1f5f9;padding:.5rem .7rem;text-align:left;font-size:.76rem;color:var(--navy);border-bottom:1px solid var(--border)}
+  .acc-table td{padding:.55rem .7rem;border-bottom:1px solid var(--border);vertical-align:middle}
+  .acc-table tr:last-child td{border-bottom:none}
+  .role-badge{display:inline-block;border-radius:99px;padding:.1rem .5rem;font-size:.7rem;font-weight:700;color:#fff}
+  .role-admin{background:var(--tagA)}.role-editor{background:var(--tagB)}.role-viewer{background:#64748b}
+  label{display:block;font-size:.76rem;font-weight:600;color:var(--navy);margin-bottom:.25rem}
+  input,textarea,select{width:100%;border:1.5px solid var(--border);border-radius:.5rem;padding:.5rem .7rem;font-size:.86rem;color:var(--text);outline:none;transition:.2s;background:#fff;font-family:inherit}
+  input:focus,textarea:focus,select:focus{border-color:var(--accent);box-shadow:0 0 0 3px #3b82f618}
+  textarea{resize:vertical;min-height:75px}
+  .btn{display:inline-flex;align-items:center;gap:.35rem;padding:.5rem 1.1rem;border-radius:.5rem;border:none;cursor:pointer;font-size:.85rem;font-weight:600;transition:.2s}
+  .btn-primary{background:var(--navy3);color:#fff}.btn-primary:hover{background:var(--navy2)}
+  .btn-danger{background:var(--danger);color:#fff;padding:.28rem .55rem;font-size:.75rem}.btn-danger:hover{background:#dc2626}
+  .btn-green{background:#16a34a;color:#fff}.btn-green:hover{background:#15803d}
+  .btn-warn{background:#f59e0b;color:#fff}.btn-warn:hover{background:#d97706}
+  .btn-sm{font-size:.78rem;padding:.35rem .8rem}
+  .anon-hint{font-size:.74rem;color:var(--muted);margin-top:.25rem}
+  .form-grid2{display:grid;grid-template-columns:1fr 1fr;gap:.6rem;margin-bottom:.6rem}
+  @media(max-width:480px){.form-grid2{grid-template-columns:1fr}}
+  .modal-overlay{display:none;position:fixed;inset:0;background:#0007;z-index:200;align-items:center;justify-content:center;padding:1rem}
+  .modal-overlay.open{display:flex}
+  .modal{background:#fff;border-radius:.9rem;padding:1.4rem;width:100%;max-width:560px;max-height:90vh;overflow-y:auto;box-shadow:0 8px 40px #0004}
+  .modal h3{font-size:1rem;font-weight:700;color:var(--navy);margin-bottom:.9rem}
+  .modal-footer{display:flex;gap:.6rem;justify-content:flex-end;margin-top:1rem}
+  .edit-overlay{display:none;position:fixed;inset:0;background:#0007;z-index:300;align-items:center;justify-content:center;padding:1rem}
+  .edit-overlay.open{display:flex}
+  .edit-modal{background:#fff;border-radius:.9rem;padding:1.4rem;width:100%;max-width:580px;max-height:92vh;overflow-y:auto;box-shadow:0 8px 40px #0004}
+  .toast{position:fixed;bottom:1.5rem;right:1rem;background:var(--success);color:#fff;padding:.6rem 1.1rem;border-radius:.6rem;font-size:.83rem;font-weight:600;z-index:999;transform:translateY(60px);opacity:0;transition:.3s;box-shadow:0 4px 16px #0004}
+  .toast.show{transform:translateY(0);opacity:1}.toast.error{background:var(--danger)}
+  .loading{text-align:center;padding:2rem;color:var(--muted);font-size:.86rem}
+  .cors-warn{background:#fffbeb;border:1.5px solid #f59e0b;border-radius:.6rem;padding:.8rem 1rem;font-size:.8rem;color:#92400e;margin-bottom:1rem;line-height:1.6;display:none}
+  @media(max-width:560px){.stat-row{grid-template-columns:1fr 1fr}}
+</style>
+</head>
+<body>
+<nav>
+  <div class="nav-brand">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#60a5fa" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
+    領航者：AI 人事共創平台
+    <span class="admin-pill" id="adminPill" style="display:none">✅ 管理員</span>
+  </div>
+  <div class="nav-tabs">
+    <button class="nav-tab active" onclick="switchPage('home',this)">🏠 首頁</button>
+    <button class="nav-tab" onclick="switchPage('articles',this)">📝 文章</button>
+    <button class="nav-tab" onclick="switchPage('discuss',this)">🗣️ 討論區</button>
+    <button class="nav-tab" onclick="switchPage('resources',this)">📦 資源</button>
+    <button class="nav-tab" onclick="switchPage('feedback',this)">📮 問題與建議</button>
+    <button class="nav-tab" onclick="switchPage('admin',this)">⚙️ 管理</button>
+  </div>
+</nav>
+<main>
+
+<!-- HOME -->
+<div class="page active" id="page-home">
+  <div class="hero">
+    <div class="hero-tag">📋 2026 人事業務智動化計畫</div>
+    <h1>領航者：AI 人事共創平台</h1>
+    <p>交流 AI 工具應用心得，共同推動人事業務智動化，提升施政效能。</p>
+  </div>
+  <div id="corsWarnHome" class="cors-warn">
+    ⚠️ <strong>提示：</strong>目前在預覽環境中，Supabase 的跨域請求（CORS）會被封鎖。請將此 HTML 檔案下載後，直接用瀏覽器開啟，或部署至您的伺服器，即可正常連接 Supabase 資料庫。
+  </div>
+  <div class="sec-title">📢 最新公告</div>
+  <div class="announce-list" id="announceList">
+    <div class="loading">載入中...</div>
+  </div>
+  <div class="sec-title">🔥 熱門文章</div>
+  <div class="hot-list" id="homeHotList"><div class="loading">載入中...</div></div>
+  <div class="sec-title">📚 主題專區</div>
+  <div class="theme-grid" id="homeThemeGrid"><div class="loading">載入中...</div></div>
+</div>
+
+<!-- ARTICLES -->
+<div class="page" id="page-articles">
+  <div id="view-themes">
+    <div class="hero" style="padding:1.4rem">
+      <div class="hero-tag">📝 文章專區</div>
+      <h1 style="font-size:1.3rem">主題專區</h1>
+      <p>由管理員發布的精選文章，歡迎留言討論。</p>
+    </div>
+    <div class="theme-grid" id="articleThemeGrid"><div class="loading">載入中...</div></div>
+  </div>
+  <div id="view-forum" style="display:none">
+    <div style="display:flex;align-items:center;gap:.7rem;margin-bottom:.8rem;flex-wrap:wrap">
+      <button class="forum-back" onclick="backToThemes()">← 返回主題</button>
+      <div id="forumTag"></div>
+    </div>
+    <div class="post-list" id="postList"></div>
+  </div>
+  <div class="article-view" id="view-article">
+    <div style="margin-bottom:.8rem"><button class="forum-back" onclick="backToForum()">← 返回文章列表</button></div>
+    <div class="article-header">
+      <div id="articleMeta"></div>
+      <div class="article-title" id="articleTitle"></div>
+      <div style="font-size:.78rem;color:var(--muted);display:flex;align-items:center;gap:.6rem;flex-wrap:wrap" id="articleInfo"></div>
+    </div>
+    <div class="article-body" id="articleBody"></div>
+    <div id="promptBoxWrapper"></div>
+    <div class="ac-section">
+      <div class="sec-title">💬 討論留言</div>
+      <div class="ac-form">
+        <div style="margin-bottom:.5rem">
+          <label>姓名或暱稱</label>
+          <input id="ac-name" type="text" placeholder="輸入姓名、暱稱，或留空匿名"/>
+          <div class="anon-hint">💡 可留空，將以「匿名」發表</div>
+        </div>
+        <div style="margin-bottom:.6rem"><label>留言內容 *</label><textarea id="ac-body" placeholder="針對本文發表意見或提問..." style="min-height:65px"></textarea></div>
+        <button class="btn btn-primary btn-sm" onclick="submitArticleComment()">✉️ 送出</button>
+      </div>
+      <div class="ac-list" id="acList"></div>
+    </div>
+  </div>
+</div>
+
+<!-- DISCUSS -->
+<div class="page" id="page-discuss">
+  <div id="disc-view-list">
+    <div class="hero" style="padding:1.4rem">
+      <div class="hero-tag">🗣️ 討論區</div>
+      <h1 style="font-size:1.3rem">討論區</h1>
+      <p>自由發表您的 AI 應用心得、問題或想法，支援匿名發表。</p>
+    </div>
+    <div style="display:flex;align-items:center;margin-bottom:.8rem;flex-wrap:wrap;gap:.6rem">
+      <div class="sec-title" style="margin:0">最新討論</div>
+      <button class="btn btn-primary btn-sm" style="margin-left:auto" onclick="openDiscModal()">✏️ 發起討論</button>
+    </div>
+    <div id="discList"><div class="loading">載入中...</div></div>
+  </div>
+  <div class="disc-detail-view" id="disc-view-detail">
+    <div style="margin-bottom:.8rem"><button class="forum-back" onclick="backToDiscList()">← 返回討論列表</button></div>
+    <div class="article-header">
+      <div id="discDetailMeta"></div>
+      <div class="article-title" id="discDetailTitle"></div>
+      <div style="font-size:.78rem;color:var(--muted)" id="discDetailInfo"></div>
+    </div>
+    <div class="disc-full" id="discDetailBody"></div>
+    <div class="ac-section">
+      <div class="sec-title">💬 回覆討論</div>
+      <div class="ac-form">
+        <div style="margin-bottom:.5rem">
+          <label>姓名或暱稱</label>
+          <input id="dc-name" type="text" placeholder="輸入姓名、暱稱，或留空匿名"/>
+          <div class="anon-hint">💡 可留空，將以「匿名」發表</div>
+        </div>
+        <div style="margin-bottom:.6rem"><label>回覆內容 *</label><textarea id="dc-body" placeholder="輸入您的回覆..." style="min-height:65px"></textarea></div>
+        <button class="btn btn-primary btn-sm" onclick="submitDiscComment()">✉️ 送出回覆</button>
+      </div>
+      <div class="ac-list" id="dcList"></div>
+    </div>
+  </div>
+</div>
+
+<!-- RESOURCES -->
+<div class="page" id="page-resources">
+  <div class="hero" style="padding:1.4rem">
+    <div class="hero-tag">📦 相關資源</div>
+    <h1 style="font-size:1.3rem">相關資源下載專區</h1>
+    <p>提供教學手冊、範本、指引等資源供同仁下載參考。</p>
+  </div>
+  <div class="sec-title">可用資源</div>
+  <div class="res-list" id="resList"><div class="loading">載入中...</div></div>
+  <p style="font-size:.78rem;color:var(--muted);text-align:center">如需新增資源，請洽管理員介面 ⚙️</p>
+</div>
+
+<!-- FEEDBACK -->
+<div class="page" id="page-feedback">
+  <div class="hero" style="padding:1.4rem">
+    <div class="hero-tag">📮 問題與建議</div>
+    <h1 style="font-size:1.3rem">問題回報與功能建議</h1>
+    <p>遇到系統問題或有改善建議，請填寫下方表單，我們將盡快以 Email 回覆。</p>
+  </div>
+  <div class="feedback-card" id="feedbackForm">
+    <div style="margin-bottom:.7rem"><label>類型 *</label>
+      <select id="fb-type"><option value="系統問題">🐛 系統問題回報</option><option value="功能建議">💡 功能改善建議</option><option value="內容錯誤">📝 內容錯誤回報</option><option value="其他">📌 其他</option></select>
+    </div>
+    <div style="margin-bottom:.7rem"><label>姓名或暱稱</label><input id="fb-name" type="text" placeholder="輸入姓名、暱稱，或留空匿名"/><div class="anon-hint">💡 可留空，將以「匿名」提交</div></div>
+    <div style="margin-bottom:.7rem"><label>Email（必填，以便我們回覆）*</label><input id="fb-email" type="email" placeholder="your@email.gov.tw"/></div>
+    <div style="margin-bottom:.7rem"><label>主旨 *</label><input id="fb-title" type="text" placeholder="簡短描述問題或建議"/></div>
+    <div style="margin-bottom:.9rem"><label>詳細說明 *</label><textarea id="fb-body" placeholder="請詳細描述您的問題或建議..." style="min-height:110px"></textarea></div>
+    <button class="btn btn-primary" onclick="submitFeedback()">📮 送出</button>
+  </div>
+  <div class="feedback-success" id="feedbackSuccess">
+    <div style="font-size:2rem;margin-bottom:.5rem">✅</div>
+    <h3>感謝您的回饋！</h3>
+    <p>我們已收到您的訊息，將盡快以 Email 回覆您。</p>
+    <button class="btn btn-primary btn-sm" style="margin-top:.9rem" onclick="resetFeedback()">再次提交</button>
+  </div>
+</div>
+
+<!-- ADMIN -->
+<div class="page" id="page-admin">
+  <div id="adminLoginGate">
+    <div class="hero" style="padding:1.4rem"><div class="hero-tag">⚙️ 管理員登入</div><h1 style="font-size:1.3rem">後台管理登入</h1></div>
+    <div style="max-width:380px;margin:0 auto;background:var(--card);border:1px solid var(--border);border-radius:.9rem;padding:1.5rem">
+      <div style="margin-bottom:.7rem"><label>帳號 *</label><input id="login-user" type="text" placeholder="管理員帳號"/></div>
+      <div style="margin-bottom:.9rem"><label>密碼 *</label><input id="login-pass" type="password" placeholder="密碼"/></div>
+      <button class="btn btn-primary" style="width:100%;justify-content:center" onclick="doLogin()">🔐 登入</button>
+      <div style="text-align:center;margin-top:.8rem"><button style="background:none;border:none;color:var(--accent);cursor:pointer;font-size:.82rem" onclick="showForgotPwd()">忘記密碼？</button></div>
+      <div id="loginErr" style="color:var(--danger);font-size:.8rem;margin-top:.5rem;text-align:center;display:none">帳號或密碼錯誤，請再試一次。</div>
+    </div>
+  </div>
+  <div id="adminForgotGate" style="display:none">
+    <div class="hero" style="padding:1.4rem"><div class="hero-tag">🔑 忘記密碼</div><h1 style="font-size:1.3rem">重設密碼</h1></div>
+    <div style="max-width:400px;margin:0 auto;background:var(--card);border:1px solid var(--border);border-radius:.9rem;padding:1.5rem">
+      <div style="margin-bottom:.7rem"><label>管理員帳號 *</label><input id="forgot-user" type="text" placeholder="管理員帳號"/></div>
+      <button class="btn btn-primary" style="width:100%;justify-content:center" onclick="doForgotPwd()">📧 傳送重設連結</button>
+      <div style="text-align:center;margin-top:.8rem"><button style="background:none;border:none;color:var(--accent);cursor:pointer;font-size:.82rem" onclick="showLoginGate()">← 返回登入</button></div>
+      <div id="forgotMsg" style="font-size:.82rem;margin-top:.6rem;text-align:center;display:none"></div>
+    </div>
+  </div>
+  <div id="adminPanel" style="display:none">
+    <div class="hero" style="padding:1.2rem 1.4rem;margin-bottom:1rem">
+      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.5rem">
+        <div><div class="hero-tag">⚙️ 後台管理</div><h1 style="font-size:1.2rem;margin-top:.2rem">管理員介面</h1></div>
+        <button class="btn btn-sm" style="background:#ffffff20;color:#fff;border:1px solid #ffffff40" onclick="doLogout()">登出</button>
+      </div>
+    </div>
+    <div class="stat-row">
+      <div class="stat"><div class="stat-num" id="statArticles">-</div><div class="stat-label">文章數量</div></div>
+      <div class="stat"><div class="stat-num" id="statDisc">-</div><div class="stat-label">討論串</div></div>
+      <div class="stat"><div class="stat-num" id="statRes">-</div><div class="stat-label">資源數量</div></div>
+      <div class="stat"><div class="stat-num" id="statFeedback">-</div><div class="stat-label">待處理回饋</div></div>
+    </div>
+    <div class="admin-layout">
+      <div class="admin-sidebar">
+        <div class="admin-sidebar-item active" onclick="switchAdminTab('tab-announce',this)">📢 公告管理</div>
+        <div class="admin-sidebar-item" onclick="switchAdminTab('tab-accounts',this)">👤 帳號管理</div>
+        <div class="admin-sidebar-item" onclick="switchAdminTab('tab-articles',this)">📝 文章管理</div>
+        <div class="admin-sidebar-item" onclick="switchAdminTab('tab-discuss',this)">🗣️ 討論管理</div>
+        <div class="admin-sidebar-item" onclick="switchAdminTab('tab-resources',this)">📦 資源管理</div>
+        <div class="admin-sidebar-item" onclick="switchAdminTab('tab-feedback',this)">📮 問題回饋</div>
+      </div>
+      <div>
+        <!-- ── 公告管理 ── -->
+        <div class="admin-panel-section active" id="tab-announce">
+          <div class="admin-card">
+            <div class="admin-header"><span>📢</span><h2>新增公告</h2></div>
+            <div class="form-grid2">
+              <div><label>公告類型</label>
+                <select id="ann-type">
+                  <option value="最新">🆕 最新</option>
+                  <option value="公告">📌 公告</option>
+                  <option value="資源">📎 資源</option>
+                  <option value="注意">⚠️ 注意</option>
+                </select>
+              </div>
+              <div><label>顯示日期</label><input id="ann-date" type="date"/></div>
+            </div>
+            <div style="margin-bottom:.6rem"><label>公告內容 *</label><input id="ann-body" type="text" placeholder="公告文字內容"/></div>
+            <button class="btn btn-green btn-sm" onclick="addAnnounce()">+ 新增公告</button>
+          </div>
+          <div class="admin-card">
+            <div class="admin-header"><span>📋</span><h2>現有公告列表</h2></div>
+            <div id="adminAnnounceList"><div class="loading">載入中...</div></div>
+          </div>
+        </div>
+        <!-- ── 帳號管理 ── -->
+        <div class="admin-panel-section" id="tab-accounts">
+          <div class="admin-card">
+            <div class="admin-header"><span>👤</span><h2>管理員帳號管理</h2></div>
+            <table class="acc-table" id="accTable"></table>
+            <div style="margin-top:1rem;padding-top:.8rem;border-top:1px solid var(--border)">
+              <p style="font-size:.82rem;font-weight:600;color:var(--navy);margin-bottom:.6rem">新增帳號</p>
+              <div style="display:grid;grid-template-columns:1fr 1fr 1fr auto;gap:.6rem;align-items:end">
+                <div><label>帳號 *</label><input id="new-acc-user" type="text" placeholder="帳號名稱"/></div>
+                <div><label>Email *</label><input id="new-acc-email" type="email" placeholder="email@gov.tw"/></div>
+                <div><label>角色</label><select id="new-acc-role"><option value="admin">管理員</option><option value="editor">編輯員</option><option value="viewer">檢視者</option></select></div>
+                <div><label style="opacity:0">_</label><button class="btn btn-green btn-sm" onclick="addAccount()">+ 新增</button></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- ── 文章管理 ── -->
+        <div class="admin-panel-section" id="tab-articles">
+          <div class="admin-card">
+            <div class="admin-header"><span>📝</span><h2>文章管理</h2></div>
+            <button class="btn btn-primary btn-sm" style="margin-bottom:.8rem" onclick="openAddArticleModal()">✏️ 新增文章</button>
+            <div id="adminArticleList"><div class="loading">載入中...</div></div>
+          </div>
+        </div>
+        <!-- ── 討論管理 ── -->
+        <div class="admin-panel-section" id="tab-discuss">
+          <div class="admin-card">
+            <div class="admin-header"><span>🗣️</span><h2>討論區管理</h2></div>
+            <div id="adminDiscList"><div class="loading">載入中...</div></div>
+          </div>
+        </div>
+        <!-- ── 資源管理 ── -->
+        <div class="admin-panel-section" id="tab-resources">
+          <div class="admin-card">
+            <div class="admin-header"><span>📦</span><h2>新增資源</h2></div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:.6rem;margin-bottom:.6rem">
+              <div><label>資源名稱 *</label><input id="r-title" type="text" placeholder="例：AI 工具入門操作手冊"/></div>
+              <div><label>分類（自填）*</label><input id="r-cat" type="text" placeholder="例：教學手冊、推動指引…"/></div>
+            </div>
+            <div style="margin-bottom:.6rem"><label>資源連結 *</label><input id="r-url" type="url" placeholder="https://example.com/file.pdf"/></div>
+            <button class="btn btn-primary btn-sm" onclick="addResource()">+ 新增資源</button>
+          </div>
+          <div class="admin-card">
+            <div class="admin-header"><span>📋</span><h2>已上架資源</h2></div>
+            <div id="adminResList" class="res-list"><div class="loading">載入中...</div></div>
+          </div>
+        </div>
+        <!-- ── 問題回饋 ── -->
+        <div class="admin-panel-section" id="tab-feedback">
+          <div class="admin-card">
+            <div class="admin-header"><span>📮</span><h2>問題與建議（待處理）</h2></div>
+            <div id="adminFeedbackList"><div class="loading">載入中...</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</main>
+
+<!-- MODALS -->
+<div class="modal-overlay" id="addArticleModal">
+  <div class="modal">
+    <h3>✏️ 新增文章（管理員）</h3>
+    <div style="margin-bottom:.6rem"><label>主題分類 *</label>
+      <select id="a-theme">
+        <option value="A">主題 A：人事人員常態業務 AI 導入案例</option>
+        <option value="B">主題 B：115年人事業務績效考核 AI 導入案例</option>
+        <option value="C">主題 C：通用性公務場景導入案例</option>
+      </select>
+    </div>
+    <div style="margin-bottom:.6rem"><label>標題 *</label><input id="a-title" type="text" placeholder="文章標題"/></div>
+    <div style="margin-bottom:.6rem"><label>作者</label><input id="a-author" type="text" placeholder="作者姓名"/></div>
+    <div style="margin-bottom:.6rem"><label>摘要 *</label><textarea id="a-summary" placeholder="文章摘要，約100字以內..." style="min-height:60px"></textarea></div>
+    <div style="margin-bottom:.6rem"><label>完整內容 *</label><textarea id="a-body" placeholder="完整文章內容..." style="min-height:110px"></textarea></div>
+    <div style="margin-bottom:.6rem"><label>AI 提示詞（Prompt）</label><textarea id="a-prompt" placeholder="貼上與本文相關的 AI 提示詞..." style="min-height:80px;font-family:'Courier New',monospace;background:#f8fafc"></textarea><div class="anon-hint">💡 選填。填寫後讀者可一鍵複製</div></div>
+    <div class="modal-footer">
+      <button class="btn" style="background:#f1f5f9;color:var(--text)" onclick="closeModal()">取消</button>
+      <button class="btn btn-green" onclick="submitArticle()">✅ 發布文章</button>
+    </div>
+  </div>
+</div>
+<div class="modal-overlay" id="addDiscModal">
+  <div class="modal">
+    <h3>🗣️ 發起討論</h3>
+    <div style="margin-bottom:.5rem"><label>姓名或暱稱</label><input id="d-name" type="text" placeholder="輸入姓名、暱稱，或留空匿名"/><div class="anon-hint">💡 可留空，將以「匿名」發表</div></div>
+    <div style="margin-bottom:.6rem"><label>標題 *</label><input id="d-title" type="text" placeholder="討論主題標題"/></div>
+    <div style="margin-bottom:.6rem"><label>內容 *</label><textarea id="d-body" placeholder="詳細說明您的問題或想法..." style="min-height:100px"></textarea></div>
+    <div class="modal-footer">
+      <button class="btn" style="background:#f1f5f9;color:var(--text)" onclick="closeDiscModal()">取消</button>
+      <button class="btn btn-green" onclick="submitDisc()">✅ 發布</button>
+    </div>
+  </div>
+</div>
+<div class="edit-overlay" id="editArticleOverlay">
+  <div class="edit-modal">
+    <h3>✏️ 編輯文章</h3>
+    <input type="hidden" id="edit-art-id"/>
+    <div style="margin-bottom:.6rem"><label>標題 *</label><input id="edit-art-title" type="text"/></div>
+    <div style="margin-bottom:.6rem"><label>作者</label><input id="edit-art-author" type="text"/></div>
+    <div style="margin-bottom:.6rem"><label>摘要 *</label><textarea id="edit-art-summary" style="min-height:60px"></textarea></div>
+    <div style="margin-bottom:.6rem"><label>完整內容 *</label><textarea id="edit-art-body" style="min-height:110px"></textarea></div>
+    <div style="margin-bottom:.6rem"><label>AI 提示詞</label><textarea id="edit-art-prompt" style="min-height:80px;font-family:'Courier New',monospace;background:#f8fafc"></textarea></div>
+    <div class="modal-footer">
+      <button class="btn" style="background:#f1f5f9;color:var(--text)" onclick="closeEditArticle()">取消</button>
+      <button class="btn btn-green" onclick="saveEditArticle()">💾 儲存</button>
+    </div>
+  </div>
+</div>
+<div class="edit-overlay" id="editDiscOverlay">
+  <div class="edit-modal">
+    <h3>✏️ 編輯討論</h3>
+    <input type="hidden" id="edit-disc-id"/>
+    <div style="margin-bottom:.6rem"><label>標題 *</label><input id="edit-disc-title" type="text"/></div>
+    <div style="margin-bottom:.6rem"><label>內容 *</label><textarea id="edit-disc-body" style="min-height:110px"></textarea></div>
+    <div class="modal-footer">
+      <button class="btn" style="background:#f1f5f9;color:var(--text)" onclick="closeEditDisc()">取消</button>
+      <button class="btn btn-green" onclick="saveEditDisc()">💾 儲存</button>
+    </div>
+  </div>
+</div>
+<!-- 編輯公告 -->
+<div class="edit-overlay" id="editAnnounceOverlay">
+  <div class="edit-modal" style="max-width:480px">
+    <h3>✏️ 編輯公告</h3>
+    <input type="hidden" id="edit-ann-id"/>
+    <div style="margin-bottom:.6rem"><label>公告類型</label>
+      <select id="edit-ann-type">
+        <option value="最新">🆕 最新</option>
+        <option value="公告">📌 公告</option>
+        <option value="資源">📎 資源</option>
+        <option value="注意">⚠️ 注意</option>
+      </select>
+    </div>
+    <div style="margin-bottom:.6rem"><label>顯示日期</label><input id="edit-ann-date" type="date"/></div>
+    <div style="margin-bottom:.6rem"><label>公告內容 *</label><input id="edit-ann-body" type="text"/></div>
+    <div class="modal-footer">
+      <button class="btn" style="background:#f1f5f9;color:var(--text)" onclick="document.getElementById('editAnnounceOverlay').classList.remove('open')">取消</button>
+      <button class="btn btn-green" onclick="saveEditAnnounce()">💾 儲存</button>
+    </div>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+// ══════════════════════════════════════════════════════
+//  SUPABASE CONFIG
+// ══════════════════════════════════════════════════════
+const SB_URL = 'https://lkxmgkofbuajvhxaytyh.supabase.co';
+const SB_KEY = 'sb_publishable_BBanWGfWNh_rJt3NI_bQdg_6CwavgQW';
+
+const SB_HEADS = {
+  'apikey': SB_KEY,
+  'Authorization': `Bearer ${SB_KEY}`,
+  'Content-Type': 'application/json',
+  'Prefer': 'return=representation'
+};
+
+// 核心請求函式
+async function sb(method, table, params={}, body=null){
+  let url = `${SB_URL}/rest/v1/${table}`;
+  const qs = new URLSearchParams(params).toString();
+  if(qs) url += '?' + qs;
+  const opts = { method, headers: {...SB_HEADS} };
+  if(body !== null) opts.body = JSON.stringify(body);
+  if(method === 'GET') opts.headers['Accept'] = 'application/json';
+  const res = await fetch(url, opts);
+  if(!res.ok){ const e = await res.text(); throw new Error(`[${res.status}] ${e}`); }
+  const ct = res.headers.get('content-type') || '';
+  if(ct.includes('json') && res.status !== 204) return res.json();
+  return null;
+}
+
+// ══════════════════════════════════════════════════════
+//  STATE
+// ══════════════════════════════════════════════════════
+let isAdmin = false;
+let currentTheme = 'A', currentArticleId = null, currentDiscId = null;
+let _articles = [];
+
+const THEMES = {
+  A:{label:'人事人員常態業務 AI 導入案例', color:'var(--tagA)'},
+  B:{label:'115年人事業務績效考核 AI 導入案例', color:'var(--tagB)'},
+  C:{label:'通用性公務場景導入案例', color:'var(--tagC)'},
+};
+const ANN_STYLE = {
+  '最新':'background:#fef9c3;color:#92400e',
+  '公告':'background:#dcfce7;color:#166534',
+  '資源':'background:#ede9fe;color:#5b21b6',
+  '注意':'background:#fee2e2;color:#991b1b',
+};
+const ANN_ICON = {'最新':'🆕','公告':'📌','資源':'📎','注意':'⚠️'};
+
+// 本地帳號（不走 Supabase）
+let adminAccounts = [
+  {id:'u1', username:'admin', password:'admin123', email:'admin@gov.tw', role:'admin'}
+];
+
+// ══════════════════════════════════════════════════════
+//  UTILS
+// ══════════════════════════════════════════════════════
+const G  = id => document.getElementById(id);
+const V  = id => G(id).value.trim();
+const SH = (id, h) => G(id).innerHTML = h;
+const show = id => G(id).style.display = 'block';
+const hide = id => G(id).style.display = 'none';
+function esc(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function fmtDT(iso){ return (iso||'').slice(0,16).replace('T',' '); }
+function today(){ return new Date().toISOString().slice(0,10); }
+function showToast(msg, type='success'){
+  const t = G('toast');
+  t.textContent = msg;
+  t.className = 'toast' + (type==='error' ? ' error' : '');
+  void t.offsetWidth;
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'), 3200);
+}
+// CORS 偵測：在 iframe/sandbox 環境顯示提示
+function detectEnv(){
+  try{
+    if(window.self !== window.top){
+      G('corsWarnHome').style.display = 'block';
+    }
+  }catch(e){ G('corsWarnHome').style.display = 'block'; }
+}
+
+// ══════════════════════════════════════════════════════
+//  AUTH
+// ══════════════════════════════════════════════════════
+function doLogin(){
+  const u = V('login-user'), p = G('login-pass').value;
+  const acc = adminAccounts.find(a => a.username===u && a.password===p);
+  if(acc){
+    isAdmin = true;
+    hide('adminLoginGate'); hide('adminForgotGate'); show('adminPanel');
+    G('adminPill').style.display = '';
+    renderAdmin();
+  } else {
+    G('loginErr').style.display = 'block';
+  }
+}
+function doLogout(){
+  isAdmin = false;
+  hide('adminPanel'); show('adminLoginGate');
+  G('adminPill').style.display = 'none';
+}
+function showForgotPwd(){ hide('adminLoginGate'); show('adminForgotGate'); G('forgotMsg').style.display='none'; }
+function showLoginGate(){ show('adminLoginGate'); hide('adminForgotGate'); }
+function doForgotPwd(){
+  const u = V('forgot-user'), acc = adminAccounts.find(a=>a.username===u);
+  const msg = G('forgotMsg'); msg.style.display='block';
+  if(acc){ msg.style.color='var(--success)'; msg.textContent=`✅ 重設連結已模擬傳送至 ${acc.email}`; }
+  else { msg.style.color='var(--danger)'; msg.textContent='找不到此帳號，請確認後再試。'; }
+}
+
+// ══════════════════════════════════════════════════════
+//  NAV
+// ══════════════════════════════════════════════════════
+function switchPage(id, el){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active'));
+  G('page-'+id).classList.add('active'); el.classList.add('active');
+  if(id==='home') renderHome();
+  if(id==='articles') showThemeView();
+  if(id==='discuss') renderDiscList();
+  if(id==='resources') renderResources();
+  if(id==='admin') renderAdminGate();
+}
+function switchAdminTab(id, el){
+  document.querySelectorAll('.admin-panel-section').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.admin-sidebar-item').forEach(s=>s.classList.remove('active'));
+  G(id).classList.add('active'); el.classList.add('active');
+  if(id==='tab-announce') loadAdminAnnounces();
+  if(id==='tab-articles') loadAdminArticles();
+  if(id==='tab-discuss') loadAdminDiscs();
+  if(id==='tab-resources') renderAdminResources();
+  if(id==='tab-feedback') loadAdminFeedback();
+}
+function renderAdminGate(){
+  if(isAdmin){ hide('adminLoginGate'); hide('adminForgotGate'); show('adminPanel'); renderAdmin(); }
+  else { show('adminLoginGate'); hide('adminForgotGate'); hide('adminPanel'); }
+}
+
+// ══════════════════════════════════════════════════════
+//  HOME
+// ══════════════════════════════════════════════════════
+async function renderHome(){
+  detectEnv();
+  await Promise.all([ loadAnnounces(), loadHotArticles() ]);
+}
+
+async function loadAnnounces(){
+  try{
+    const rows = await sb('GET','announces',{order:'date.desc'});
+    SH('announceList', rows.length
+      ? rows.map(r=>`
+        <div class="announce-item">
+          <span class="chip" style="${ANN_STYLE[r.type]||ANN_STYLE['公告']}">${ANN_ICON[r.type]||'📌'} ${esc(r.type)}</span>
+          <span style="font-size:.86rem;font-weight:600;color:var(--navy)">${esc(r.body)}</span>
+          <span class="date">${(r.date||'').slice(0,10)}</span>
+        </div>`).join('')
+      : '<p style="color:var(--muted);font-size:.85rem;padding:.5rem">尚無公告</p>');
+  } catch(e){
+    // 若 CORS 失敗，顯示靜態預設公告
+    SH('announceList',`
+      <div class="announce-item"><span class="chip" style="background:#fef9c3;color:#92400e">🆕 最新</span><span style="font-size:.86rem;font-weight:600;color:var(--navy)">115年度人事業務績效考核 AI 導入說明會開放報名</span><span class="date">2026-03-01</span></div>
+      <div class="announce-item"><span class="chip" style="background:#dcfce7;color:#166534">📌 公告</span><span style="font-size:.86rem;font-weight:600;color:var(--navy)">2026人事業務智動化計畫推動指引（第一版）發布</span><span class="date">2026-02-15</span></div>
+      <div class="announce-item"><span class="chip" style="background:#ede9fe;color:#5b21b6">📎 資源</span><span style="font-size:.86rem;font-weight:600;color:var(--navy)">通用性公務 AI 工具評估報告已上架相關資源下載專區</span><span class="date">2026-02-01</span></div>
+      <p style="font-size:.75rem;color:var(--muted);margin-top:.5rem">⚠️ 目前顯示靜態預設公告（Supabase 連線受限）</p>`);
+  }
+}
+
+async function loadHotArticles(){
+  try{
+    _articles = await sb('GET','articles',{order:'views.desc'});
+    const hot = _articles.slice(0,5);
+    const rc = ['#ef4444','#f97316','#eab308','#64748b','#64748b'];
+    SH('homeHotList', hot.length
+      ? hot.map((a,i)=>`
+        <div class="hot-item" onclick="goArticle('${a.id}')">
+          <div class="hot-rank" style="background:${rc[i]}">${i+1}</div>
+          <div class="hot-info">
+            <div class="title">${esc(a.title)}</div>
+            <div class="meta">${(THEMES[a.theme]?.label||'').slice(0,16)}… · ${esc(a.author||'管理員')}</div>
+          </div>
+          <span class="hot-views">👁 ${a.views||0}</span>
+        </div>`).join('')
+      : '<p style="color:var(--muted);font-size:.85rem;padding:.5rem">尚無文章</p>');
+    SH('homeThemeGrid', buildThemeCards());
+  } catch(e){
+    SH('homeHotList','<p style="color:var(--danger);font-size:.84rem;padding:.5rem">⚠️ 無法連接 Supabase，請將檔案下載後在本機開啟使用。</p>');
+    SH('homeThemeGrid','');
+  }
+}
+
+function buildThemeCards(){
+  return Object.entries(THEMES).map(([t,th])=>{
+    const posts = _articles.filter(a=>a.theme===t).sort((a,b)=>(b.views||0)-(a.views||0)).slice(0,3);
+    const li = posts.map(p=>`<li onclick="event.stopPropagation();goArticle('${p.id}')">${esc(p.title)}</li>`).join('');
+    const total = _articles.filter(a=>a.theme===t).length;
+    return `<div class="theme-card ${t}" onclick="openTheme('${t}')">
+      <h3>${esc(th.label)}</h3>
+      <ul class="theme-posts">${li||'<li style="color:var(--muted);cursor:default">尚無文章</li>'}</ul>
+      <div class="theme-count">共 ${total} 篇文章</div>
+      <div class="theme-more">查看全部 →</div>
+    </div>`;
+  }).join('');
+}
+
+async function goArticle(id){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active'));
+  G('page-articles').classList.add('active');
+  document.querySelectorAll('.nav-tab')[1].classList.add('active');
+  if(!_articles.length) _articles = await sb('GET','articles',{order:'created_at.desc'});
+  const art = _articles.find(a=>a.id===id);
+  if(art){ currentTheme=art.theme; showThemeView(); openArticle(id); }
+}
+
+// ══════════════════════════════════════════════════════
+//  ARTICLES
+// ══════════════════════════════════════════════════════
+async function showThemeView(){
+  show('view-themes'); hide('view-forum');
+  G('view-article').classList.remove('active');
+  if(!_articles.length){
+    SH('articleThemeGrid','<div class="loading">載入中...</div>');
+    try{ _articles = await sb('GET','articles',{order:'views.desc'}); }catch(e){}
+  }
+  SH('articleThemeGrid', buildThemeCards());
+}
+
+async function openTheme(t){
+  currentTheme = t;
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(n=>n.classList.remove('active'));
+  G('page-articles').classList.add('active');
+  document.querySelectorAll('.nav-tab')[1].classList.add('active');
+  hide('view-themes'); show('view-forum');
+  G('view-article').classList.remove('active');
+  G('forumTag').innerHTML=`<span style="display:inline-block;background:${THEMES[t].color};color:#fff;border-radius:99px;padding:.2rem .75rem;font-size:.78rem;font-weight:700">${esc(THEMES[t].label)}</span>`;
+  await renderPosts(t);
+}
+function backToThemes(){ showThemeView(); }
+
+async function renderPosts(t){
+  SH('postList','<div class="loading">載入中...</div>');
+  try{
+    const posts = await sb('GET','articles',{theme:'eq.'+t, order:'created_at.desc'});
+    SH('postList', posts.length
+      ? posts.map(p=>`
+        <div class="post-item">
+          <div class="post-meta">
+            <span class="post-author">👤 ${esc(p.author||'管理員')}</span>
+            <span class="post-date">${(p.created_at||'').slice(0,10)}</span>
+          </div>
+          <div class="post-title" onclick="openArticle('${p.id}')">${esc(p.title)}</div>
+          <div class="post-summary">${esc(p.summary)}</div>
+          <div class="post-footer">
+            <button class="read-more" onclick="openArticle('${p.id}')">繼續閱讀 →</button>
+            <span class="post-views">👁 ${p.views||0}</span>
+          </div>
+        </div>`).join('')
+      : '<div style="background:#fff;border:1px solid var(--border);border-radius:.75rem;padding:2rem;text-align:center;color:var(--muted)">此主題尚無文章。</div>');
+  } catch(e){ SH('postList','<p style="color:var(--danger);padding:1rem">載入失敗</p>'); }
+}
+
+async function openArticle(id){
+  hide('view-themes'); hide('view-forum');
+  G('view-article').classList.add('active');
+  SH('articleBody','<div class="loading">載入中...</div>');
+  currentArticleId = id;
+  try{
+    const arts = await sb('GET','articles',{'id':'eq.'+id});
+    const art = arts[0]; if(!art) return;
+    try{ await sb('PATCH','articles',{'id':'eq.'+id},{views:(art.views||0)+1}); }catch(e){}
+    G('articleMeta').innerHTML=`<span style="display:inline-block;background:${THEMES[art.theme]?.color||'#1e4d8c'};color:#fff;border-radius:99px;padding:.15rem .6rem;font-size:.72rem;font-weight:700">${esc(THEMES[art.theme]?.label||'')}</span>`;
+    G('articleTitle').textContent = art.title;
+    G('articleInfo').innerHTML = `<span>👤 ${esc(art.author||'管理員')}</span><span>📅 ${(art.created_at||'').slice(0,10)}</span><span>👁 ${(art.views||0)+1}</span>`;
+    const html = art.body.split('\n').map(l=>{
+      if(l.startsWith('## ')) return `<h2>${esc(l.slice(3))}</h2>`;
+      if(l.startsWith('> ')) return `<blockquote>${esc(l.slice(2))}</blockquote>`;
+      if(l.startsWith('- ')) return `<li>${esc(l.slice(2))}</li>`;
+      if(!l.trim()) return '';
+      return `<p>${esc(l)}</p>`;
+    }).join('\n').replace(/(<li>.*?<\/li>\n?)+/gs, m=>`<ul>${m}</ul>`);
+    SH('articleBody', html);
+    const pw = G('promptBoxWrapper');
+    pw.innerHTML = (art.prompt&&art.prompt.trim()) ? `<div class="prompt-box">
+      <div class="prompt-box-header">
+        <span class="prompt-box-label">🤖 AI 提示詞（Prompt）</span>
+        <button class="copy-btn" onclick="copyPrompt(this,'${id}')">📋 複製提示詞</button>
+      </div>
+      <div class="prompt-text" id="pt_${id}">${esc(art.prompt)}</div>
+    </div>` : '';
+    await loadArticleComments(id);
+    G('ac-name').value=''; G('ac-body').value='';
+  } catch(e){ SH('articleBody','<p style="color:var(--danger)">載入失敗</p>'); }
+}
+
+function copyPrompt(btn, artId){
+  const el = G('pt_'+artId); if(!el) return;
+  navigator.clipboard.writeText(el.textContent).then(()=>{
+    btn.textContent='✅ 已複製！'; btn.classList.add('copied');
+    setTimeout(()=>{ btn.textContent='📋 複製提示詞'; btn.classList.remove('copied'); },2000);
+  }).catch(()=>showToast('複製失敗，請手動選取','error'));
+}
+function backToForum(){ G('view-article').classList.remove('active'); openTheme(currentTheme); }
+
+async function loadArticleComments(artId){
+  try{
+    const coms = await sb('GET','article_comments',{'article_id':'eq.'+artId, order:'created_at.asc'});
+    SH('acList', coms.length
+      ? coms.map(x=>`
+        <div class="ac-item">
+          <div class="ac-header">
+            <div class="mini-avatar">${(x.name||'匿')[0]}</div>
+            <span style="font-weight:700;font-size:.83rem;color:var(--navy)">${esc(x.name||'匿名')}</span>
+            <span class="ac-time">${fmtDT(x.created_at)}</span>
+            ${isAdmin?`<button class="btn btn-danger" style="padding:.18rem .42rem;font-size:.7rem" onclick="deleteArticleComment('${x.id}','${artId}')">🗑</button>`:''}
+          </div>
+          <div class="ac-body">${esc(x.body)}</div>
+        </div>`).join('')
+      : '<p style="color:var(--muted);font-size:.83rem;text-align:center;padding:.5rem">尚無留言，歡迎率先發表！</p>');
+  } catch(e){ SH('acList','<p style="color:var(--danger);font-size:.82rem">留言載入失敗</p>'); }
+}
+
+async function submitArticleComment(){
+  const body = V('ac-body');
+  if(!body){ showToast('請填寫留言內容','error'); return; }
+  try{
+    await sb('POST','article_comments',{},{article_id:currentArticleId, name:V('ac-name')||'', body});
+    G('ac-name').value=''; G('ac-body').value='';
+    await loadArticleComments(currentArticleId);
+    showToast('✅ 留言已送出');
+  } catch(e){ showToast('送出失敗：'+e.message,'error'); }
+}
+async function deleteArticleComment(cId, artId){
+  if(!confirm('確定刪除此留言？')) return;
+  await sb('DELETE','article_comments',{'id':'eq.'+cId});
+  await loadArticleComments(artId); showToast('🗑 留言已刪除');
+}
+
+// ══════════════════════════════════════════════════════
+//  DISCUSS
+// ══════════════════════════════════════════════════════
+async function renderDiscList(){
+  show('disc-view-list');
+  G('disc-view-detail').classList.remove('active');
+  SH('discList','<div class="loading">載入中...</div>');
+  try{
+    const rows = await sb('GET','discussions',{order:'created_at.desc'});
+    SH('discList', rows.length
+      ? rows.map(d=>`
+        <div class="disc-post">
+          <div class="disc-meta">
+            <span class="disc-tag">討論</span>
+            <span style="font-size:.75rem;color:var(--muted)">👤 ${esc(d.author||'匿名')}</span>
+            <span style="font-size:.72rem;color:var(--muted);margin-left:auto">${fmtDT(d.created_at)}</span>
+          </div>
+          <div class="disc-title" onclick="openDisc('${d.id}')">${esc(d.title)}</div>
+          <div class="disc-preview">${esc(d.body)}</div>
+          <div class="post-footer">
+            <button class="read-more" onclick="openDisc('${d.id}')">繼續閱讀 →</button>
+            <span class="post-views">👁 ${d.views||0}</span>
+          </div>
+        </div>`).join('')
+      : '<div style="background:#fff;border:1px solid var(--border);border-radius:.75rem;padding:2rem;text-align:center;color:var(--muted)">尚無討論，按「✏️ 發起討論」開始第一篇！</div>');
+  } catch(e){ SH('discList','<p style="color:var(--danger);padding:1rem">⚠️ 無法連接 Supabase，請將檔案下載後在本機開啟使用。</p>'); }
+}
+
+function openDiscModal(){ G('addDiscModal').classList.add('open'); }
+function closeDiscModal(){
+  G('addDiscModal').classList.remove('open');
+  ['d-name','d-title','d-body'].forEach(i=>G(i).value='');
+}
+async function submitDisc(){
+  const title = V('d-title'), body = V('d-body');
+  if(!title||!body){ showToast('請填寫標題與內容','error'); return; }
+  const author = V('d-name') || '匿名';
+  try{
+    await sb('POST','discussions',{},{title, author, body, views:0});
+    closeDiscModal();
+    await renderDiscList();
+    showToast('✅ 討論已發布');
+  } catch(e){ showToast('發布失敗：'+e.message,'error'); }
+}
+
+async function openDisc(id){
+  currentDiscId = id;
+  hide('disc-view-list');
+  G('disc-view-detail').classList.add('active');
+  try{
+    const rows = await sb('GET','discussions',{'id':'eq.'+id});
+    const d = rows[0]; if(!d) return;
+    try{ await sb('PATCH','discussions',{'id':'eq.'+id},{views:(d.views||0)+1}); }catch(e){}
+    G('discDetailMeta').innerHTML=`<span class="disc-tag">討論</span>`;
+    G('discDetailTitle').textContent = d.title;
+    G('discDetailInfo').textContent = `👤 ${d.author||'匿名'} · 📅 ${(d.created_at||'').slice(0,10)} · 👁 ${(d.views||0)+1}`;
+    SH('discDetailBody', d.body.split('\n').map(l=>l.trim()?`<p>${esc(l)}</p>`:'').join(''));
+    await loadDiscComments(id);
+    G('dc-name').value=''; G('dc-body').value='';
+  } catch(e){ showToast('載入失敗','error'); }
+}
+function backToDiscList(){ G('disc-view-detail').classList.remove('active'); renderDiscList(); }
+
+async function loadDiscComments(discId){
+  try{
+    const coms = await sb('GET','discussion_comments',{'discussion_id':'eq.'+discId, order:'created_at.asc'});
+    SH('dcList', coms.length
+      ? coms.map(x=>`
+        <div class="ac-item">
+          <div class="ac-header">
+            <div class="mini-avatar">${(x.name||'匿')[0]}</div>
+            <span style="font-weight:700;font-size:.83rem;color:var(--navy)">${esc(x.name||'匿名')}</span>
+            <span class="ac-time">${fmtDT(x.created_at)}</span>
+            ${isAdmin?`<button class="btn btn-danger" style="padding:.18rem .42rem;font-size:.7rem" onclick="deleteDiscComment('${x.id}','${discId}')">🗑</button>`:''}
+          </div>
+          <div class="ac-body">${esc(x.body)}</div>
+        </div>`).join('')
+      : '<p style="color:var(--muted);font-size:.83rem;text-align:center;padding:.5rem">尚無回覆，歡迎率先回應！</p>');
+  } catch(e){ SH('dcList','<p style="color:var(--danger);font-size:.82rem">回覆載入失敗</p>'); }
+}
+
+async function submitDiscComment(){
+  const body = V('dc-body');
+  if(!body){ showToast('請填寫回覆內容','error'); return; }
+  try{
+    await sb('POST','discussion_comments',{},{discussion_id:currentDiscId, name:V('dc-name')||'', body});
+    G('dc-name').value=''; G('dc-body').value='';
+    await loadDiscComments(currentDiscId);
+    showToast('✅ 回覆已送出');
+  } catch(e){ showToast('送出失敗：'+e.message,'error'); }
+}
+async function deleteDiscComment(cId, discId){
+  if(!confirm('確定刪除？')) return;
+  await sb('DELETE','discussion_comments',{'id':'eq.'+cId});
+  await loadDiscComments(discId); showToast('🗑 留言已刪除');
+}
+
+// ══════════════════════════════════════════════════════
+//  RESOURCES
+// ══════════════════════════════════════════════════════
+async function renderResources(){
+  SH('resList','<div class="loading">載入中...</div>');
+  try{
+    const rows = await sb('GET','resources',{order:'created_at.desc'});
+    SH('resList', rows.length
+      ? rows.map(r=>`
+        <div class="res-item">
+          <span style="font-size:1.2rem">📄</span>
+          <div style="flex:1">
+            <a href="${esc(r.url)}" target="_blank">${esc(r.title)}</a>
+            <div class="res-meta">${esc(r.category)} · ${(r.created_at||'').slice(0,10)}</div>
+          </div>
+          <span class="chip">${esc(r.category)}</span>
+        </div>`).join('')
+      : '<p style="color:var(--muted);font-size:.84rem;padding:.5rem">尚無資源。</p>');
+  } catch(e){ SH('resList','<p style="color:var(--danger);font-size:.84rem;padding:.5rem">載入失敗</p>'); }
+}
+
+// ══════════════════════════════════════════════════════
+//  FEEDBACK
+// ══════════════════════════════════════════════════════
+async function submitFeedback(){
+  const email=V('fb-email'), title=V('fb-title'), body=V('fb-body');
+  if(!email||!title||!body){ showToast('請填寫 Email、主旨與詳細說明','error'); return; }
+  if(!/\S+@\S+\.\S+/.test(email)){ showToast('請輸入有效的 Email 地址','error'); return; }
+  try{
+    await sb('POST','feedbacks',{},{
+      type: G('fb-type').value,
+      name: V('fb-name')||'匿名',
+      email, title, body, done: false
+    });
+    hide('feedbackForm'); show('feedbackSuccess');
+  } catch(e){ showToast('送出失敗：'+e.message,'error'); }
+}
+function resetFeedback(){
+  ['fb-title','fb-body','fb-name','fb-email'].forEach(i=>G(i).value='');
+  show('feedbackForm'); hide('feedbackSuccess');
+}
+
+// ══════════════════════════════════════════════════════
+//  ADMIN
+// ══════════════════════════════════════════════════════
+async function renderAdmin(){
+  // stats
+  try{
+    const [a,d,r,f] = await Promise.all([
+      sb('GET','articles',{select:'id'}),
+      sb('GET','discussions',{select:'id'}),
+      sb('GET','resources',{select:'id'}),
+      sb('GET','feedbacks',{done:'eq.false',select:'id'}),
+    ]);
+    G('statArticles').textContent = a?.length||0;
+    G('statDisc').textContent = d?.length||0;
+    G('statRes').textContent = r?.length||0;
+    G('statFeedback').textContent = f?.length||0;
+  } catch(e){}
+  renderAdminAccounts();
+  loadAdminAnnounces();
+}
+
+// ── 公告管理 ──
+async function loadAdminAnnounces(){
+  try{
+    const rows = await sb('GET','announces',{order:'date.desc'});
+    SH('adminAnnounceList', rows.length
+      ? rows.map(r=>`
+        <div style="background:var(--bg);border:1px solid var(--border);border-radius:.6rem;padding:.75rem;margin-bottom:.5rem;display:flex;align-items:center;gap:.6rem;flex-wrap:wrap">
+          <span class="chip" style="${ANN_STYLE[r.type]||''}">${ANN_ICON[r.type]||'📌'} ${esc(r.type)}</span>
+          <span style="font-size:.84rem;font-weight:600;color:var(--navy);flex:1">${esc(r.body)}</span>
+          <span style="font-size:.73rem;color:var(--muted)">${(r.date||'').slice(0,10)}</span>
+          <div style="display:flex;gap:.4rem">
+            <button class="btn btn-warn btn-sm" onclick="openEditAnnounce('${r.id}','${esc(r.type)}','${(r.date||'').slice(0,10)}','${esc(r.body).replace(/'/g,'&#39;')}')">✏️</button>
+            <button class="btn btn-danger btn-sm" onclick="deleteAnnounce('${r.id}')">🗑</button>
+          </div>
+        </div>`).join('')
+      : '<p style="color:var(--muted);font-size:.84rem">尚無公告</p>');
+  } catch(e){ SH('adminAnnounceList','<p style="color:var(--danger)">載入失敗</p>'); }
+}
+
+async function addAnnounce(){
+  const body = V('ann-body');
+  if(!body){ showToast('請填寫公告內容','error'); return; }
+  const type = G('ann-type').value;
+  const date = G('ann-date').value || today();
+  try{
+    await sb('POST','announces',{},{type, body, date});
+    G('ann-body').value=''; G('ann-date').value='';
+    await loadAdminAnnounces();
+    await loadAnnounces(); // 同步首頁
+    showToast('✅ 公告已新增');
+  } catch(e){ showToast('新增失敗：'+e.message,'error'); }
+}
+
+function openEditAnnounce(id, type, date, body){
+  G('edit-ann-id').value = id;
+  G('edit-ann-type').value = type;
+  G('edit-ann-date').value = date;
+  G('edit-ann-body').value = body;
+  G('editAnnounceOverlay').classList.add('open');
+}
+async function saveEditAnnounce(){
+  const id = G('edit-ann-id').value;
+  const body = V('edit-ann-body');
+  if(!body){ showToast('請填寫公告內容','error'); return; }
+  try{
+    await sb('PATCH','announces',{'id':'eq.'+id},{
+      type: G('edit-ann-type').value,
+      date: G('edit-ann-date').value || today(),
+      body
+    });
+    G('editAnnounceOverlay').classList.remove('open');
+    await loadAdminAnnounces(); await loadAnnounces();
+    showToast('✅ 公告已更新');
+  } catch(e){ showToast('更新失敗：'+e.message,'error'); }
+}
+async function deleteAnnounce(id){
+  if(!confirm('確定刪除此公告？')) return;
+  await sb('DELETE','announces',{'id':'eq.'+id});
+  await loadAdminAnnounces(); await loadAnnounces();
+  showToast('🗑 公告已刪除');
+}
+
+// ── 文章管理 ──
+async function loadAdminArticles(){
+  try{
+    const arts = await sb('GET','articles',{order:'created_at.desc'});
+    SH('adminArticleList', arts.length
+      ? arts.map(a=>`
+        <div style="background:var(--bg);border:1px solid var(--border);border-radius:.6rem;padding:.75rem;margin-bottom:.5rem">
+          <div style="font-size:.83rem;font-weight:600;color:var(--navy)">${esc(a.title)}</div>
+          <div style="font-size:.73rem;color:var(--muted);margin:.2rem 0">${esc(THEMES[a.theme]?.label||'')} · ${esc(a.author||'管理員')} · ${(a.created_at||'').slice(0,10)}</div>
+          <div class="item-actions">
+            <button class="btn btn-warn btn-sm" onclick="openEditArticle('${a.id}')">✏️ 編輯</button>
+            <button class="btn btn-danger btn-sm" onclick="deleteArticle('${a.id}')">🗑 刪除</button>
+          </div>
+        </div>`).join('')
+      : '<p style="color:var(--muted);font-size:.84rem">尚無文章</p>');
+  } catch(e){ SH('adminArticleList','<p style="color:var(--danger)">載入失敗</p>'); }
+}
+
+function openAddArticleModal(){ G('addArticleModal').classList.add('open'); }
+function closeModal(){
+  G('addArticleModal').classList.remove('open');
+  ['a-title','a-author','a-summary','a-body','a-prompt'].forEach(i=>G(i).value='');
+}
+async function submitArticle(){
+  const title=V('a-title'), summary=V('a-summary'), body=V('a-body');
+  if(!title||!summary||!body){ showToast('請填寫標題、摘要與內容','error'); return; }
+  try{
+    await sb('POST','articles',{},{
+      theme: G('a-theme').value, title,
+      author: V('a-author')||'管理員',
+      summary, body, prompt: V('a-prompt'), views:0
+    });
+    closeModal(); await loadAdminArticles(); showToast('✅ 文章已發布');
+  } catch(e){ showToast('發布失敗：'+e.message,'error'); }
+}
+async function openEditArticle(id){
+  const arts = await sb('GET','articles',{'id':'eq.'+id});
+  const art = arts[0]; if(!art) return;
+  G('edit-art-id').value=id; G('edit-art-title').value=art.title;
+  G('edit-art-author').value=art.author||''; G('edit-art-summary').value=art.summary;
+  G('edit-art-body').value=art.body; G('edit-art-prompt').value=art.prompt||'';
+  G('editArticleOverlay').classList.add('open');
+}
+function closeEditArticle(){ G('editArticleOverlay').classList.remove('open'); }
+async function saveEditArticle(){
+  const id=G('edit-art-id').value, title=V('edit-art-title'), summary=V('edit-art-summary'), body=V('edit-art-body');
+  if(!title||!summary||!body){ showToast('請填寫標題、摘要與內容','error'); return; }
+  await sb('PATCH','articles',{'id':'eq.'+id},{title, author:V('edit-art-author'), summary, body, prompt:V('edit-art-prompt')});
+  closeEditArticle(); await loadAdminArticles(); showToast('✅ 文章已更新');
+}
+async function deleteArticle(id){
+  if(!confirm('確定刪除此文章？')) return;
+  await sb('DELETE','articles',{'id':'eq.'+id});
+  await loadAdminArticles(); showToast('🗑 文章已刪除');
+}
+
+// ── 討論管理 ──
+async function loadAdminDiscs(){
+  try{
+    const discs = await sb('GET','discussions',{order:'created_at.desc'});
+    SH('adminDiscList', discs.length
+      ? discs.map(d=>`
+        <div style="background:var(--bg);border:1px solid var(--border);border-radius:.6rem;padding:.75rem;margin-bottom:.5rem">
+          <div style="font-size:.83rem;font-weight:600;color:var(--navy)">${esc(d.title)}</div>
+          <div style="font-size:.73rem;color:var(--muted);margin:.2rem 0">👤 ${esc(d.author||'匿名')} · ${(d.created_at||'').slice(0,10)}</div>
+          <div class="item-actions">
+            <button class="btn btn-warn btn-sm" onclick="openEditDisc('${d.id}')">✏️ 編輯</button>
+            <button class="btn btn-danger btn-sm" onclick="deleteDisc('${d.id}')">🗑 刪除</button>
+          </div>
+        </div>`).join('')
+      : '<p style="color:var(--muted);font-size:.84rem">尚無討論</p>');
+  } catch(e){ SH('adminDiscList','<p style="color:var(--danger)">載入失敗</p>'); }
+}
+async function openEditDisc(id){
+  const rows = await sb('GET','discussions',{'id':'eq.'+id});
+  const d = rows[0]; if(!d) return;
+  G('edit-disc-id').value=id; G('edit-disc-title').value=d.title; G('edit-disc-body').value=d.body;
+  G('editDiscOverlay').classList.add('open');
+}
+function closeEditDisc(){ G('editDiscOverlay').classList.remove('open'); }
+async function saveEditDisc(){
+  const id=G('edit-disc-id').value, title=V('edit-disc-title'), body=V('edit-disc-body');
+  if(!title||!body){ showToast('請填寫標題與內容','error'); return; }
+  await sb('PATCH','discussions',{'id':'eq.'+id},{title, body});
+  closeEditDisc(); await loadAdminDiscs(); showToast('✅ 討論已更新');
+}
+async function deleteDisc(id){
+  if(!confirm('確定刪除？')) return;
+  await sb('DELETE','discussions',{'id':'eq.'+id});
+  await loadAdminDiscs(); showToast('🗑 討論已刪除');
+}
+
+// ── 資源管理 ──
+async function renderAdminResources(){
+  try{
+    const res = await sb('GET','resources',{order:'created_at.desc'});
+    SH('adminResList', res.length
+      ? res.map(r=>`
+        <div class="res-item">
+          <span>📄</span>
+          <div style="flex:1"><a href="${esc(r.url)}" target="_blank">${esc(r.title)}</a><div class="res-meta">${esc(r.category)} · ${(r.created_at||'').slice(0,10)}</div></div>
+          <button class="btn btn-danger" onclick="deleteResource('${r.id}')">🗑</button>
+        </div>`).join('')
+      : '<p style="color:var(--muted);font-size:.84rem">尚無資源</p>');
+  } catch(e){ SH('adminResList','<p style="color:var(--danger)">載入失敗</p>'); }
+}
+async function addResource(){
+  const title=V('r-title'), cat=V('r-cat'), url=V('r-url');
+  if(!title||!cat||!url){ showToast('請填寫資源名稱、分類與連結','error'); return; }
+  await sb('POST','resources',{},{title, category:cat, url});
+  ['r-title','r-cat','r-url'].forEach(i=>G(i).value='');
+  await renderAdminResources(); showToast('✅ 資源已新增');
+}
+async function deleteResource(id){
+  if(!confirm('確定刪除？')) return;
+  await sb('DELETE','resources',{'id':'eq.'+id});
+  await renderAdminResources(); showToast('🗑 已刪除');
+}
+
+// ── 回饋管理 ──
+async function loadAdminFeedback(){
+  try{
+    const fbs = await sb('GET','feedbacks',{done:'eq.false', order:'created_at.desc'});
+    SH('adminFeedbackList', fbs.length
+      ? fbs.map(f=>`
+        <div style="background:var(--bg);border:1px solid var(--border);border-radius:.6rem;padding:.8rem;margin-bottom:.5rem">
+          <div style="display:flex;align-items:center;gap:.5rem;flex-wrap:wrap;margin-bottom:.35rem">
+            <span class="chip" style="background:#fef9c3;color:#92400e">${esc(f.type)}</span>
+            <span style="font-size:.83rem;font-weight:600;color:var(--navy)">${esc(f.title)}</span>
+            <span style="font-size:.72rem;color:var(--muted);margin-left:auto">${esc(f.name)} · ${(f.created_at||'').slice(0,10)}</span>
+          </div>
+          <div style="font-size:.82rem;color:var(--text);line-height:1.5;margin-bottom:.4rem">${esc(f.body)}</div>
+          <div style="font-size:.76rem;color:var(--accent);margin-bottom:.5rem">📧 ${esc(f.email)}</div>
+          <button class="btn btn-sm" style="background:#dcfce7;color:#166534;font-size:.76rem" onclick="markFeedbackDone('${f.id}')">✅ 標記已處理</button>
+        </div>`).join('')
+      : '<p style="color:var(--muted);font-size:.84rem">目前無待處理回饋 🎉</p>');
+  } catch(e){ SH('adminFeedbackList','<p style="color:var(--danger)">載入失敗</p>'); }
+}
+async function markFeedbackDone(id){
+  await sb('PATCH','feedbacks',{'id':'eq.'+id},{done:true});
+  await loadAdminFeedback(); showToast('已標記為處理完成');
+}
+
+// ── 帳號管理（本地）──
+function renderAdminAccounts(){
+  const roles={admin:'管理員',editor:'編輯員',viewer:'檢視者'};
+  const rc={admin:'role-admin',editor:'role-editor',viewer:'role-viewer'};
+  SH('accTable',`<tr><th>帳號</th><th>Email</th><th>角色</th><th>操作</th></tr>`
+    +adminAccounts.map(a=>`<tr>
+      <td>${esc(a.username)}</td><td style="font-size:.8rem">${esc(a.email)}</td>
+      <td><span class="role-badge ${rc[a.role]}">${roles[a.role]}</span></td>
+      <td>${a.id!=='u1'?`<button class="btn btn-danger" onclick="deleteAccount('${a.id}')">🗑 刪除</button>`:'<span style="font-size:.75rem;color:var(--muted)">主帳號</span>'}</td>
+    </tr>`).join(''));
+}
+function addAccount(){
+  const u=V('new-acc-user'), e=V('new-acc-email');
+  if(!u||!e){ showToast('請填寫帳號與 Email','error'); return; }
+  if(adminAccounts.find(a=>a.username===u)){ showToast('帳號已存在','error'); return; }
+  adminAccounts.push({id:'u'+Date.now(), username:u, password:'temp1234', email:e, role:G('new-acc-role').value});
+  ['new-acc-user','new-acc-email'].forEach(i=>G(i).value='');
+  renderAdminAccounts(); showToast(`✅ 帳號「${u}」已新增，預設密碼：temp1234`);
+}
+function deleteAccount(id){
+  if(!confirm('確定刪除？')) return;
+  adminAccounts = adminAccounts.filter(a=>a.id!==id);
+  renderAdminAccounts(); showToast('🗑 帳號已刪除');
+}
+
+// ══════════════════════════════════════════════════════
+//  INIT
+// ══════════════════════════════════════════════════════
+
+// 今天日期預填
+G('ann-date').value = new Date().toISOString().slice(0,10);
+renderHome();
+</script>
+</body>
+</html>
