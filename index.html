@@ -612,11 +612,16 @@ function detectEnv(){
 async function doLogin(){
   const u = V('login-user'), p = G('login-pass').value;
   try{
-    const rows = await sb('GET','admin_accounts',{username:'eq.'+u, password:'eq.'+p});
-    if(rows && rows.length > 0){
-      const acc = rows[0];
+    // 用 pgcrypto 的 crypt() 比對加密密碼
+    const res = await fetch(`${SB_URL}/rest/v1/rpc/verify_login`, {
+      method: 'POST',
+      headers: {...SB_HEADS},
+      body: JSON.stringify({p_username: u, p_password: p})
+    });
+    const data = await res.json();
+    if(data && data.id){
       isAdmin = true;
-      currentAdminId = acc.id;
+      currentAdminId = data.id;
       hide('adminLoginGate'); hide('adminForgotGate'); show('adminPanel');
       G('adminPill').style.display = '';
       renderAdmin();
@@ -626,6 +631,30 @@ async function doLogin(){
   } catch(e){
     G('loginErr').style.display = 'block';
   }
+}
+
+async function changePassword(id, newPwd){
+  // 用 RPC 更新加密密碼
+  const res = await fetch(`${SB_URL}/rest/v1/rpc/update_password`, {
+    method: 'POST',
+    headers: {...SB_HEADS},
+    body: JSON.stringify({p_id: id, p_password: newPwd})
+  });
+  if(!res.ok){ const e = await res.text(); throw new Error(e); }
+}
+
+async function saveChangePwd(){
+  const id = G('pwd-acc-id').value;
+  const np = G('pwd-new').value.trim();
+  const cp = G('pwd-confirm').value.trim();
+  if(!np){ showToast('請輸入新密碼','error'); return; }
+  if(np !== cp){ showToast('兩次密碼不一致','error'); return; }
+  if(np.length < 6){ showToast('密碼至少需要 6 個字元','error'); return; }
+  try{
+    await changePassword(id, np);
+    G('changePwdOverlay').classList.remove('open');
+    showToast('✅ 密碼已更新');
+  } catch(e){ showToast('更新失敗：'+e.message,'error'); }
 }
 function doLogout(){
   isAdmin = false;
