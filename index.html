@@ -387,9 +387,10 @@
             <table class="acc-table" id="accTable"></table>
             <div style="margin-top:1rem;padding-top:.8rem;border-top:1px solid var(--border)">
               <p style="font-size:.82rem;font-weight:600;color:var(--navy);margin-bottom:.6rem">新增帳號</p>
-              <div style="display:grid;grid-template-columns:1fr 1fr 1fr auto;gap:.6rem;align-items:end">
+                              <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr auto;gap:.6rem;align-items:end">
                 <div><label>帳號 *</label><input id="new-acc-user" type="text" placeholder="帳號名稱"/></div>
                 <div><label>Email *</label><input id="new-acc-email" type="email" placeholder="email@gov.tw"/></div>
+                <div><label>密碼 *</label><input id="new-acc-pwd" type="password" placeholder="至少6字元"/></div>
                 <div><label>角色</label><select id="new-acc-role"><option value="admin">管理員</option><option value="editor">編輯員</option><option value="viewer">檢視者</option></select></div>
                 <div><label style="opacity:0">_</label><button class="btn btn-green btn-sm" onclick="addAccount()">+ 新增</button></div>
               </div>
@@ -573,10 +574,9 @@ const ANN_STYLE = {
 };
 const ANN_ICON = {'最新':'🆕','公告':'📌','資源':'📎','注意':'⚠️'};
 
-// 本地帳號（不走 Supabase）
-let adminAccounts = [
-  {id:'u1', username:'admin', password:'admin123', email:'admin@gov.tw', role:'admin'}
-];
+// 帳號從 Supabase 驗證
+let adminAccounts = [];
+let currentAdminId = null;
 
 // ══════════════════════════════════════════════════════
 //  UTILS
@@ -609,15 +609,21 @@ function detectEnv(){
 // ══════════════════════════════════════════════════════
 //  AUTH
 // ══════════════════════════════════════════════════════
-function doLogin(){
+async function doLogin(){
   const u = V('login-user'), p = G('login-pass').value;
-  const acc = adminAccounts.find(a => a.username===u && a.password===p);
-  if(acc){
-    isAdmin = true;
-    hide('adminLoginGate'); hide('adminForgotGate'); show('adminPanel');
-    G('adminPill').style.display = '';
-    renderAdmin();
-  } else {
+  try{
+    const rows = await sb('GET','admin_accounts',{username:'eq.'+u, password:'eq.'+p});
+    if(rows && rows.length > 0){
+      const acc = rows[0];
+      isAdmin = true;
+      currentAdminId = acc.id;
+      hide('adminLoginGate'); hide('adminForgotGate'); show('adminPanel');
+      G('adminPill').style.display = '';
+      renderAdmin();
+    } else {
+      G('loginErr').style.display = 'block';
+    }
+  } catch(e){
     G('loginErr').style.display = 'block';
   }
 }
@@ -1228,29 +1234,61 @@ async function markFeedbackDone(id){
   await loadAdminFeedback(); showToast('已標記為處理完成');
 }
 
-// ── 帳號管理（本地）──
-function renderAdminAccounts(){
-  const roles={admin:'管理員',editor:'編輯員',viewer:'檢視者'};
-  const rc={admin:'role-admin',editor:'role-editor',viewer:'role-viewer'};
-  SH('accTable',`<tr><th>帳號</th><th>Email</th><th>角色</th><th>操作</th></tr>`
-    +adminAccounts.map(a=>`<tr>
-      <td>${esc(a.username)}</td><td style="font-size:.8rem">${esc(a.email)}</td>
-      <td><span class="role-badge ${rc[a.role]}">${roles[a.role]}</span></td>
-      <td>${a.id!=='u1'?`<button class="btn btn-danger" onclick="deleteAccount('${a.id}')">🗑 刪除</button>`:'<span style="font-size:.75rem;color:var(--muted)">主帳號</span>'}</td>
-    </tr>`).join(''));
+// ── 帳號管理（Supabase）──
+async function renderAdminAccounts(){
+  try{
+    const rows = await sb('GET','admin_accounts',{order:'created_at.asc'});
+    adminAccounts = rows;
+    const roles={admin:'管理員',editor:'編輯員',viewer:'檢視者'};
+    const rc={admin:'role-admin',editor:'role-editor',viewer:'role-viewer'};
+    SH('accTable',`<tr><th>帳號</th><th>Email</th><th>角色</th><th>操作</th></tr>`
+      +adminAccounts.map(a=>`<tr>
+        <td>${esc(a.username)}</td><td style="font-size:.8rem">${esc(a.email)}</td>
+        <td><span class="role-badge ${rc[a.role]||'role-viewer'}">${roles[a.role]||a.role}</span></td>
+        <td style="display:flex;gap:.4rem;flex-wrap:wrap">
+          <button class="btn btn-warn btn-sm" onclick="openChangePwd('${a.id}','${esc(a.username)}')">🔑 改密碼</button>
+          ${a.id!==currentAdminId?`<button class="btn btn-danger btn-sm" onclick="deleteAccount('${a.id}')">🗑</button>`:'<span style="font-size:.72rem;color:var(--muted)">（目前登入）</span>'}
+        </td>
+      </tr>`).join(''));
+  } catch(e){ SH('accTable','<p style="color:var(--danger)">載入失敗</p>'); }
 }
-function addAccount(){
-  const u=V('new-acc-user'), e=V('new-acc-email');
-  if(!u||!e){ showToast('請填寫帳號與 Email','error'); return; }
-  if(adminAccounts.find(a=>a.username===u)){ showToast('帳號已存在','error'); return; }
-  adminAccounts.push({id:'u'+Date.now(), username:u, password:'temp1234', email:e, role:G('new-acc-role').value});
-  ['new-acc-user','new-acc-email'].forEach(i=>G(i).value='');
-  renderAdminAccounts(); showToast(`✅ 帳號「${u}」已新增，預設密碼：temp1234`);
+
+function openChangePwd(id, username){
+  G('pwd-acc-id').value = id;
+  G('pwd-acc-name').textContent = username;
+  G('pwd-new').value=''; G('pwd-confirm').value='';
+  G('changePwdOverlay').classList.add('open');
 }
-function deleteAccount(id){
-  if(!confirm('確定刪除？')) return;
-  adminAccounts = adminAccounts.filter(a=>a.id!==id);
-  renderAdminAccounts(); showToast('🗑 帳號已刪除');
+async function saveChangePwd(){
+  const id = G('pwd-acc-id').value;
+  const np = G('pwd-new').value.trim();
+  const cp = G('pwd-confirm').value.trim();
+  if(!np){ showToast('請輸入新密碼','error'); return; }
+  if(np !== cp){ showToast('兩次密碼不一致','error'); return; }
+  if(np.length < 6){ showToast('密碼至少需要 6 個字元','error'); return; }
+  try{
+    await sb('PATCH','admin_accounts',{'id':'eq.'+id},{password:np});
+    G('changePwdOverlay').classList.remove('open');
+    showToast('✅ 密碼已更新');
+  } catch(e){ showToast('更新失敗：'+e.message,'error'); }
+}
+async function addAccount(){
+  const u=V('new-acc-user'), e=V('new-acc-email'), p=V('new-acc-pwd');
+  if(!u||!e||!p){ showToast('請填寫帳號、Email 與密碼','error'); return; }
+  if(p.length < 6){ showToast('密碼至少需要 6 個字元','error'); return; }
+  try{
+    await sb('POST','admin_accounts',{},{username:u, password:p, email:e, role:G('new-acc-role').value});
+    ['new-acc-user','new-acc-email','new-acc-pwd'].forEach(i=>G(i).value='');
+    await renderAdminAccounts();
+    showToast(`✅ 帳號「${u}」已新增`);
+  } catch(e){ showToast('新增失敗：'+e.message,'error'); }
+}
+async function deleteAccount(id){
+  if(!confirm('確定刪除此帳號？')) return;
+  try{
+    await sb('DELETE','admin_accounts',{'id':'eq.'+id});
+    await renderAdminAccounts(); showToast('🗑 帳號已刪除');
+  } catch(e){ showToast('刪除失敗','error'); }
 }
 
 // ══════════════════════════════════════════════════════
