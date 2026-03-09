@@ -215,7 +215,7 @@
   </div>
   <div class="article-view" id="view-article">
     <div style="margin-bottom:.8rem"><button class="forum-back" onclick="backToForum()">← 返回文章列表</button></div>
-    <div class="article-header">
+    <div class="article-header" id="articleHeader_inner">
       <div id="articleMeta"></div>
       <div class="article-title" id="articleTitle"></div>
       <div style="font-size:.78rem;color:var(--muted);display:flex;align-items:center;gap:.6rem;flex-wrap:wrap" id="articleInfo"></div>
@@ -842,13 +842,23 @@ async function openArticle(id){
     G('articleInfo').innerHTML = `
       <span>👤 ${esc(art.author||'管理員')}</span>
       <span>📅 ${(art.created_at||'').slice(0,10)}</span>
-      <span>👁 ${(art.views||0)+1}</span>
-      <button id="shareBtn_${id}" style="margin-left:auto;background:var(--accent);color:#fff;border:none;border-radius:.4rem;padding:.28rem .75rem;cursor:pointer;font-size:.75rem;font-weight:600;display:inline-flex;align-items:center;gap:.3rem">🔗 複製分享連結</button>`;
-    // 用 addEventListener 避免 onclick 字串問題
-    setTimeout(()=>{
-      const btn = G('shareBtn_'+id);
-      if(btn) btn.addEventListener('click', ()=>copyShareLink(shareUrl));
-    }, 50);
+      <span>👁 ${(art.views||0)+1}</span>`;
+    // 分享按鈕獨立放在 header 裡避免排版問題
+    const existingShare = G('shareButtonArea');
+    if(existingShare) existingShare.remove();
+    const shareDiv = document.createElement('div');
+    shareDiv.id = 'shareButtonArea';
+    shareDiv.style.cssText = 'margin-top:.6rem';
+    const shareBtn = document.createElement('button');
+    shareBtn.textContent = '🔗 複製分享連結';
+    shareBtn.style.cssText = 'background:var(--accent);color:#fff;border:none;border-radius:.4rem;padding:.35rem .85rem;cursor:pointer;font-size:.78rem;font-weight:600';
+    shareBtn.onclick = () => {
+      navigator.clipboard.writeText(shareUrl)
+        .then(()=>{ shareBtn.textContent='✅ 已複製！'; setTimeout(()=>shareBtn.textContent='🔗 複製分享連結',2000); })
+        .catch(()=>{ prompt('請手動複製以下連結：', shareUrl); });
+    };
+    shareDiv.appendChild(shareBtn);
+    G('articleHeader_inner').appendChild(shareDiv);
     const parseLine = l => {
       // 圖片 ![alt](url)
       return l.replace(/!\[([^\]]*)\]\((https?:\/\/[^\)]+)\)/g,
