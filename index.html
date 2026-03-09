@@ -156,6 +156,10 @@
   .loading{text-align:center;padding:2rem;color:var(--muted);font-size:.86rem}
   .cors-warn{background:#fffbeb;border:1.5px solid #f59e0b;border-radius:.6rem;padding:.8rem 1rem;font-size:.8rem;color:#92400e;margin-bottom:1rem;line-height:1.6;display:none}
   @media(max-width:560px){.stat-row{grid-template-columns:1fr 1fr}}
+
+  /* 修正：改密碼 overlay */
+  #changePwdOverlay{display:none;position:fixed;inset:0;background:#0007;z-index:300;align-items:center;justify-content:center;padding:1rem}
+  #changePwdOverlay.open{display:flex}
 </style>
 </head>
 <body>
@@ -183,11 +187,12 @@
     <h1>領航者：AI 人事共創平台</h1>
     <p>交流 AI 工具應用心得，共同推動人事業務智動化，提升施政效能。</p>
     <div style="display:flex;gap:.5rem;margin-top:1rem;flex-wrap:wrap">
-      <button onclick="shareToLine()" style="display:inline-flex;align-items:center;gap:.35rem;background:#06C755;color:#fff;border:none;border-radius:.4rem;padding:.35rem .85rem;cursor:pointer;font-size:.78rem;font-weight:600">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="white"><path d="M19.365 9.863c.349 0 .63.285.63.631 0 .345-.281.63-.63.63H17.61v1.125h1.755c.349 0 .63.283.63.63 0 .344-.281.629-.63.629h-2.386c-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.63-.63h2.386c.346 0 .627.285.627.63 0 .349-.281.63-.63.63H17.61v1.125h1.755zm-3.855 3.016c0 .27-.174.51-.432.596-.064.021-.133.031-.199.031-.211 0-.391-.09-.51-.25l-2.443-3.317v2.94c0 .344-.279.629-.631.629-.346 0-.626-.285-.626-.629V8.108c0-.27.173-.51.43-.595.06-.023.136-.033.194-.033.195 0 .375.104.494.25l2.462 3.33V8.108c0-.345.282-.63.63-.63.345 0 .63.285.63.63v4.771zm-5.741 0c0 .344-.282.629-.631.629-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.63-.63.346 0 .628.285.628.63v4.771zm-2.466.629H4.917c-.345 0-.63-.285-.63-.629V8.108c0-.345.285-.63.63-.63.348 0 .63.285.63.63v4.141h1.756c.348 0 .629.283.629.63 0 .344-.281.629-.629.629M24 10.314C24 4.943 18.615.572 12 .572S0 4.943 0 10.314c0 4.811 4.27 8.842 10.035 9.608.391.082.923.258 1.058.59.12.301.079.766.038 1.08l-.164 1.02c-.045.301-.24 1.186 1.049.645 1.291-.539 6.916-4.070 9.436-6.975C23.176 14.393 24 12.458 24 10.314"/></svg>
+      <!-- ✅ 修正：首頁分享按鈕綁定正確函式 -->
+      <button onclick="sharePageToLine()" style="display:inline-flex;align-items:center;gap:.35rem;background:#06C755;color:#fff;border:none;border-radius:.4rem;padding:.35rem .85rem;cursor:pointer;font-size:.78rem;font-weight:600">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="white"><path d="M19.365 9.863c.349 0 .63.285.63.631 0 .345-.281.63-.63.63H17.61v1.125h1.755c.349 0 .63.283.63.630 0 .344-.281.629-.63.629h-2.386c-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.63-.63h2.386c.346 0 .627.285.627.63 0 .349-.281.63-.63.63H17.61v1.125h1.755zm-3.855 3.016c0 .27-.174.51-.432.596-.064.021-.133.031-.199.031-.211 0-.391-.09-.51-.25l-2.443-3.317v2.94c0 .344-.279.629-.631.629-.346 0-.626-.285-.626-.629V8.108c0-.27.173-.51.43-.595.06-.023.136-.033.194-.033.195 0 .375.104.494.25l2.462 3.33V8.108c0-.345.282-.63.63-.63.345 0 .63.285.63.63v4.771zm-5.741 0c0 .344-.282.629-.631.629-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.63-.63.346 0 .628.285.628.63v4.771zm-2.466.629H4.917c-.345 0-.63-.285-.63-.629V8.108c0-.345.285-.63.63-.63.348 0 .63.285.63.63v4.141h1.756c.348 0 .629.283.629.63 0 .344-.281.629-.629.629M24 10.314C24 4.943 18.615.572 12 .572S0 4.943 0 10.314c0 4.811 4.27 8.842 10.035 9.608.391.082.923.258 1.058.59.12.301.079.766.038 1.08l-.164 1.02c-.045.301-.24 1.186 1.049.645 1.291-.539 6.916-4.070 9.436-6.975C23.176 14.393 24 12.458 24 10.314"/></svg>
         LINE
       </button>
-      <button onclick="shareToFB()" style="display:inline-flex;align-items:center;gap:.35rem;background:#1877F2;color:#fff;border:none;border-radius:.4rem;padding:.35rem .85rem;cursor:pointer;font-size:.78rem;font-weight:600">
+      <button onclick="sharePageToFB()" style="display:inline-flex;align-items:center;gap:.35rem;background:#1877F2;color:#fff;border:none;border-radius:.4rem;padding:.35rem .85rem;cursor:pointer;font-size:.78rem;font-weight:600">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="white"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
         Facebook
       </button>
@@ -200,9 +205,7 @@
     ⚠️ <strong>提示：</strong>目前在預覽環境中，Supabase 的跨域請求（CORS）會被封鎖。請將此 HTML 檔案下載後，直接用瀏覽器開啟，或部署至您的伺服器，即可正常連接 Supabase 資料庫。
   </div>
   <div class="sec-title">📢 最新公告</div>
-  <div class="announce-list" id="announceList">
-    <div class="loading">載入中...</div>
-  </div>
+  <div class="announce-list" id="announceList"><div class="loading">載入中...</div></div>
   <div class="sec-title">🔥 熱門文章</div>
   <div class="hot-list" id="homeHotList"><div class="loading">載入中...</div></div>
   <div class="sec-title">📚 主題專區</div>
@@ -370,7 +373,6 @@
         <div class="admin-sidebar-item" onclick="switchAdminTab('tab-feedback',this)">📮 問題回饋</div>
       </div>
       <div>
-        <!-- ── 公告管理 ── -->
         <div class="admin-panel-section active" id="tab-announce">
           <div class="admin-card">
             <div class="admin-header"><span>📢</span><h2>新增公告</h2></div>
@@ -393,14 +395,13 @@
             <div id="adminAnnounceList"><div class="loading">載入中...</div></div>
           </div>
         </div>
-        <!-- ── 帳號管理 ── -->
         <div class="admin-panel-section" id="tab-accounts">
           <div class="admin-card">
             <div class="admin-header"><span>👤</span><h2>管理員帳號管理</h2></div>
             <table class="acc-table" id="accTable"></table>
             <div style="margin-top:1rem;padding-top:.8rem;border-top:1px solid var(--border)">
               <p style="font-size:.82rem;font-weight:600;color:var(--navy);margin-bottom:.6rem">新增帳號</p>
-                              <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr auto;gap:.6rem;align-items:end">
+              <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr auto;gap:.6rem;align-items:end">
                 <div><label>帳號 *</label><input id="new-acc-user" type="text" placeholder="帳號名稱"/></div>
                 <div><label>Email *</label><input id="new-acc-email" type="email" placeholder="email@gov.tw"/></div>
                 <div><label>密碼 *</label><input id="new-acc-pwd" type="password" placeholder="至少6字元"/></div>
@@ -410,7 +411,6 @@
             </div>
           </div>
         </div>
-        <!-- ── 文章管理 ── -->
         <div class="admin-panel-section" id="tab-articles">
           <div class="admin-card">
             <div class="admin-header"><span>📝</span><h2>文章管理</h2></div>
@@ -418,14 +418,12 @@
             <div id="adminArticleList"><div class="loading">載入中...</div></div>
           </div>
         </div>
-        <!-- ── 討論管理 ── -->
         <div class="admin-panel-section" id="tab-discuss">
           <div class="admin-card">
             <div class="admin-header"><span>🗣️</span><h2>討論區管理</h2></div>
             <div id="adminDiscList"><div class="loading">載入中...</div></div>
           </div>
         </div>
-        <!-- ── 資源管理 ── -->
         <div class="admin-panel-section" id="tab-resources">
           <div class="admin-card">
             <div class="admin-header"><span>📦</span><h2>新增資源</h2></div>
@@ -441,7 +439,6 @@
             <div id="adminResList" class="res-list"><div class="loading">載入中...</div></div>
           </div>
         </div>
-        <!-- ── 問題回饋 ── -->
         <div class="admin-panel-section" id="tab-feedback">
           <div class="admin-card">
             <div class="admin-header"><span>📮</span><h2>問題與建議（待處理）</h2></div>
@@ -515,7 +512,6 @@
     </div>
   </div>
 </div>
-<!-- 編輯公告 -->
 <div class="edit-overlay" id="editAnnounceOverlay">
   <div class="edit-modal" style="max-width:480px">
     <h3>✏️ 編輯公告</h3>
@@ -536,6 +532,21 @@
     </div>
   </div>
 </div>
+
+<!-- ✅ 新增：改密碼 overlay（原版缺少 HTML） -->
+<div id="changePwdOverlay" class="edit-overlay">
+  <div class="edit-modal" style="max-width:420px">
+    <h3>🔑 修改密碼：<span id="pwd-acc-name"></span></h3>
+    <input type="hidden" id="pwd-acc-id"/>
+    <div style="margin-bottom:.6rem"><label>新密碼 *</label><input id="pwd-new" type="password" placeholder="至少 6 個字元"/></div>
+    <div style="margin-bottom:.6rem"><label>確認新密碼 *</label><input id="pwd-confirm" type="password" placeholder="再輸入一次"/></div>
+    <div class="modal-footer">
+      <button class="btn" style="background:#f1f5f9;color:var(--text)" onclick="document.getElementById('changePwdOverlay').classList.remove('open')">取消</button>
+      <button class="btn btn-green" onclick="saveChangePwd()">💾 儲存</button>
+    </div>
+  </div>
+</div>
+
 <div class="toast" id="toast"></div>
 
 <script>
@@ -544,7 +555,6 @@
 // ══════════════════════════════════════════════════════
 const SB_URL = 'https://lkxmgkofbuajvhxaytyh.supabase.co';
 const SB_KEY = 'sb_publishable_BBanWGfWNh_rJt3NI_bQdg_6CwavgQW';
-
 const SB_HEADS = {
   'apikey': SB_KEY,
   'Authorization': `Bearer ${SB_KEY}`,
@@ -552,7 +562,6 @@ const SB_HEADS = {
   'Prefer': 'return=representation'
 };
 
-// 核心請求函式
 async function sb(method, table, params={}, body=null){
   let url = `${SB_URL}/rest/v1/${table}`;
   const qs = new URLSearchParams(params).toString();
@@ -573,6 +582,8 @@ async function sb(method, table, params={}, body=null){
 let isAdmin = false;
 let currentTheme = 'A', currentArticleId = null, currentDiscId = null;
 let _articles = [];
+let adminAccounts = [];
+let currentAdminId = null;
 
 const THEMES = {
   A:{label:'人事人員常態業務 AI 導入案例', color:'var(--tagA)'},
@@ -586,10 +597,6 @@ const ANN_STYLE = {
   '注意':'background:#fee2e2;color:#991b1b',
 };
 const ANN_ICON = {'最新':'🆕','公告':'📌','資源':'📎','注意':'⚠️'};
-
-// 帳號從 Supabase 驗證
-let adminAccounts = [];
-let currentAdminId = null;
 
 // ══════════════════════════════════════════════════════
 //  UTILS
@@ -610,14 +617,109 @@ function showToast(msg, type='success'){
   t.classList.add('show');
   setTimeout(()=>t.classList.remove('show'), 3200);
 }
-// CORS 偵測：在 iframe/sandbox 環境顯示提示
 function detectEnv(){
   try{
-    if(window.self !== window.top){
-      G('corsWarnHome').style.display = 'block';
-    }
+    if(window.self !== window.top) G('corsWarnHome').style.display = 'block';
   }catch(e){ G('corsWarnHome').style.display = 'block'; }
 }
+
+// ══════════════════════════════════════════════════════
+//  ✅ 修正一：首頁分享函式（原版缺少定義）
+// ══════════════════════════════════════════════════════
+function getPageUrl(){
+  // 取得當前頁面的完整 URL（不含 hash）
+  return window.location.href.split('#')[0];
+}
+
+function sharePageToLine(){
+  const url = encodeURIComponent(getPageUrl());
+  const text = encodeURIComponent('領航者：AI 人事共創平台 — 交流 AI 工具應用心得，共同推動人事業務智動化');
+  window.open(`https://social-plugins.line.me/lineit/share?url=${url}&text=${text}`, '_blank');
+}
+
+function sharePageToFB(){
+  const url = encodeURIComponent(getPageUrl());
+  window.open(`https://www.facebook.com/sharer/sharer.php?u=${url}`, '_blank', 'width=600,height=400');
+}
+
+function copyPageLink(){
+  const url = getPageUrl();
+  const btn = G('copyPageBtn');
+  _copyToClipboard(url, () => {
+    btn.textContent = '✅ 已複製！';
+    setTimeout(() => { btn.innerHTML = '🔗 複製連結'; }, 2000);
+  });
+}
+
+// 通用複製到剪貼簿（相容各瀏覽器）
+function _copyToClipboard(text, onSuccess){
+  if(navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(text).then(onSuccess).catch(()=>_legacyCopy(text, onSuccess));
+  } else {
+    _legacyCopy(text, onSuccess);
+  }
+}
+function _legacyCopy(text, onSuccess){
+  const ta = document.createElement('textarea');
+  ta.value = text;
+  ta.style.cssText = 'position:fixed;opacity:0;top:0;left:0';
+  document.body.appendChild(ta);
+  ta.focus(); ta.select();
+  try{ document.execCommand('copy'); onSuccess(); }
+  catch(e){ prompt('請手動複製：', text); }
+  document.body.removeChild(ta);
+}
+
+// ══════════════════════════════════════════════════════
+//  ✅ 修正二：URL Hash 路由（解決文章連結貼上後回首頁問題）
+// ══════════════════════════════════════════════════════
+
+// 產生文章分享 URL（使用 hash）
+function getArticleUrl(id){
+  return window.location.href.split('#')[0] + '#article=' + id;
+}
+
+// 解析 hash 並導航至對應頁面
+async function handleHashRoute(){
+  const hash = window.location.hash; // e.g. "#article=abc123"
+  if(!hash) return false;
+
+  const articleMatch = hash.match(/^#article=(.+)$/);
+  if(articleMatch){
+    const id = articleMatch[1];
+    // 切換至文章頁籤
+    document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+    document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active'));
+    G('page-articles').classList.add('active');
+    document.querySelectorAll('.nav-tab')[1].classList.add('active');
+    // 載入文章資料（若尚未載入）
+    if(!_articles.length){
+      try{ _articles = await sb('GET','articles',{order:'created_at.desc'}); }catch(e){}
+    }
+    const art = _articles.find(a => a.id === id);
+    if(art){
+      currentTheme = art.theme;
+      showThemeView();
+      openArticle(id);
+    }
+    return true;
+  }
+  return false;
+}
+
+// 監聽瀏覽器上下頁（popstate）
+window.addEventListener('popstate', () => {
+  handleHashRoute().then(handled => {
+    if(!handled) {
+      // 無 hash → 回到首頁
+      document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+      document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active'));
+      G('page-home').classList.add('active');
+      document.querySelectorAll('.nav-tab')[0].classList.add('active');
+      renderHome();
+    }
+  });
+});
 
 // ══════════════════════════════════════════════════════
 //  AUTH
@@ -631,7 +733,6 @@ async function doLogin(){
       body: JSON.stringify({p_username: u, p_password: p})
     });
     const data = await res.json();
-    // verify_login 回傳的是陣列
     if(Array.isArray(data) && data.length > 0){
       const acc = data[0];
       isAdmin = true;
@@ -648,29 +749,6 @@ async function doLogin(){
   }
 }
 
-async function changePassword(id, newPwd){
-  // 用 RPC 更新加密密碼
-  const res = await fetch(`${SB_URL}/rest/v1/rpc/update_password`, {
-    method: 'POST',
-    headers: {...SB_HEADS},
-    body: JSON.stringify({p_id: id, p_password: newPwd})
-  });
-  if(!res.ok){ const e = await res.text(); throw new Error(e); }
-}
-
-async function saveChangePwd(){
-  const id = G('pwd-acc-id').value;
-  const np = G('pwd-new').value.trim();
-  const cp = G('pwd-confirm').value.trim();
-  if(!np){ showToast('請輸入新密碼','error'); return; }
-  if(np !== cp){ showToast('兩次密碼不一致','error'); return; }
-  if(np.length < 6){ showToast('密碼至少需要 6 個字元','error'); return; }
-  try{
-    await changePassword(id, np);
-    G('changePwdOverlay').classList.remove('open');
-    showToast('✅ 密碼已更新');
-  } catch(e){ showToast('更新失敗：'+e.message,'error'); }
-}
 function doLogout(){
   isAdmin = false;
   hide('adminPanel'); show('adminLoginGate');
@@ -692,6 +770,8 @@ function switchPage(id, el){
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active'));
   G('page-'+id).classList.add('active'); el.classList.add('active');
+  // 切換頁面時清除 hash（避免殘留舊文章 hash）
+  history.pushState(null, '', window.location.pathname + window.location.search);
   if(id==='home') renderHome();
   if(id==='articles') showThemeView();
   if(id==='discuss') renderDiscList();
@@ -718,7 +798,7 @@ function renderAdminGate(){
 // ══════════════════════════════════════════════════════
 async function renderHome(){
   detectEnv();
-  await Promise.all([ loadAnnounces(), loadHotArticles() ]);
+  await Promise.all([loadAnnounces(), loadHotArticles()]);
 }
 
 async function loadAnnounces(){
@@ -733,7 +813,6 @@ async function loadAnnounces(){
         </div>`).join('')
       : '<p style="color:var(--muted);font-size:.85rem;padding:.5rem">尚無公告</p>');
   } catch(e){
-    // 若 CORS 失敗，顯示靜態預設公告
     SH('announceList',`
       <div class="announce-item"><span class="chip" style="background:#fef9c3;color:#92400e">🆕 最新</span><span style="font-size:.86rem;font-weight:600;color:var(--navy)">115年度人事業務績效考核 AI 導入說明會開放報名</span><span class="date">2026-03-01</span></div>
       <div class="announce-item"><span class="chip" style="background:#dcfce7;color:#166534">📌 公告</span><span style="font-size:.86rem;font-weight:600;color:var(--navy)">2026人事業務智動化計畫推動指引（第一版）發布</span><span class="date">2026-02-15</span></div>
@@ -745,7 +824,6 @@ async function loadAnnounces(){
 async function loadHotArticles(){
   try{
     _articles = await sb('GET','articles',{order:'views.desc'});
-    // 30天內瀏覽數最多
     const cutoff = new Date(Date.now() - 30*24*60*60*1000).toISOString();
     const recent = _articles.filter(a=>(a.updated_at||a.created_at||'') >= cutoff);
     const hot = (recent.length >= 3 ? recent : _articles).slice(0,5);
@@ -763,7 +841,7 @@ async function loadHotArticles(){
       : '<p style="color:var(--muted);font-size:.85rem;padding:.5rem">尚無文章</p>');
     SH('homeThemeGrid', buildThemeCards());
   } catch(e){
-    SH('homeHotList','<p style="color:var(--danger);font-size:.84ređm;padding:.5rem">⚠️ 無法連接 Supabase，請將檔案下載後在本機開啟使用。</p>');
+    SH('homeHotList','<p style="color:var(--danger);font-size:.84rem;padding:.5rem">⚠️ 無法連接 Supabase，請將檔案下載後在本機開啟使用。</p>');
     SH('homeThemeGrid','');
   }
 }
@@ -845,26 +923,33 @@ async function openArticle(id){
   G('view-article').classList.add('active');
   SH('articleBody','<div class="loading">載入中...</div>');
   currentArticleId = id;
+
+  // ✅ 修正：更新 URL hash，讓連結可直接分享
+  history.pushState(null, '', '#article=' + id);
+
   try{
     const arts = await sb('GET','articles',{'id':'eq.'+id});
     const art = arts[0]; if(!art) return;
     try{ await sb('PATCH','articles',{'id':'eq.'+id},{views:(art.views||0)+1}); }catch(e){}
+
     G('articleMeta').innerHTML=`<span style="display:inline-block;background:${THEMES[art.theme]?.color||'#1e4d8c'};color:#fff;border-radius:99px;padding:.15rem .6rem;font-size:.72rem;font-weight:700">${esc(THEMES[art.theme]?.label||'')}</span>`;
     G('articleTitle').textContent = art.title;
-    const shareUrl = `https://h237482h-cmd.github.io/navigator-platform/#article=${id}`;
+
+    // ✅ 修正：使用 getArticleUrl() 產生含 hash 的完整連結
+    const shareUrl = getArticleUrl(id);
+
     G('articleInfo').innerHTML = `
       <span>👤 ${esc(art.author||'管理員')}</span>
       <span>📅 ${(art.created_at||'').slice(0,10)}</span>
       <span>👁 ${(art.views||0)+1}</span>`;
 
-    // 分享按鈕區
+    // 分享按鈕區（每次重建，避免重複）
     const existingShare = G('shareButtonArea');
     if(existingShare) existingShare.remove();
     const shareDiv = document.createElement('div');
     shareDiv.id = 'shareButtonArea';
     shareDiv.style.cssText = 'margin-top:.7rem;display:flex;gap:.5rem;flex-wrap:wrap';
 
-    // LINE 按鈕
     const lineBtn = document.createElement('button');
     lineBtn.innerHTML = '💬 分享到 LINE';
     lineBtn.style.cssText = 'background:#06C755;color:#fff;border:none;border-radius:.4rem;padding:.35rem .85rem;cursor:pointer;font-size:.78rem;font-weight:600';
@@ -874,7 +959,6 @@ async function openArticle(id){
       window.open(`https://social-plugins.line.me/lineit/share?url=${u}&text=${t}`, '_blank');
     };
 
-    // FB 按鈕
     const fbBtn = document.createElement('button');
     fbBtn.innerHTML = '👍 分享到 Facebook';
     fbBtn.style.cssText = 'background:#1877F2;color:#fff;border:none;border-radius:.4rem;padding:.35rem .85rem;cursor:pointer;font-size:.78rem;font-weight:600';
@@ -882,32 +966,22 @@ async function openArticle(id){
       window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`, '_blank', 'width=600,height=400');
     };
 
-    // 複製連結按鈕
     const cpBtn = document.createElement('button');
     cpBtn.innerHTML = '🔗 複製文章連結';
     cpBtn.style.cssText = 'background:var(--navy2);color:#fff;border:none;border-radius:.4rem;padding:.35rem .85rem;cursor:pointer;font-size:.78rem;font-weight:600';
     cpBtn.onclick = () => {
-      try{
-        navigator.clipboard.writeText(shareUrl).then(()=>{
-          cpBtn.textContent='✅ 已複製！';
-          setTimeout(()=>{ cpBtn.textContent='🔗 複製文章連結'; }, 2000);
-        }).catch(()=>{
-          const ta = document.createElement('textarea');
-          ta.value = shareUrl; ta.style.cssText='position:fixed;opacity:0';
-          document.body.appendChild(ta); ta.focus(); ta.select();
-          document.execCommand('copy'); document.body.removeChild(ta);
-          cpBtn.textContent='✅ 已複製！';
-          setTimeout(()=>{ cpBtn.textContent='🔗 複製文章連結'; }, 2000);
-        });
-      } catch(e){ prompt('請手動複製：', shareUrl); }
+      _copyToClipboard(shareUrl, () => {
+        cpBtn.textContent = '✅ 已複製！';
+        setTimeout(() => { cpBtn.textContent = '🔗 複製文章連結'; }, 2000);
+      });
     };
 
     shareDiv.appendChild(lineBtn);
     shareDiv.appendChild(fbBtn);
     shareDiv.appendChild(cpBtn);
     G('articleHeader_inner').appendChild(shareDiv);
+
     const parseLine = l => {
-      // 圖片 ![alt](url)
       return l.replace(/!\[([^\]]*)\]\((https?:\/\/[^\)]+)\)/g,
         (_,alt,url)=>`<img src="${esc(url)}" alt="${esc(alt)}" style="max-width:100%;border-radius:.5rem;margin:.4rem 0;display:block">`);
     };
@@ -919,6 +993,7 @@ async function openArticle(id){
       return `<p>${parseLine(esc(l))}</p>`;
     }).join('\n').replace(/(<li>.*?<\/li>\n?)+/gs, m=>`<ul>${m}</ul>`);
     SH('articleBody', html);
+
     const pw = G('promptBoxWrapper');
     pw.innerHTML = (art.prompt&&art.prompt.trim()) ? `<div class="prompt-box">
       <div class="prompt-box-header">
@@ -927,6 +1002,7 @@ async function openArticle(id){
       </div>
       <div class="prompt-text" id="pt_${id}">${esc(art.prompt)}</div>
     </div>` : '';
+
     await loadArticleComments(id);
     G('ac-name').value=''; G('ac-body').value='';
   } catch(e){ SH('articleBody','<p style="color:var(--danger)">載入失敗</p>'); }
@@ -934,12 +1010,17 @@ async function openArticle(id){
 
 function copyPrompt(btn, artId){
   const el = G('pt_'+artId); if(!el) return;
-  navigator.clipboard.writeText(el.textContent).then(()=>{
+  _copyToClipboard(el.textContent, () => {
     btn.textContent='✅ 已複製！'; btn.classList.add('copied');
     setTimeout(()=>{ btn.textContent='📋 複製提示詞'; btn.classList.remove('copied'); },2000);
-  }).catch(()=>showToast('複製失敗，請手動選取','error'));
+  });
 }
-function backToForum(){ G('view-article').classList.remove('active'); openTheme(currentTheme); }
+function backToForum(){
+  // ✅ 清除文章 hash，回到文章列表
+  history.pushState(null, '', window.location.pathname + window.location.search);
+  G('view-article').classList.remove('active');
+  openTheme(currentTheme);
+}
 
 async function loadArticleComments(artId){
   try{
@@ -1118,7 +1199,6 @@ function resetFeedback(){
 //  ADMIN
 // ══════════════════════════════════════════════════════
 async function renderAdmin(){
-  // stats
   try{
     const [a,d,r,f] = await Promise.all([
       sb('GET','articles',{select:'id'}),
@@ -1135,7 +1215,6 @@ async function renderAdmin(){
   loadAdminAnnounces();
 }
 
-// ── 公告管理 ──
 async function loadAdminAnnounces(){
   try{
     const rows = await sb('GET','announces',{order:'date.desc'});
@@ -1163,7 +1242,7 @@ async function addAnnounce(){
     await sb('POST','announces',{},{type, body, date});
     G('ann-body').value=''; G('ann-date').value='';
     await loadAdminAnnounces();
-    await loadAnnounces(); // 同步首頁
+    await loadAnnounces();
     showToast('✅ 公告已新增');
   } catch(e){ showToast('新增失敗：'+e.message,'error'); }
 }
@@ -1197,7 +1276,6 @@ async function deleteAnnounce(id){
   showToast('🗑 公告已刪除');
 }
 
-// ── 文章管理 ──
 async function loadAdminArticles(){
   try{
     const arts = await sb('GET','articles',{order:'created_at.desc'});
@@ -1253,7 +1331,6 @@ async function deleteArticle(id){
   await loadAdminArticles(); showToast('🗑 文章已刪除');
 }
 
-// ── 討論管理 ──
 async function loadAdminDiscs(){
   try{
     const discs = await sb('GET','discussions',{order:'created_at.desc'});
@@ -1289,7 +1366,6 @@ async function deleteDisc(id){
   await loadAdminDiscs(); showToast('🗑 討論已刪除');
 }
 
-// ── 資源管理 ──
 async function renderAdminResources(){
   try{
     const res = await sb('GET','resources',{order:'created_at.desc'});
@@ -1316,7 +1392,6 @@ async function deleteResource(id){
   await renderAdminResources(); showToast('🗑 已刪除');
 }
 
-// ── 回饋管理 ──
 async function loadAdminFeedback(){
   try{
     const fbs = await sb('GET','feedbacks',{done:'eq.false', order:'created_at.desc'});
@@ -1340,7 +1415,6 @@ async function markFeedbackDone(id){
   await loadAdminFeedback(); showToast('已標記為處理完成');
 }
 
-// ── 帳號管理（Supabase）──
 async function renderAdminAccounts(){
   try{
     const rows = await sb('GET','admin_accounts',{order:'created_at.asc'});
@@ -1400,10 +1474,13 @@ async function deleteAccount(id){
 // ══════════════════════════════════════════════════════
 //  INIT
 // ══════════════════════════════════════════════════════
-
-// 今天日期預填
 G('ann-date').value = new Date().toISOString().slice(0,10);
-renderHome();
+
+// ✅ 啟動時先嘗試 hash 路由，無 hash 則正常顯示首頁
+(async function init(){
+  const handled = await handleHashRoute();
+  if(!handled) renderHome();
+})();
 </script>
 </body>
 </html>
