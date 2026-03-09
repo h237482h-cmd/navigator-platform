@@ -174,7 +174,7 @@
     <button class="nav-tab" onclick="switchPage('articles',this)">📝 文章</button>
     <button class="nav-tab" onclick="switchPage('discuss',this)">🗣️ 討論區</button>
     <button class="nav-tab" onclick="switchPage('resources',this)">📦 資源</button>
-    <button class="nav-tab" onclick="switchPage('feedback',this)">📮 問題與建議</button>
+    <button class="nav-tab" onclick="switchPage('feedback',this)">📮 建議與投稿</button>
     <button class="nav-tab" onclick="switchPage('admin',this)">⚙️ 管理</button>
   </div>
 </nav>
@@ -307,25 +307,64 @@
 <!-- FEEDBACK -->
 <div class="page" id="page-feedback">
   <div class="hero" style="padding:1.4rem">
-    <div class="hero-tag">📮 問題與建議</div>
-    <h1 style="font-size:1.3rem">問題回報與功能建議</h1>
-    <p>遇到系統問題或有改善建議，請填寫下方表單，我們將盡快以 Email 回覆。</p>
+    <div class="hero-tag">📮 建議與投稿</div>
+    <h1 style="font-size:1.3rem">建議與投稿</h1>
+    <p>有問題想回報、或想分享你的 AI 應用心得？歡迎填寫下方表單！</p>
   </div>
-  <div class="feedback-card" id="feedbackForm">
-    <div style="margin-bottom:.7rem"><label>類型 *</label>
-      <select id="fb-type"><option value="系統問題">🐛 系統問題回報</option><option value="功能建議">💡 功能改善建議</option><option value="內容錯誤">📝 內容錯誤回報</option><option value="其他">📌 其他</option></select>
+
+  <!-- Tab 切換 -->
+  <div style="display:flex;gap:0;margin-bottom:1.2rem;border:1.5px solid var(--border);border-radius:.6rem;overflow:hidden;max-width:360px">
+    <button id="tab-fb-btn" onclick="switchFeedbackTab('feedback')" style="flex:1;padding:.55rem;border:none;cursor:pointer;font-size:.85rem;font-weight:700;background:var(--navy3);color:#fff;transition:.2s">📮 問題建議</button>
+    <button id="tab-sub-btn" onclick="switchFeedbackTab('submit')" style="flex:1;padding:.55rem;border:none;cursor:pointer;font-size:.85rem;font-weight:700;background:#f1f5f9;color:var(--muted);transition:.2s">✍️ 文章投稿</button>
+  </div>
+
+  <!-- 問題建議區塊 -->
+  <div id="block-feedback">
+    <div class="feedback-card" id="feedbackForm">
+      <div style="margin-bottom:.7rem"><label>類型 *</label>
+        <select id="fb-type"><option value="系統問題">🐛 系統問題回報</option><option value="功能建議">💡 功能改善建議</option><option value="內容錯誤">📝 內容錯誤回報</option><option value="其他">📌 其他</option></select>
+      </div>
+      <div style="margin-bottom:.7rem"><label>姓名或暱稱</label><input id="fb-name" type="text" placeholder="輸入姓名、暱稱，或留空匿名"/><div class="anon-hint">💡 可留空，將以「匿名」提交</div></div>
+      <div style="margin-bottom:.7rem"><label>Email（必填，以便我們回覆）*</label><input id="fb-email" type="email" placeholder="your@email.gov.tw"/></div>
+      <div style="margin-bottom:.7rem"><label>主旨 *</label><input id="fb-title" type="text" placeholder="簡短描述問題或建議"/></div>
+      <div style="margin-bottom:.9rem"><label>詳細說明 *</label><textarea id="fb-body" placeholder="請詳細描述您的問題或建議..." style="min-height:110px"></textarea></div>
+      <button class="btn btn-primary" onclick="submitFeedback()">📮 送出</button>
     </div>
-    <div style="margin-bottom:.7rem"><label>姓名或暱稱</label><input id="fb-name" type="text" placeholder="輸入姓名、暱稱，或留空匿名"/><div class="anon-hint">💡 可留空，將以「匿名」提交</div></div>
-    <div style="margin-bottom:.7rem"><label>Email（必填，以便我們回覆）*</label><input id="fb-email" type="email" placeholder="your@email.gov.tw"/></div>
-    <div style="margin-bottom:.7rem"><label>主旨 *</label><input id="fb-title" type="text" placeholder="簡短描述問題或建議"/></div>
-    <div style="margin-bottom:.9rem"><label>詳細說明 *</label><textarea id="fb-body" placeholder="請詳細描述您的問題或建議..." style="min-height:110px"></textarea></div>
-    <button class="btn btn-primary" onclick="submitFeedback()">📮 送出</button>
+    <div class="feedback-success" id="feedbackSuccess">
+      <div style="font-size:2rem;margin-bottom:.5rem">✅</div>
+      <h3>感謝您的回饋！</h3>
+      <p>我們已收到您的訊息，將盡快以 Email 回覆您。</p>
+      <button class="btn btn-primary btn-sm" style="margin-top:.9rem" onclick="resetFeedback()">再次提交</button>
+    </div>
   </div>
-  <div class="feedback-success" id="feedbackSuccess">
-    <div style="font-size:2rem;margin-bottom:.5rem">✅</div>
-    <h3>感謝您的回饋！</h3>
-    <p>我們已收到您的訊息，將盡快以 Email 回覆您。</p>
-    <button class="btn btn-primary btn-sm" style="margin-top:.9rem" onclick="resetFeedback()">再次提交</button>
+
+  <!-- 文章投稿區塊 -->
+  <div id="block-submit" style="display:none">
+    <div class="feedback-card" id="submissionForm">
+      <div style="margin-bottom:.5rem;padding:.7rem 1rem;background:#eff6ff;border:1px solid var(--accent2);border-radius:.6rem;font-size:.82rem;color:var(--navy2);line-height:1.6">
+        💡 投稿內容將由管理員審核，通過後才會發佈至文章專區。
+      </div>
+      <div style="margin-bottom:.7rem;margin-top:.7rem"><label>主題分類 *</label>
+        <select id="sub-theme">
+          <option value="A">主題 A：人事人員常態業務 AI 導入案例</option>
+          <option value="B">主題 B：115年人事業務績效考核 AI 導入案例</option>
+          <option value="C">主題 C：通用性公務場景導入案例</option>
+        </select>
+      </div>
+      <div style="margin-bottom:.7rem"><label>姓名或暱稱</label><input id="sub-name" type="text" placeholder="輸入姓名、暱稱，或留空匿名"/><div class="anon-hint">💡 可留空，將以「匿名」發表</div></div>
+      <div style="margin-bottom:.7rem"><label>Email（必填，審核結果通知用）*</label><input id="sub-email" type="email" placeholder="your@email.gov.tw"/></div>
+      <div style="margin-bottom:.7rem"><label>文章標題 *</label><input id="sub-title" type="text" placeholder="文章標題"/></div>
+      <div style="margin-bottom:.7rem"><label>摘要 *</label><textarea id="sub-summary" placeholder="文章摘要，約100字以內..." style="min-height:65px"></textarea></div>
+      <div style="margin-bottom:.7rem"><label>完整內容 *</label><textarea id="sub-body" placeholder="完整文章內容..." style="min-height:130px"></textarea></div>
+      <div style="margin-bottom:.9rem"><label>AI 提示詞（選填）</label><textarea id="sub-prompt" placeholder="貼上與本文相關的 AI 提示詞..." style="min-height:75px;font-family:'Courier New',monospace;background:#f8fafc"></textarea><div class="anon-hint">💡 填寫後讀者可一鍵複製使用</div></div>
+      <button class="btn btn-primary" onclick="submitSubmission()">✍️ 送出投稿</button>
+    </div>
+    <div class="feedback-success" id="submissionSuccess" style="display:none">
+      <div style="font-size:2rem;margin-bottom:.5rem">✍️</div>
+      <h3>投稿已送出！</h3>
+      <p>感謝您的投稿，管理員審核通過後將發佈至文章專區，並以 Email 通知您。</p>
+      <button class="btn btn-primary btn-sm" style="margin-top:.9rem" onclick="resetSubmission()">再次投稿</button>
+    </div>
   </div>
 </div>
 
@@ -371,6 +410,7 @@
         <div class="admin-sidebar-item" onclick="switchAdminTab('tab-discuss',this)">🗣️ 討論管理</div>
         <div class="admin-sidebar-item" onclick="switchAdminTab('tab-resources',this)">📦 資源管理</div>
         <div class="admin-sidebar-item" onclick="switchAdminTab('tab-feedback',this)">📮 問題回饋</div>
+        <div class="admin-sidebar-item" onclick="switchAdminTab('tab-submissions',this)">✍️ 投稿管理</div>
       </div>
       <div>
         <div class="admin-panel-section active" id="tab-announce">
@@ -443,6 +483,13 @@
           <div class="admin-card">
             <div class="admin-header"><span>📮</span><h2>問題與建議（待處理）</h2></div>
             <div id="adminFeedbackList"><div class="loading">載入中...</div></div>
+          </div>
+        </div>
+        <!-- ── 投稿管理 ── -->
+        <div class="admin-panel-section" id="tab-submissions">
+          <div class="admin-card">
+            <div class="admin-header"><span>✍️</span><h2>待審核投稿</h2></div>
+            <div id="adminSubmissionList"><div class="loading">載入中...</div></div>
           </div>
         </div>
       </div>
@@ -543,6 +590,30 @@
     <div class="modal-footer">
       <button class="btn" style="background:#f1f5f9;color:var(--text)" onclick="document.getElementById('changePwdOverlay').classList.remove('open')">取消</button>
       <button class="btn btn-green" onclick="saveChangePwd()">💾 儲存</button>
+    </div>
+  </div>
+</div>
+
+<!-- 編輯投稿 modal -->
+<div class="edit-overlay" id="editSubmissionOverlay">
+  <div class="edit-modal">
+    <h3>✍️ 編輯投稿內容</h3>
+    <input type="hidden" id="edit-sub-id"/>
+    <div style="margin-bottom:.6rem"><label>主題分類</label>
+      <select id="edit-sub-theme">
+        <option value="A">主題 A：人事人員常態業務 AI 導入案例</option>
+        <option value="B">主題 B：115年人事業務績效考核 AI 導入案例</option>
+        <option value="C">主題 C：通用性公務場景導入案例</option>
+      </select>
+    </div>
+    <div style="margin-bottom:.6rem"><label>標題 *</label><input id="edit-sub-title" type="text"/></div>
+    <div style="margin-bottom:.6rem"><label>作者</label><input id="edit-sub-name" type="text"/></div>
+    <div style="margin-bottom:.6rem"><label>摘要 *</label><textarea id="edit-sub-summary" style="min-height:60px"></textarea></div>
+    <div style="margin-bottom:.6rem"><label>完整內容 *</label><textarea id="edit-sub-body" style="min-height:110px"></textarea></div>
+    <div style="margin-bottom:.6rem"><label>AI 提示詞</label><textarea id="edit-sub-prompt" style="min-height:75px;font-family:'Courier New',monospace;background:#f8fafc"></textarea></div>
+    <div class="modal-footer">
+      <button class="btn" style="background:#f1f5f9;color:var(--text)" onclick="closeEditSubmission()">取消</button>
+      <button class="btn btn-green" onclick="saveEditSubmission()">💾 儲存</button>
     </div>
   </div>
 </div>
@@ -807,6 +878,7 @@ function switchAdminTab(id, el){
   if(id==='tab-discuss') loadAdminDiscs();
   if(id==='tab-resources') renderAdminResources();
   if(id==='tab-feedback') loadAdminFeedback();
+  if(id==='tab-submissions') loadAdminSubmissions();
 }
 function renderAdminGate(){
   if(isAdmin){ hide('adminLoginGate'); hide('adminForgotGate'); show('adminPanel'); renderAdmin(); }
@@ -1201,6 +1273,19 @@ async function renderResources(){
 }
 
 // ══════════════════════════════════════════════════════
+//  FEEDBACK & SUBMISSION TAB 切換
+// ══════════════════════════════════════════════════════
+function switchFeedbackTab(tab){
+  const isFb = tab === 'feedback';
+  G('block-feedback').style.display = isFb ? 'block' : 'none';
+  G('block-submit').style.display = isFb ? 'none' : 'block';
+  G('tab-fb-btn').style.background = isFb ? 'var(--navy3)' : '#f1f5f9';
+  G('tab-fb-btn').style.color = isFb ? '#fff' : 'var(--muted)';
+  G('tab-sub-btn').style.background = isFb ? '#f1f5f9' : 'var(--navy3)';
+  G('tab-sub-btn').style.color = isFb ? 'var(--muted)' : '#fff';
+}
+
+// ══════════════════════════════════════════════════════
 //  FEEDBACK
 // ══════════════════════════════════════════════════════
 async function submitFeedback(){
@@ -1219,6 +1304,27 @@ async function submitFeedback(){
 function resetFeedback(){
   ['fb-title','fb-body','fb-name','fb-email'].forEach(i=>G(i).value='');
   show('feedbackForm'); hide('feedbackSuccess');
+}
+
+// ── 文章投稿 ──
+async function submitSubmission(){
+  const email=V('sub-email'), title=V('sub-title'), summary=V('sub-summary'), body=V('sub-body');
+  if(!email||!title||!summary||!body){ showToast('請填寫 Email、標題、摘要與內容','error'); return; }
+  if(!/\S+@\S+\.\S+/.test(email)){ showToast('請輸入有效的 Email 地址','error'); return; }
+  try{
+    await sb('POST','submissions',{},{
+      theme: G('sub-theme').value,
+      name: V('sub-name')||'匿名',
+      email, title, summary, body,
+      prompt: V('sub-prompt'),
+      status: 'pending'
+    });
+    hide('submissionForm'); G('submissionSuccess').style.display='block';
+  } catch(e){ showToast('送出失敗：'+e.message,'error'); }
+}
+function resetSubmission(){
+  ['sub-title','sub-summary','sub-body','sub-name','sub-email','sub-prompt'].forEach(i=>G(i).value='');
+  show('submissionForm'); G('submissionSuccess').style.display='none';
 }
 
 // ══════════════════════════════════════════════════════
@@ -1439,6 +1545,84 @@ async function loadAdminFeedback(){
 async function markFeedbackDone(id){
   await sb('PATCH','feedbacks',{'id':'eq.'+id},{done:true});
   await loadAdminFeedback(); showToast('已標記為處理完成');
+}
+
+// ── 投稿管理 ──
+async function loadAdminSubmissions(){
+  try{
+    const rows = await sb('GET','submissions',{status:'eq.pending', order:'created_at.desc'});
+    SH('adminSubmissionList', rows.length
+      ? rows.map(s=>`
+        <div style="background:var(--bg);border:1px solid var(--border);border-radius:.6rem;padding:.8rem;margin-bottom:.6rem">
+          <div style="display:flex;align-items:center;gap:.5rem;flex-wrap:wrap;margin-bottom:.3rem">
+            <span style="display:inline-block;background:${THEMES[s.theme]?.color||'#1e4d8c'};color:#fff;border-radius:99px;padding:.1rem .5rem;font-size:.7rem;font-weight:700">${esc(THEMES[s.theme]?.label||s.theme)}</span>
+            <span style="font-size:.83rem;font-weight:600;color:var(--navy)">${esc(s.title)}</span>
+            <span style="font-size:.72rem;color:var(--muted);margin-left:auto">${esc(s.name||'匿名')} · ${(s.created_at||'').slice(0,10)}</span>
+          </div>
+          <div style="font-size:.8rem;color:var(--text);line-height:1.5;margin-bottom:.3rem;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden">${esc(s.summary)}</div>
+          <div style="font-size:.75rem;color:var(--accent);margin-bottom:.5rem">📧 ${esc(s.email)}</div>
+          <div class="item-actions">
+            <button class="btn btn-warn btn-sm" onclick="openEditSubmission('${s.id}')">✏️ 編輯</button>
+            <button class="btn btn-green btn-sm" onclick="publishSubmission('${s.id}')">🚀 發佈</button>
+            <button class="btn btn-danger btn-sm" onclick="deleteSubmission('${s.id}')">🗑 刪除</button>
+          </div>
+        </div>`).join('')
+      : '<p style="color:var(--muted);font-size:.84rem">目前無待審核投稿 🎉</p>');
+  } catch(e){ SH('adminSubmissionList','<p style="color:var(--danger)">載入失敗</p>'); }
+}
+
+async function openEditSubmission(id){
+  const rows = await sb('GET','submissions',{'id':'eq.'+id});
+  const s = rows[0]; if(!s) return;
+  G('edit-sub-id').value=id;
+  G('edit-sub-theme').value=s.theme;
+  G('edit-sub-title').value=s.title;
+  G('edit-sub-name').value=s.name||'';
+  G('edit-sub-summary').value=s.summary;
+  G('edit-sub-body').value=s.body;
+  G('edit-sub-prompt').value=s.prompt||'';
+  G('editSubmissionOverlay').classList.add('open');
+}
+function closeEditSubmission(){ G('editSubmissionOverlay').classList.remove('open'); }
+async function saveEditSubmission(){
+  const id=G('edit-sub-id').value;
+  const title=V('edit-sub-title'), summary=V('edit-sub-summary'), body=V('edit-sub-body');
+  if(!title||!summary||!body){ showToast('請填寫標題、摘要與內容','error'); return; }
+  try{
+    await sb('PATCH','submissions',{'id':'eq.'+id},{
+      theme:G('edit-sub-theme').value, title,
+      name:V('edit-sub-name'), summary, body,
+      prompt:V('edit-sub-prompt')
+    });
+    closeEditSubmission(); await loadAdminSubmissions(); showToast('✅ 投稿已更新');
+  } catch(e){ showToast('更新失敗：'+e.message,'error'); }
+}
+
+async function publishSubmission(id){
+  if(!confirm('確定發佈此投稿至文章專區？')) return;
+  try{
+    const rows = await sb('GET','submissions',{'id':'eq.'+id});
+    const s = rows[0]; if(!s) return;
+    // 發佈到 articles 資料表
+    await sb('POST','articles',{},{
+      theme:s.theme, title:s.title,
+      author:s.name||'匿名',
+      summary:s.summary, body:s.body,
+      prompt:s.prompt||'', views:0
+    });
+    // 將投稿狀態改為 published
+    await sb('PATCH','submissions',{'id':'eq.'+id},{status:'published'});
+    await loadAdminSubmissions();
+    showToast('🚀 投稿已發佈至文章專區！');
+  } catch(e){ showToast('發佈失敗：'+e.message,'error'); }
+}
+
+async function deleteSubmission(id){
+  if(!confirm('確定刪除此投稿？')) return;
+  try{
+    await sb('DELETE','submissions',{'id':'eq.'+id});
+    await loadAdminSubmissions(); showToast('🗑 投稿已刪除');
+  } catch(e){ showToast('刪除失敗','error'); }
 }
 
 async function renderAdminAccounts(){
