@@ -851,26 +851,60 @@ async function openArticle(id){
     try{ await sb('PATCH','articles',{'id':'eq.'+id},{views:(art.views||0)+1}); }catch(e){}
     G('articleMeta').innerHTML=`<span style="display:inline-block;background:${THEMES[art.theme]?.color||'#1e4d8c'};color:#fff;border-radius:99px;padding:.15rem .6rem;font-size:.72rem;font-weight:700">${esc(THEMES[art.theme]?.label||'')}</span>`;
     G('articleTitle').textContent = art.title;
-    const shareUrl = `${location.origin}${location.pathname}#article=${id}`;
+    const shareUrl = `https://h237482h-cmd.github.io/navigator-platform/#article=${id}`;
     G('articleInfo').innerHTML = `
       <span>👤 ${esc(art.author||'管理員')}</span>
       <span>📅 ${(art.created_at||'').slice(0,10)}</span>
       <span>👁 ${(art.views||0)+1}</span>`;
-    // 分享按鈕獨立放在 header 裡避免排版問題
+
+    // 分享按鈕區
     const existingShare = G('shareButtonArea');
     if(existingShare) existingShare.remove();
     const shareDiv = document.createElement('div');
     shareDiv.id = 'shareButtonArea';
-    shareDiv.style.cssText = 'margin-top:.6rem';
-    const shareBtn = document.createElement('button');
-    shareBtn.textContent = '🔗 複製分享連結';
-    shareBtn.style.cssText = 'background:var(--accent);color:#fff;border:none;border-radius:.4rem;padding:.35rem .85rem;cursor:pointer;font-size:.78rem;font-weight:600';
-    shareBtn.onclick = () => {
-      navigator.clipboard.writeText(shareUrl)
-        .then(()=>{ shareBtn.textContent='✅ 已複製！'; setTimeout(()=>shareBtn.textContent='🔗 複製分享連結',2000); })
-        .catch(()=>{ prompt('請手動複製以下連結：', shareUrl); });
+    shareDiv.style.cssText = 'margin-top:.7rem;display:flex;gap:.5rem;flex-wrap:wrap';
+
+    // LINE 按鈕
+    const lineBtn = document.createElement('button');
+    lineBtn.innerHTML = '💬 分享到 LINE';
+    lineBtn.style.cssText = 'background:#06C755;color:#fff;border:none;border-radius:.4rem;padding:.35rem .85rem;cursor:pointer;font-size:.78rem;font-weight:600';
+    lineBtn.onclick = () => {
+      const u = encodeURIComponent(shareUrl);
+      const t = encodeURIComponent(`${art.title} — 領航者：AI 人事共創平台`);
+      window.open(`https://social-plugins.line.me/lineit/share?url=${u}&text=${t}`, '_blank');
     };
-    shareDiv.appendChild(shareBtn);
+
+    // FB 按鈕
+    const fbBtn = document.createElement('button');
+    fbBtn.innerHTML = '👍 分享到 Facebook';
+    fbBtn.style.cssText = 'background:#1877F2;color:#fff;border:none;border-radius:.4rem;padding:.35rem .85rem;cursor:pointer;font-size:.78rem;font-weight:600';
+    fbBtn.onclick = () => {
+      window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`, '_blank', 'width=600,height=400');
+    };
+
+    // 複製連結按鈕
+    const cpBtn = document.createElement('button');
+    cpBtn.innerHTML = '🔗 複製文章連結';
+    cpBtn.style.cssText = 'background:var(--navy2);color:#fff;border:none;border-radius:.4rem;padding:.35rem .85rem;cursor:pointer;font-size:.78rem;font-weight:600';
+    cpBtn.onclick = () => {
+      try{
+        navigator.clipboard.writeText(shareUrl).then(()=>{
+          cpBtn.textContent='✅ 已複製！';
+          setTimeout(()=>{ cpBtn.textContent='🔗 複製文章連結'; }, 2000);
+        }).catch(()=>{
+          const ta = document.createElement('textarea');
+          ta.value = shareUrl; ta.style.cssText='position:fixed;opacity:0';
+          document.body.appendChild(ta); ta.focus(); ta.select();
+          document.execCommand('copy'); document.body.removeChild(ta);
+          cpBtn.textContent='✅ 已複製！';
+          setTimeout(()=>{ cpBtn.textContent='🔗 複製文章連結'; }, 2000);
+        });
+      } catch(e){ prompt('請手動複製：', shareUrl); }
+    };
+
+    shareDiv.appendChild(lineBtn);
+    shareDiv.appendChild(fbBtn);
+    shareDiv.appendChild(cpBtn);
     G('articleHeader_inner').appendChild(shareDiv);
     const parseLine = l => {
       // 圖片 ![alt](url)
