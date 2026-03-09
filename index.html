@@ -838,10 +838,17 @@ async function openArticle(id){
     try{ await sb('PATCH','articles',{'id':'eq.'+id},{views:(art.views||0)+1}); }catch(e){}
     G('articleMeta').innerHTML=`<span style="display:inline-block;background:${THEMES[art.theme]?.color||'#1e4d8c'};color:#fff;border-radius:99px;padding:.15rem .6rem;font-size:.72rem;font-weight:700">${esc(THEMES[art.theme]?.label||'')}</span>`;
     G('articleTitle').textContent = art.title;
-    G('articleInfo').innerHTML = `<span>👤 ${esc(art.author||'管理員')}</span><span>📅 ${(art.created_at||'').slice(0,10)}</span><span>👁 ${(art.views||0)+1}</span>`;
-    // 分享按鈕
     const shareUrl = `${location.origin}${location.pathname}?article=${id}`;
-    G('articleInfo').innerHTML += `<button onclick="copyShareLink('${shareUrl}')" style="margin-left:auto;background:var(--accent);color:#fff;border:none;border-radius:.4rem;padding:.25rem .7rem;cursor:pointer;font-size:.75rem;font-weight:600">🔗 複製分享連結</button>`;
+    G('articleInfo').innerHTML = `
+      <span>👤 ${esc(art.author||'管理員')}</span>
+      <span>📅 ${(art.created_at||'').slice(0,10)}</span>
+      <span>👁 ${(art.views||0)+1}</span>
+      <button id="shareBtn_${id}" style="margin-left:auto;background:var(--accent);color:#fff;border:none;border-radius:.4rem;padding:.28rem .75rem;cursor:pointer;font-size:.75rem;font-weight:600;display:inline-flex;align-items:center;gap:.3rem">🔗 複製分享連結</button>`;
+    // 用 addEventListener 避免 onclick 字串問題
+    setTimeout(()=>{
+      const btn = G('shareBtn_'+id);
+      if(btn) btn.addEventListener('click', ()=>copyShareLink(shareUrl));
+    }, 50);
     const parseLine = l => {
       // 圖片 ![alt](url)
       return l.replace(/!\[([^\]]*)\]\((https?:\/\/[^\)]+)\)/g,
