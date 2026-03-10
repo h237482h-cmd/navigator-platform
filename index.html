@@ -891,12 +891,12 @@ async function loadHotArticles(){
     _articles = await sb('GET','articles',{order:'views.desc'});
     const cutoff = new Date(Date.now()-30*24*60*60*1000).toISOString();
     const recent = _articles.filter(a=>(a.updated_at||a.created_at||'')>=cutoff);
-    const hot = (recent.length>=3?recent:_articles).slice(0,5);
-    const rc = ['#ef4444','#f97316','#eab308','#64748b','#64748b'];
+    const hot = (recent.length>=3?recent:_articles).slice(0,3);
+    const rc = ['#ef4444','#f97316','#eab308'];
     SH('homeHotList', hot.length
       ? hot.map((a,i)=>`
         <div class="hot-item" onclick="goArticle('${a.id}')">
-          <div class="hot-rank" style="background:${rc[i]}">${i+1}</div>
+          <div class="hot-rank" style="background:${THEMES[a.theme]?.color||'var(--navy2)'}">${i+1}</div>
           <div class="hot-info">
             <div class="title">${esc(a.title)}</div>
             <div class="meta">${(THEMES[a.theme]?.label||'').slice(0,16)}… · ${esc(a.author||'管理員')}</div>
@@ -904,11 +904,11 @@ async function loadHotArticles(){
           <span class="hot-views">👁 ${a.views||0}</span>
         </div>`).join('')
       : '<p style="color:var(--muted);font-size:.85rem;padding:.5rem">尚無文章</p>');
-    const newest = [..._articles].sort((a,b)=>((b.created_at||'')>(a.created_at||'')?1:-1)).slice(0,5);
+    const newest = [..._articles].sort((a,b)=>((b.created_at||'')>(a.created_at||'')?1:-1)).slice(0,3);
     SH('homeNewList', newest.length
-      ? newest.map((a)=>`
+      ? newest.map((a,i)=>`
         <div class="hot-item" onclick="goArticle('${a.id}')">
-          <div class="hot-rank" style="background:${THEMES[a.theme]?.color||'var(--navy2)'}">${esc(a.theme)}</div>
+          <div class="hot-rank" style="background:${THEMES[a.theme]?.color||'var(--navy2)'}">${i+1}</div>
           <div class="hot-info">
             <div class="title">${esc(a.title)}</div>
             <div class="meta">${esc(a.author||'管理員')} · ${(a.created_at||'').slice(0,10)}</div>
