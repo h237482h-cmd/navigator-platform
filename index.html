@@ -159,7 +159,7 @@
   .cors-warn{background:#fffbeb;border:1.5px solid #f59e0b;border-radius:.6rem;padding:.8rem 1rem;font-size:.8rem;color:#92400e;margin-bottom:1rem;line-height:1.6;display:none}
   @media(max-width:560px){.stat-row{grid-template-columns:1fr 1fr}}
 
-  /* 修正：改密碼 overlay */
+  .notif-badge{display:inline-flex;align-items:center;justify-content:center;background:var(--danger);color:#fff;border-radius:99px;font-size:.65rem;font-weight:800;min-width:18px;height:18px;padding:0 .35rem;margin-left:auto;}
   #changePwdOverlay{display:none;position:fixed;inset:0;background:#0007;z-index:300;align-items:center;justify-content:center;padding:1rem}
   #changePwdOverlay.open{display:flex}
 </style>
@@ -177,7 +177,7 @@
     <button class="nav-tab" onclick="switchPage('discuss',this)">🗣️ 討論區</button>
     <button class="nav-tab" onclick="switchPage('resources',this)">📦 資源</button>
     <button class="nav-tab" onclick="switchPage('feedback',this)">📮 建議與投稿</button>
-    <button class="nav-tab" onclick="switchPage('admin',this)">⚙️ 管理</button>
+    <button class="nav-tab" onclick="switchPage('admin',this)">⚙️ 管理 <span class="notif-badge" id="badge-nav-admin" style="display:none;vertical-align:middle"></span></button>
   </div>
 </nav>
 <main>
@@ -409,10 +409,10 @@
         <div class="admin-sidebar-item active" onclick="switchAdminTab('tab-announce',this)">📢 公告管理</div>
         <div class="admin-sidebar-item" onclick="switchAdminTab('tab-accounts',this)">👤 帳號管理</div>
         <div class="admin-sidebar-item" onclick="switchAdminTab('tab-articles',this)">📝 文章管理</div>
-        <div class="admin-sidebar-item" onclick="switchAdminTab('tab-discuss',this)">🗣️ 討論管理</div>
+        <div class="admin-sidebar-item" onclick="switchAdminTab('tab-discuss',this)">🗣️ 討論管理 <span class="notif-badge" id="badge-discuss" style="display:none"></span></div>
         <div class="admin-sidebar-item" onclick="switchAdminTab('tab-resources',this)">📦 資源管理</div>
-        <div class="admin-sidebar-item" onclick="switchAdminTab('tab-feedback',this)">📮 問題回饋</div>
-        <div class="admin-sidebar-item" onclick="switchAdminTab('tab-submissions',this)">✍️ 投稿管理</div>
+        <div class="admin-sidebar-item" onclick="switchAdminTab('tab-feedback',this)">📮 問題回饋 <span class="notif-badge" id="badge-feedback" style="display:none"></span></div>
+        <div class="admin-sidebar-item" onclick="switchAdminTab('tab-submissions',this)">✍️ 投稿管理 <span class="notif-badge" id="badge-submissions" style="display:none"></span></div>
       </div>
       <div>
         <div class="admin-panel-section active" id="tab-announce">
@@ -1364,19 +1364,53 @@ function resetSubmission(){
 // ══════════════════════════════════════════════════════
 async function renderAdmin(){
   try{
-    const [a,d,r,f] = await Promise.all([
+    const [a,d,r,f,s] = await Promise.all([
       sb('GET','articles',{select:'id'}),
       sb('GET','discussions',{select:'id'}),
       sb('GET','resources',{select:'id'}),
       sb('GET','feedbacks',{done:'eq.false',select:'id'}),
+      sb('GET','submissions',{status:'eq.pending',select:'id'}),
     ]);
     G('statArticles').textContent = a?.length||0;
     G('statDisc').textContent = d?.length||0;
     G('statRes').textContent = r?.length||0;
     G('statFeedback').textContent = f?.length||0;
+    updateBadges(f?.length||0, s?.length||0);
   } catch(e){}
   renderAdminAccounts();
   loadAdminAnnounces();
+}
+
+function updateBadges(feedbackCount, submissionCount){
+  // 討論區：抓最近24小時新增的討論數
+  sb('GET','discussions',{
+    created_at: 'gte.' + new Date(Date.now()-24*60*60*1000).toISOString(),
+    select:'id'
+  }).then(rows=>{
+    setBadge('badge-discuss', rows?.length||0);
+  }).catch(()=>{});
+
+  setBadge('badge-feedback', feedbackCount);
+  setBadge('badge-submissions', submissionCount);
+
+  // 導覽列總徽章 = 三者加總
+  sb('GET','discussions',{
+    created_at: 'gte.' + new Date(Date.now()-24*60*60*1000).toISOString(),
+    select:'id'
+  }).then(rows=>{
+    const total = (rows?.length||0) + feedbackCount + submissionCount;
+    setBadge('badge-nav-admin', total);
+  }).catch(()=>{ setBadge('badge-nav-admin', feedbackCount + submissionCount); });
+}
+
+function setBadge(id, count){
+  const el = G(id); if(!el) return;
+  if(count > 0){
+    el.textContent = count > 99 ? '99+' : count;
+    el.style.display = 'inline-flex';
+  } else {
+    el.style.display = 'none';
+  }
 }
 
 async function loadAdminAnnounces(){
