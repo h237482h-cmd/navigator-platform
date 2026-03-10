@@ -770,41 +770,55 @@ async function handleHashRoute(){
   const hash = window.location.hash;
   if(!hash) return false;
 
+  // ✅ 處理頁面 hash：#page=articles 等
+  const pageMatch = hash.match(/^#page=(.+)$/);
+  if(pageMatch){
+    const id = pageMatch[1];
+    const tabs = ['home','articles','discuss','resources','feedback','admin'];
+    const idx = tabs.indexOf(id);
+    if(idx !== -1){
+      document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+      document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active'));
+      G('page-'+id).classList.add('active');
+      document.querySelectorAll('.nav-tab')[idx].classList.add('active');
+      if(id==='home') renderHome();
+      if(id==='articles') showThemeView();
+      if(id==='discuss') renderDiscList();
+      if(id==='resources') renderResources();
+      if(id==='admin') renderAdminGate();
+      return true;
+    }
+  }
+
+  // ✅ 處理文章 hash：#article=id
   const articleMatch = hash.match(/^#article=(.+)$/);
   if(articleMatch){
     const id = articleMatch[1];
-    // 切換至文章頁籤
     document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
     document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active'));
     G('page-articles').classList.add('active');
     document.querySelectorAll('.nav-tab')[1].classList.add('active');
-
-    // ✅ 修正：不依賴快取，直接用 id 從 Supabase 查詢單篇文章
     try{
       const arts = await sb('GET','articles',{'id':'eq.'+id});
       if(arts && arts.length){
         const art = arts[0];
-        // 同步至 _articles 快取
         if(!_articles.find(a=>a.id===id)) _articles.push(art);
         currentTheme = art.theme;
         showThemeView();
         openArticle(id);
         return true;
       }
-    } catch(e){
-      console.warn('Hash route: 無法載入文章', e);
-    }
-    // 文章不存在時退回首頁
+    } catch(e){ console.warn('Hash route: 無法載入文章', e); }
     return false;
   }
+
   return false;
 }
 
 // 監聽瀏覽器上下頁（popstate）
 window.addEventListener('popstate', () => {
   handleHashRoute().then(handled => {
-    if(!handled) {
-      // 無 hash → 回到首頁
+    if(!handled){
       document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
       document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active'));
       G('page-home').classList.add('active');
@@ -863,8 +877,8 @@ function switchPage(id, el){
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active'));
   G('page-'+id).classList.add('active'); el.classList.add('active');
-  // 切換頁面時清除 hash（避免殘留舊文章 hash）
-  history.pushState(null, '', window.location.pathname + window.location.search);
+  // 記錄當前頁面到 URL hash
+  history.pushState(null, '', '#page=' + id);
   if(id==='home') renderHome();
   if(id==='articles') showThemeView();
   if(id==='discuss') renderDiscList();
@@ -1133,8 +1147,7 @@ function copyPrompt(btn, artId){
   });
 }
 function backToForum(){
-  // ✅ 清除文章 hash，回到文章列表
-  history.pushState(null, '', window.location.pathname + window.location.search);
+  history.pushState(null, '', '#page=articles');
   G('view-article').classList.remove('active');
   openTheme(currentTheme);
 }
