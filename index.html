@@ -30,8 +30,11 @@
   .hero p{color:#93c5fd;font-size:.85rem;max-width:480px}
   .sec-title{font-size:.95rem;font-weight:700;color:var(--navy);margin:1.3rem 0 .7rem;padding-left:.5rem;border-left:4px solid var(--accent)}
   .announce-list{display:flex;flex-direction:column;gap:.5rem;margin-bottom:1.2rem}
-  .announce-item{background:var(--card);border:1px solid var(--border);border-radius:.6rem;padding:.7rem 1rem;display:flex;align-items:center;gap:.6rem;flex-wrap:wrap}
+  .announce-item{background:var(--card);border:1px solid var(--border);border-radius:.6rem;padding:.7rem 1rem;display:flex;align-items:center;gap:.6rem;flex-wrap:wrap;cursor:pointer;transition:.2s}
+  .announce-item:hover{background:#eff6ff;border-color:var(--accent2)}
   .announce-item .date{font-size:.73rem;color:var(--muted);margin-left:auto;white-space:nowrap}
+  .announce-item .ann-title{font-size:.86rem;font-weight:600;color:var(--navy);flex:1}
+  .announce-item .ann-arrow{font-size:.8rem;color:var(--muted)}
   .hot-list{display:flex;flex-direction:column;gap:.5rem;margin-bottom:1.2rem}
   .hot-item{background:var(--card);border:1px solid var(--border);border-radius:.6rem;padding:.7rem 1rem;display:flex;align-items:center;gap:.75rem;cursor:pointer;transition:.2s}
   .hot-item:hover{background:#eff6ff;border-color:var(--accent2)}
@@ -49,10 +52,10 @@
   .theme-posts{list-style:none;margin-top:.5rem;border-top:1px solid var(--border);padding-top:.5rem;display:flex;flex-direction:column;gap:.3rem}
   .theme-posts li{font-size:.78rem;color:var(--navy2);display:flex;align-items:flex-start;gap:.4rem;cursor:pointer;line-height:1.4}
   .theme-posts li:hover{color:var(--accent)}.theme-posts li::before{content:'›';color:var(--muted);flex-shrink:0}
-  .theme-card.article-mode{cursor:default}
-  .theme-card.article-mode:hover{transform:none;box-shadow:none}
   .theme-count{font-size:.73rem;color:var(--muted);margin-top:.5rem}
   .theme-more{font-size:.75rem;color:var(--accent);margin-top:.4rem;font-weight:600}
+  .theme-card.article-mode{cursor:default}
+  .theme-card.article-mode:hover{transform:none;box-shadow:none}
   .forum-back{background:none;border:1.5px solid var(--border);border-radius:.5rem;padding:.35rem .8rem;cursor:pointer;font-size:.82rem;color:var(--navy);font-weight:600;transition:.2s}
   .forum-back:hover{background:var(--bg)}
   .post-list{display:flex;flex-direction:column;gap:.7rem}
@@ -158,7 +161,6 @@
   .loading{text-align:center;padding:2rem;color:var(--muted);font-size:.86rem}
   .cors-warn{background:#fffbeb;border:1.5px solid #f59e0b;border-radius:.6rem;padding:.8rem 1rem;font-size:.8rem;color:#92400e;margin-bottom:1rem;line-height:1.6;display:none}
   @media(max-width:560px){.stat-row{grid-template-columns:1fr 1fr}}
-
   .notif-badge{display:inline-flex;align-items:center;justify-content:center;background:var(--danger);color:#fff;border-radius:99px;font-size:.65rem;font-weight:800;min-width:18px;height:18px;padding:0 .35rem;margin-left:auto;}
   #changePwdOverlay{display:none;position:fixed;inset:0;background:#0007;z-index:300;align-items:center;justify-content:center;padding:1rem}
   #changePwdOverlay.open{display:flex}
@@ -189,7 +191,6 @@
     <h1>領航者：AI 人事共創平台</h1>
     <p>交流 AI 工具應用心得，共同推動人事業務智動化，提升施政效能。</p>
     <div style="display:flex;gap:.5rem;margin-top:1rem;flex-wrap:wrap">
-      <!-- ✅ 修正：首頁分享按鈕綁定正確函式 -->
       <button onclick="sharePageToLine()" style="display:inline-flex;align-items:center;gap:.35rem;background:#06C755;color:#fff;border:none;border-radius:.4rem;padding:.35rem .85rem;cursor:pointer;font-size:.78rem;font-weight:600">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="white"><path d="M19.365 9.863c.349 0 .63.285.63.631 0 .345-.281.63-.63.63H17.61v1.125h1.755c.349 0 .63.283.63.630 0 .344-.281.629-.63.629h-2.386c-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.63-.63h2.386c.346 0 .627.285.627.63 0 .349-.281.63-.63.63H17.61v1.125h1.755zm-3.855 3.016c0 .27-.174.51-.432.596-.064.021-.133.031-.199.031-.211 0-.391-.09-.51-.25l-2.443-3.317v2.94c0 .344-.279.629-.631.629-.346 0-.626-.285-.626-.629V8.108c0-.27.173-.51.43-.595.06-.023.136-.033.194-.033.195 0 .375.104.494.25l2.462 3.33V8.108c0-.345.282-.63.63-.63.345 0 .63.285.63.63v4.771zm-5.741 0c0 .344-.282.629-.631.629-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.63-.63.346 0 .628.285.628.63v4.771zm-2.466.629H4.917c-.345 0-.63-.285-.63-.629V8.108c0-.345.285-.63.63-.63.348 0 .63.285.63.63v4.141h1.756c.348 0 .629.283.629.63 0 .344-.281.629-.629.629M24 10.314C24 4.943 18.615.572 12 .572S0 4.943 0 10.314c0 4.811 4.27 8.842 10.035 9.608.391.082.923.258 1.058.59.12.301.079.766.038 1.08l-.164 1.02c-.045.301-.24 1.186 1.049.645 1.291-.539 6.916-4.070 9.436-6.975C23.176 14.393 24 12.458 24 10.314"/></svg>
         LINE
@@ -203,15 +204,32 @@
       </button>
     </div>
   </div>
-  <div id="corsWarnHome" class="cors-warn">
-    ⚠️ <strong>提示：</strong>目前在預覽環境中，Supabase 的跨域請求（CORS）會被封鎖。請將此 HTML 檔案下載後，直接用瀏覽器開啟，或部署至您的伺服器，即可正常連接 Supabase 資料庫。
+
+  <!-- 公告內頁 -->
+  <div id="ann-detail-view" style="display:none">
+    <div style="margin-bottom:.8rem"><button class="forum-back" onclick="backToHome()">← 返回首頁</button></div>
+    <div class="article-header">
+      <div id="annDetailMeta"></div>
+      <div class="article-title" id="annDetailTitle"></div>
+      <div style="font-size:.78rem;color:var(--muted);margin-top:.3rem" id="annDetailDate"></div>
+    </div>
+    <div class="article-body" id="annDetailBody"></div>
   </div>
-  <div class="sec-title">📢 最新公告</div>
-  <div class="announce-list" id="announceList"><div class="loading">載入中...</div></div>
-  <div class="sec-title">🔥 熱門文章</div>
-  <div class="hot-list" id="homeHotList"><div class="loading">載入中...</div></div>
-  <div class="sec-title">📚 主題專區</div>
-  <div class="theme-grid" id="homeThemeGrid"><div class="loading">載入中...</div></div>
+
+  <!-- 首頁主內容 -->
+  <div id="home-main-content">
+    <div id="corsWarnHome" class="cors-warn">
+      ⚠️ <strong>提示：</strong>目前在預覽環境中，Supabase 的跨域請求（CORS）會被封鎖。請將此 HTML 檔案下載後，直接用瀏覽器開啟，或部署至您的伺服器，即可正常連接 Supabase 資料庫。
+    </div>
+    <div class="sec-title">📢 最新公告</div>
+    <div class="announce-list" id="announceList"><div class="loading">載入中...</div></div>
+    <div class="sec-title">🔥 熱門文章</div>
+    <div class="hot-list" id="homeHotList"><div class="loading">載入中...</div></div>
+    <div class="sec-title">🆕 最新文章</div>
+    <div class="hot-list" id="homeNewList"><div class="loading">載入中...</div></div>
+    <div class="sec-title">📚 主題專區</div>
+    <div class="theme-grid" id="homeThemeGrid"><div class="loading">載入中...</div></div>
+  </div>
 </div>
 
 <!-- ARTICLES -->
@@ -313,14 +331,10 @@
     <h1 style="font-size:1.3rem">建議與投稿</h1>
     <p>有問題想回報、或想分享你的 AI 應用心得？歡迎填寫下方表單！</p>
   </div>
-
-  <!-- Tab 切換 -->
   <div style="display:flex;gap:0;margin-bottom:1.2rem;border:1.5px solid var(--border);border-radius:.6rem;overflow:hidden;max-width:360px">
     <button id="tab-fb-btn" onclick="switchFeedbackTab('feedback')" style="flex:1;padding:.55rem;border:none;cursor:pointer;font-size:.85rem;font-weight:700;background:var(--navy3);color:#fff;transition:.2s">📮 問題建議</button>
     <button id="tab-sub-btn" onclick="switchFeedbackTab('submit')" style="flex:1;padding:.55rem;border:none;cursor:pointer;font-size:.85rem;font-weight:700;background:#f1f5f9;color:var(--muted);transition:.2s">✍️ 文章投稿</button>
   </div>
-
-  <!-- 問題建議區塊 -->
   <div id="block-feedback">
     <div class="feedback-card" id="feedbackForm">
       <div style="margin-bottom:.7rem"><label>類型 *</label>
@@ -339,8 +353,6 @@
       <button class="btn btn-primary btn-sm" style="margin-top:.9rem" onclick="resetFeedback()">再次提交</button>
     </div>
   </div>
-
-  <!-- 文章投稿區塊 -->
   <div id="block-submit" style="display:none">
     <div class="feedback-card" id="submissionForm">
       <div style="margin-bottom:.5rem;padding:.7rem 1rem;background:#eff6ff;border:1px solid var(--accent2);border-radius:.6rem;font-size:.82rem;color:var(--navy2);line-height:1.6">
@@ -429,7 +441,8 @@
               </div>
               <div><label>顯示日期</label><input id="ann-date" type="date"/></div>
             </div>
-            <div style="margin-bottom:.6rem"><label>公告內容 *</label><input id="ann-body" type="text" placeholder="公告文字內容"/></div>
+            <div style="margin-bottom:.6rem"><label>公告標題 *</label><input id="ann-body" type="text" placeholder="公告標題文字"/></div>
+            <div style="margin-bottom:.6rem"><label>公告內文</label><input id="ann-content" type="text" placeholder="點進公告後顯示的詳細內容（選填）"/></div>
             <button class="btn btn-green btn-sm" onclick="addAnnounce()">+ 新增公告</button>
           </div>
           <div class="admin-card">
@@ -487,7 +500,6 @@
             <div id="adminFeedbackList"><div class="loading">載入中...</div></div>
           </div>
         </div>
-        <!-- ── 投稿管理 ── -->
         <div class="admin-panel-section" id="tab-submissions">
           <div class="admin-card">
             <div class="admin-header"><span>✍️</span><h2>待審核投稿</h2></div>
@@ -574,29 +586,14 @@
       </select>
     </div>
     <div style="margin-bottom:.6rem"><label>顯示日期</label><input id="edit-ann-date" type="date"/></div>
-    <div style="margin-bottom:.6rem"><label>公告內容 *</label><input id="edit-ann-body" type="text"/></div>
+    <div style="margin-bottom:.6rem"><label>公告標題 *</label><input id="edit-ann-body" type="text"/></div>
+    <div style="margin-bottom:.6rem"><label>公告內文</label><input id="edit-ann-content" type="text" placeholder="點進公告後顯示的詳細內容（選填）"/></div>
     <div class="modal-footer">
       <button class="btn" style="background:#f1f5f9;color:var(--text)" onclick="document.getElementById('editAnnounceOverlay').classList.remove('open')">取消</button>
       <button class="btn btn-green" onclick="saveEditAnnounce()">💾 儲存</button>
     </div>
   </div>
 </div>
-
-<!-- ✅ 新增：改密碼 overlay（原版缺少 HTML） -->
-<div id="changePwdOverlay" class="edit-overlay">
-  <div class="edit-modal" style="max-width:420px">
-    <h3>🔑 修改密碼：<span id="pwd-acc-name"></span></h3>
-    <input type="hidden" id="pwd-acc-id"/>
-    <div style="margin-bottom:.6rem"><label>新密碼 *</label><input id="pwd-new" type="password" placeholder="至少 6 個字元"/></div>
-    <div style="margin-bottom:.6rem"><label>確認新密碼 *</label><input id="pwd-confirm" type="password" placeholder="再輸入一次"/></div>
-    <div class="modal-footer">
-      <button class="btn" style="background:#f1f5f9;color:var(--text)" onclick="document.getElementById('changePwdOverlay').classList.remove('open')">取消</button>
-      <button class="btn btn-green" onclick="saveChangePwd()">💾 儲存</button>
-    </div>
-  </div>
-</div>
-
-<!-- 編輯投稿 modal -->
 <div class="edit-overlay" id="editSubmissionOverlay">
   <div class="edit-modal">
     <h3>✍️ 編輯投稿內容</h3>
@@ -619,13 +616,21 @@
     </div>
   </div>
 </div>
-
+<div id="changePwdOverlay" class="edit-overlay">
+  <div class="edit-modal" style="max-width:420px">
+    <h3>🔑 修改密碼：<span id="pwd-acc-name"></span></h3>
+    <input type="hidden" id="pwd-acc-id"/>
+    <div style="margin-bottom:.6rem"><label>新密碼 *</label><input id="pwd-new" type="password" placeholder="至少 6 個字元"/></div>
+    <div style="margin-bottom:.6rem"><label>確認新密碼 *</label><input id="pwd-confirm" type="password" placeholder="再輸入一次"/></div>
+    <div class="modal-footer">
+      <button class="btn" style="background:#f1f5f9;color:var(--text)" onclick="document.getElementById('changePwdOverlay').classList.remove('open')">取消</button>
+      <button class="btn btn-green" onclick="saveChangePwd()">💾 儲存</button>
+    </div>
+  </div>
+</div>
 <div class="toast" id="toast"></div>
 
 <script>
-// ══════════════════════════════════════════════════════
-//  SUPABASE CONFIG
-// ══════════════════════════════════════════════════════
 const SB_URL = 'https://lkxmgkofbuajvhxaytyh.supabase.co';
 const SB_KEY = 'sb_publishable_BBanWGfWNh_rJt3NI_bQdg_6CwavgQW';
 const SB_HEADS = {
@@ -634,7 +639,6 @@ const SB_HEADS = {
   'Content-Type': 'application/json',
   'Prefer': 'return=representation'
 };
-
 async function sb(method, table, params={}, body=null){
   let url = `${SB_URL}/rest/v1/${table}`;
   const qs = new URLSearchParams(params).toString();
@@ -649,9 +653,6 @@ async function sb(method, table, params={}, body=null){
   return null;
 }
 
-// ══════════════════════════════════════════════════════
-//  STATE
-// ══════════════════════════════════════════════════════
 let isAdmin = false;
 let currentTheme = 'A', currentArticleId = null, currentDiscId = null;
 let _articles = [];
@@ -671,9 +672,6 @@ const ANN_STYLE = {
 };
 const ANN_ICON = {'最新':'🆕','公告':'📌','資源':'📎','注意':'⚠️'};
 
-// ══════════════════════════════════════════════════════
-//  UTILS
-// ══════════════════════════════════════════════════════
 const G  = id => document.getElementById(id);
 const V  = id => G(id).value.trim();
 const SH = (id, h) => G(id).innerHTML = h;
@@ -691,86 +689,56 @@ function showToast(msg, type='success'){
   setTimeout(()=>t.classList.remove('show'), 3200);
 }
 function detectEnv(){
-  try{
-    if(window.self !== window.top) G('corsWarnHome').style.display = 'block';
-  }catch(e){ G('corsWarnHome').style.display = 'block'; }
+  try{ if(window.self !== window.top) G('corsWarnHome').style.display = 'block'; }
+  catch(e){ G('corsWarnHome').style.display = 'block'; }
 }
 
-// ══════════════════════════════════════════════════════
-//  ✅ 修正一：首頁分享函式（原版缺少定義）
-// ══════════════════════════════════════════════════════
-function getPageUrl(){
-  // 取得當前頁面的完整 URL（不含 hash）
-  return window.location.href.split('#')[0];
-}
+// ── 分享 ──
+function getPageUrl(){ return window.location.href.split('#')[0]; }
+function getArticleUrl(id){ return window.location.href.split('#')[0] + '#article=' + id; }
 
 function sharePageToLine(){
-  const url = encodeURIComponent(getPageUrl());
-  const text = encodeURIComponent('領航者：AI 人事共創平台 — 交流 AI 工具應用心得，共同推動人事業務智動化');
-  // 用 <a> 模擬點擊，避免電腦瀏覽器彈窗封鎖
+  const u = encodeURIComponent(getPageUrl());
+  const t = encodeURIComponent('領航者：AI 人事共創平台 — 交流 AI 工具應用心得，共同推動人事業務智動化');
   const a = document.createElement('a');
-  a.href = `https://social-plugins.line.me/lineit/share?url=${url}&text=${text}`;
-  a.target = '_blank'; a.rel = 'noopener noreferrer';
+  a.href=`https://social-plugins.line.me/lineit/share?url=${u}&text=${t}`;
+  a.target='_blank'; a.rel='noopener noreferrer';
   document.body.appendChild(a); a.click(); document.body.removeChild(a);
 }
-
 function sharePageToFB(){
-  const url = encodeURIComponent(getPageUrl());
   const a = document.createElement('a');
-  a.href = `https://www.facebook.com/sharer/sharer.php?u=${url}`;
-  a.target = '_blank'; a.rel = 'noopener noreferrer';
+  a.href=`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(getPageUrl())}`;
+  a.target='_blank'; a.rel='noopener noreferrer';
   document.body.appendChild(a); a.click(); document.body.removeChild(a);
 }
-
 function copyPageLink(){
-  const url = getPageUrl();
   const btn = G('copyPageBtn');
-  _copyToClipboard(url,
-    () => { btn.textContent='✅ 已複製！'; setTimeout(()=>{ btn.innerHTML='🔗 複製連結'; },2000); },
-    () => { prompt('請手動複製此連結：', url); }
+  _copyToClipboard(getPageUrl(),
+    ()=>{ btn.textContent='✅ 已複製！'; setTimeout(()=>{ btn.innerHTML='🔗 複製連結'; },2000); },
+    ()=>{ prompt('請手動複製此連結：', getPageUrl()); }
   );
 }
-
-// 通用複製到剪貼簿（相容各瀏覽器）
 function _copyToClipboard(text, onSuccess, onFail){
   if(navigator.clipboard && navigator.clipboard.writeText){
-    navigator.clipboard.writeText(text).then(onSuccess).catch(()=>_legacyCopy(text, onSuccess, onFail));
-  } else {
-    _legacyCopy(text, onSuccess, onFail);
-  }
+    navigator.clipboard.writeText(text).then(onSuccess).catch(()=>_legacyCopy(text,onSuccess,onFail));
+  } else { _legacyCopy(text,onSuccess,onFail); }
 }
 function _legacyCopy(text, onSuccess, onFail){
   const ta = document.createElement('textarea');
-  ta.value = text;
-  ta.style.cssText = 'position:fixed;opacity:0;top:0;left:0';
-  document.body.appendChild(ta);
-  ta.focus(); ta.select();
+  ta.value=text; ta.style.cssText='position:fixed;opacity:0;top:0;left:0';
+  document.body.appendChild(ta); ta.focus(); ta.select();
   try{
     const ok = document.execCommand('copy');
     document.body.removeChild(ta);
-    if(ok) onSuccess();
-    else if(onFail) onFail();
-  } catch(e){
-    document.body.removeChild(ta);
-    if(onFail) onFail(); else prompt('請手動複製：', text);
-  }
+    if(ok) onSuccess(); else if(onFail) onFail();
+  } catch(e){ document.body.removeChild(ta); if(onFail) onFail(); else prompt('請手動複製：',text); }
 }
 
-// ══════════════════════════════════════════════════════
-//  ✅ 修正二：URL Hash 路由（解決文章連結貼上後回首頁問題）
-// ══════════════════════════════════════════════════════
-
-// 產生文章分享 URL（使用 hash）
-function getArticleUrl(id){
-  return window.location.href.split('#')[0] + '#article=' + id;
-}
-
-// 解析 hash 並導航至對應頁面
+// ── Hash 路由 ──
 async function handleHashRoute(){
   const hash = window.location.hash;
   if(!hash) return false;
 
-  // ✅ 處理頁面 hash：#page=articles 等
   const pageMatch = hash.match(/^#page=(.+)$/);
   if(pageMatch){
     const id = pageMatch[1];
@@ -790,7 +758,6 @@ async function handleHashRoute(){
     }
   }
 
-  // ✅ 處理文章 hash：#article=id
   const articleMatch = hash.match(/^#article=(.+)$/);
   if(articleMatch){
     const id = articleMatch[1];
@@ -808,16 +775,30 @@ async function handleHashRoute(){
         openArticle(id);
         return true;
       }
-    } catch(e){ console.warn('Hash route: 無法載入文章', e); }
+    } catch(e){ console.warn('Hash route error', e); }
+    return false;
+  }
+
+  // 公告內頁 hash
+  const annMatch = hash.match(/^#announce=(.+)$/);
+  if(annMatch){
+    const id = annMatch[1];
+    document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+    document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active'));
+    G('page-home').classList.add('active');
+    document.querySelectorAll('.nav-tab')[0].classList.add('active');
+    try{
+      const rows = await sb('GET','announces',{'id':'eq.'+id});
+      if(rows && rows.length){ openAnnounce(rows[0]); return true; }
+    } catch(e){}
     return false;
   }
 
   return false;
 }
 
-// 監聽瀏覽器上下頁（popstate）
-window.addEventListener('popstate', () => {
-  handleHashRoute().then(handled => {
+window.addEventListener('popstate', ()=>{
+  handleHashRoute().then(handled=>{
     if(!handled){
       document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
       document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active'));
@@ -828,56 +809,11 @@ window.addEventListener('popstate', () => {
   });
 });
 
-// ══════════════════════════════════════════════════════
-//  AUTH
-// ══════════════════════════════════════════════════════
-async function doLogin(){
-  const u = V('login-user'), p = G('login-pass').value;
-  try{
-    const res = await fetch(`${SB_URL}/rest/v1/rpc/verify_login`, {
-      method: 'POST',
-      headers: {...SB_HEADS},
-      body: JSON.stringify({p_username: u, p_password: p})
-    });
-    const data = await res.json();
-    if(Array.isArray(data) && data.length > 0){
-      const acc = data[0];
-      isAdmin = true;
-      currentAdminId = acc.id;
-      hide('adminLoginGate'); hide('adminForgotGate'); show('adminPanel');
-      G('adminPill').style.display = '';
-      G('loginErr').style.display = 'none';
-      renderAdmin();
-    } else {
-      G('loginErr').style.display = 'block';
-    }
-  } catch(e){
-    G('loginErr').style.display = 'block';
-  }
-}
-
-function doLogout(){
-  isAdmin = false;
-  hide('adminPanel'); show('adminLoginGate');
-  G('adminPill').style.display = 'none';
-}
-function showForgotPwd(){ hide('adminLoginGate'); show('adminForgotGate'); G('forgotMsg').style.display='none'; }
-function showLoginGate(){ show('adminLoginGate'); hide('adminForgotGate'); }
-function doForgotPwd(){
-  const u = V('forgot-user'), acc = adminAccounts.find(a=>a.username===u);
-  const msg = G('forgotMsg'); msg.style.display='block';
-  if(acc){ msg.style.color='var(--success)'; msg.textContent=`✅ 重設連結已模擬傳送至 ${acc.email}`; }
-  else { msg.style.color='var(--danger)'; msg.textContent='找不到此帳號，請確認後再試。'; }
-}
-
-// ══════════════════════════════════════════════════════
-//  NAV
-// ══════════════════════════════════════════════════════
+// ── NAV ──
 function switchPage(id, el){
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active'));
   G('page-'+id).classList.add('active'); el.classList.add('active');
-  // 記錄當前頁面到 URL hash
   history.pushState(null, '', '#page=' + id);
   if(id==='home') renderHome();
   if(id==='articles') showThemeView();
@@ -901,12 +837,33 @@ function renderAdminGate(){
   else { show('adminLoginGate'); hide('adminForgotGate'); hide('adminPanel'); }
 }
 
-// ══════════════════════════════════════════════════════
-//  HOME
-// ══════════════════════════════════════════════════════
+// ── HOME ──
 async function renderHome(){
   detectEnv();
+  // 確保公告內頁隱藏、主內容顯示
+  hide('ann-detail-view');
+  show('home-main-content');
   await Promise.all([loadAnnounces(), loadHotArticles()]);
+}
+
+function backToHome(){
+  history.pushState(null, '', '#page=home');
+  hide('ann-detail-view');
+  show('home-main-content');
+}
+
+// 開啟公告內頁
+function openAnnounce(r){
+  hide('home-main-content');
+  show('ann-detail-view');
+  history.pushState(null, '', '#announce=' + r.id);
+  G('annDetailMeta').innerHTML = `<span class="chip" style="${ANN_STYLE[r.type]||ANN_STYLE['公告']}">${ANN_ICON[r.type]||'📌'} ${esc(r.type)}</span>`;
+  G('annDetailTitle').textContent = r.body;
+  G('annDetailDate').textContent = '📅 ' + (r.date||'').slice(0,10);
+  const content = r.content && r.content.trim();
+  SH('annDetailBody', content
+    ? content.split('\n').map(l=>l.trim()?`<p>${esc(l)}</p>`:'').join('')
+    : '<p style="color:var(--muted)">此公告無詳細內文。</p>');
 }
 
 async function loadAnnounces(){
@@ -914,27 +871,27 @@ async function loadAnnounces(){
     const rows = await sb('GET','announces',{order:'date.desc'});
     SH('announceList', rows.length
       ? rows.map(r=>`
-        <div class="announce-item">
+        <div class="announce-item" onclick='openAnnounce(${JSON.stringify(r)})'>
           <span class="chip" style="${ANN_STYLE[r.type]||ANN_STYLE['公告']}">${ANN_ICON[r.type]||'📌'} ${esc(r.type)}</span>
-          <span style="font-size:.86rem;font-weight:600;color:var(--navy)">${esc(r.body)}</span>
+          <span class="ann-title">${esc(r.body)}</span>
           <span class="date">${(r.date||'').slice(0,10)}</span>
+          <span class="ann-arrow">›</span>
         </div>`).join('')
       : '<p style="color:var(--muted);font-size:.85rem;padding:.5rem">尚無公告</p>');
   } catch(e){
     SH('announceList',`
-      <div class="announce-item"><span class="chip" style="background:#fef9c3;color:#92400e">🆕 最新</span><span style="font-size:.86rem;font-weight:600;color:var(--navy)">115年度人事業務績效考核 AI 導入說明會開放報名</span><span class="date">2026-03-01</span></div>
-      <div class="announce-item"><span class="chip" style="background:#dcfce7;color:#166534">📌 公告</span><span style="font-size:.86rem;font-weight:600;color:var(--navy)">2026人事業務智動化計畫推動指引（第一版）發布</span><span class="date">2026-02-15</span></div>
-      <div class="announce-item"><span class="chip" style="background:#ede9fe;color:#5b21b6">📎 資源</span><span style="font-size:.86rem;font-weight:600;color:var(--navy)">通用性公務 AI 工具評估報告已上架相關資源下載專區</span><span class="date">2026-02-01</span></div>
-      <p style="font-size:.75rem;color:var(--muted);margin-top:.5rem">⚠️ 目前顯示靜態預設公告（Supabase 連線受限）</p>`);
+      <div class="announce-item"><span class="chip" style="background:#fef9c3;color:#92400e">🆕 最新</span><span class="ann-title">115年度人事業務績效考核 AI 導入說明會開放報名</span><span class="date">2026-03-01</span><span class="ann-arrow">›</span></div>
+      <div class="announce-item"><span class="chip" style="background:#dcfce7;color:#166534">📌 公告</span><span class="ann-title">2026人事業務智動化計畫推動指引（第一版）發布</span><span class="date">2026-02-15</span><span class="ann-arrow">›</span></div>
+      <p style="font-size:.75rem;color:var(--muted);margin-top:.5rem">⚠️ 目前顯示靜態預設公告</p>`);
   }
 }
 
 async function loadHotArticles(){
   try{
     _articles = await sb('GET','articles',{order:'views.desc'});
-    const cutoff = new Date(Date.now() - 30*24*60*60*1000).toISOString();
-    const recent = _articles.filter(a=>(a.updated_at||a.created_at||'') >= cutoff);
-    const hot = (recent.length >= 3 ? recent : _articles).slice(0,5);
+    const cutoff = new Date(Date.now()-30*24*60*60*1000).toISOString();
+    const recent = _articles.filter(a=>(a.updated_at||a.created_at||'')>=cutoff);
+    const hot = (recent.length>=3?recent:_articles).slice(0,5);
     const rc = ['#ef4444','#f97316','#eab308','#64748b','#64748b'];
     SH('homeHotList', hot.length
       ? hot.map((a,i)=>`
@@ -947,10 +904,22 @@ async function loadHotArticles(){
           <span class="hot-views">👁 ${a.views||0}</span>
         </div>`).join('')
       : '<p style="color:var(--muted);font-size:.85rem;padding:.5rem">尚無文章</p>');
+    const newest = [..._articles].sort((a,b)=>((b.created_at||'')>(a.created_at||'')?1:-1)).slice(0,5);
+    SH('homeNewList', newest.length
+      ? newest.map((a)=>`
+        <div class="hot-item" onclick="goArticle('${a.id}')">
+          <div class="hot-rank" style="background:${THEMES[a.theme]?.color||'var(--navy2)'}">${esc(a.theme)}</div>
+          <div class="hot-info">
+            <div class="title">${esc(a.title)}</div>
+            <div class="meta">${esc(a.author||'管理員')} · ${(a.created_at||'').slice(0,10)}</div>
+          </div>
+          <span class="hot-views">👁 ${a.views||0}</span>
+        </div>`).join('')
+      : '<p style="color:var(--muted);font-size:.85rem;padding:.5rem">尚無文章</p>');
     SH('homeThemeGrid', buildThemeCards('home'));
   } catch(e){
     SH('homeHotList','<p style="color:var(--danger);font-size:.84rem;padding:.5rem">⚠️ 無法連接 Supabase，請將檔案下載後在本機開啟使用。</p>');
-    SH('homeThemeGrid','');
+    SH('homeNewList',''); SH('homeThemeGrid','');
   }
 }
 
@@ -959,9 +928,7 @@ function buildThemeCards(mode='home'){
     const allPosts = _articles.filter(a=>a.theme===t).sort((a,b)=>(b.views||0)-(a.views||0));
     const posts = mode==='home' ? allPosts.slice(0,3) : allPosts;
     const total = allPosts.length;
-
     if(mode==='article'){
-      // 文章專區：展開所有文章，不可點卡片整體，移除「查看全部」
       const li = posts.map(p=>`
         <li onclick="openArticle('${p.id}')">
           <span style="flex:1">${esc(p.title)}</span>
@@ -973,8 +940,6 @@ function buildThemeCards(mode='home'){
         <div class="theme-count">共 ${total} 篇文章</div>
       </div>`;
     }
-
-    // 首頁模式：維持原本行為
     const li = posts.map(p=>`<li onclick="event.stopPropagation();goArticle('${p.id}')">${esc(p.title)}</li>`).join('');
     return `<div class="theme-card ${t}" onclick="openTheme('${t}')">
       <h3>${esc(th.label)}</h3>
@@ -995,9 +960,7 @@ async function goArticle(id){
   if(art){ currentTheme=art.theme; showThemeView(); openArticle(id); }
 }
 
-// ══════════════════════════════════════════════════════
-//  ARTICLES
-// ══════════════════════════════════════════════════════
+// ── ARTICLES ──
 async function showThemeView(){
   show('view-themes'); hide('view-forum');
   G('view-article').classList.remove('active');
@@ -1007,9 +970,8 @@ async function showThemeView(){
   }
   SH('articleThemeGrid', buildThemeCards('article'));
 }
-
 async function openTheme(t){
-  currentTheme = t;
+  currentTheme=t;
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   document.querySelectorAll('.nav-tab').forEach(n=>n.classList.remove('active'));
   G('page-articles').classList.add('active');
@@ -1048,74 +1010,34 @@ async function openArticle(id){
   G('view-article').classList.add('active');
   SH('articleBody','<div class="loading">載入中...</div>');
   currentArticleId = id;
-
-  // ✅ 修正：更新 URL hash，讓連結可直接分享
   history.pushState(null, '', '#article=' + id);
-
   try{
     const arts = await sb('GET','articles',{'id':'eq.'+id});
     const art = arts[0]; if(!art) return;
     try{ await sb('PATCH','articles',{'id':'eq.'+id},{views:(art.views||0)+1}); }catch(e){}
-
     G('articleMeta').innerHTML=`<span style="display:inline-block;background:${THEMES[art.theme]?.color||'#1e4d8c'};color:#fff;border-radius:99px;padding:.15rem .6rem;font-size:.72rem;font-weight:700">${esc(THEMES[art.theme]?.label||'')}</span>`;
     G('articleTitle').textContent = art.title;
-
-    // ✅ 修正：使用 getArticleUrl() 產生含 hash 的完整連結
     const shareUrl = getArticleUrl(id);
-
-    G('articleInfo').innerHTML = `
-      <span>👤 ${esc(art.author||'管理員')}</span>
-      <span>📅 ${(art.created_at||'').slice(0,10)}</span>
-      <span>👁 ${(art.views||0)+1}</span>`;
-
-    // 分享按鈕區（每次重建，避免重複）
+    G('articleInfo').innerHTML=`<span>👤 ${esc(art.author||'管理員')}</span><span>📅 ${(art.created_at||'').slice(0,10)}</span><span>👁 ${(art.views||0)+1}</span>`;
     const existingShare = G('shareButtonArea');
     if(existingShare) existingShare.remove();
     const shareDiv = document.createElement('div');
-    shareDiv.id = 'shareButtonArea';
-    shareDiv.style.cssText = 'margin-top:.7rem;display:flex;gap:.5rem;flex-wrap:wrap';
-
+    shareDiv.id='shareButtonArea'; shareDiv.style.cssText='margin-top:.7rem;display:flex;gap:.5rem;flex-wrap:wrap';
     const lineBtn = document.createElement('button');
-    lineBtn.innerHTML = '💬 分享到 LINE';
-    lineBtn.style.cssText = 'background:#06C755;color:#fff;border:none;border-radius:.4rem;padding:.35rem .85rem;cursor:pointer;font-size:.78rem;font-weight:600';
-    lineBtn.onclick = () => {
-      const u = encodeURIComponent(shareUrl);
-      const t = encodeURIComponent(`${art.title} — 領航者：AI 人事共創平台`);
-      const a = document.createElement('a');
-      a.href = `https://social-plugins.line.me/lineit/share?url=${u}&text=${t}`;
-      a.target = '_blank'; a.rel = 'noopener noreferrer';
-      document.body.appendChild(a); a.click(); document.body.removeChild(a);
-    };
-
+    lineBtn.innerHTML='💬 分享到 LINE';
+    lineBtn.style.cssText='background:#06C755;color:#fff;border:none;border-radius:.4rem;padding:.35rem .85rem;cursor:pointer;font-size:.78rem;font-weight:600';
+    lineBtn.onclick=()=>{ const a=document.createElement('a'); a.href=`https://social-plugins.line.me/lineit/share?url=${encodeURIComponent(shareUrl)}&text=${encodeURIComponent(art.title+' — 領航者：AI 人事共創平台')}`; a.target='_blank'; a.rel='noopener noreferrer'; document.body.appendChild(a); a.click(); document.body.removeChild(a); };
     const fbBtn = document.createElement('button');
-    fbBtn.innerHTML = '👍 分享到 Facebook';
-    fbBtn.style.cssText = 'background:#1877F2;color:#fff;border:none;border-radius:.4rem;padding:.35rem .85rem;cursor:pointer;font-size:.78rem;font-weight:600';
-    fbBtn.onclick = () => {
-      const a = document.createElement('a');
-      a.href = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`;
-      a.target = '_blank'; a.rel = 'noopener noreferrer';
-      document.body.appendChild(a); a.click(); document.body.removeChild(a);
-    };
-
+    fbBtn.innerHTML='👍 分享到 Facebook';
+    fbBtn.style.cssText='background:#1877F2;color:#fff;border:none;border-radius:.4rem;padding:.35rem .85rem;cursor:pointer;font-size:.78rem;font-weight:600';
+    fbBtn.onclick=()=>{ const a=document.createElement('a'); a.href=`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`; a.target='_blank'; a.rel='noopener noreferrer'; document.body.appendChild(a); a.click(); document.body.removeChild(a); };
     const cpBtn = document.createElement('button');
-    cpBtn.innerHTML = '🔗 複製文章連結';
-    cpBtn.style.cssText = 'background:var(--navy2);color:#fff;border:none;border-radius:.4rem;padding:.35rem .85rem;cursor:pointer;font-size:.78rem;font-weight:600';
-    cpBtn.onclick = () => {
-      _copyToClipboard(shareUrl,
-        () => { cpBtn.textContent='✅ 已複製！'; setTimeout(()=>{ cpBtn.textContent='🔗 複製文章連結'; },2000); },
-        () => { prompt('請手動複製此連結：', shareUrl); }
-      );
-    };
-
-    shareDiv.appendChild(lineBtn);
-    shareDiv.appendChild(fbBtn);
-    shareDiv.appendChild(cpBtn);
+    cpBtn.innerHTML='🔗 複製文章連結';
+    cpBtn.style.cssText='background:var(--navy2);color:#fff;border:none;border-radius:.4rem;padding:.35rem .85rem;cursor:pointer;font-size:.78rem;font-weight:600';
+    cpBtn.onclick=()=>{ _copyToClipboard(shareUrl, ()=>{ cpBtn.textContent='✅ 已複製！'; setTimeout(()=>{ cpBtn.textContent='🔗 複製文章連結'; },2000); }, ()=>{ prompt('請手動複製此連結：',shareUrl); }); };
+    shareDiv.appendChild(lineBtn); shareDiv.appendChild(fbBtn); shareDiv.appendChild(cpBtn);
     G('articleHeader_inner').appendChild(shareDiv);
-
-    const parseLine = l => {
-      return l.replace(/!\[([^\]]*)\]\((https?:\/\/[^\)]+)\)/g,
-        (_,alt,url)=>`<img src="${esc(url)}" alt="${esc(alt)}" style="max-width:100%;border-radius:.5rem;margin:.4rem 0;display:block">`);
-    };
+    const parseLine = l => l.replace(/!\[([^\]]*)\]\((https?:\/\/[^\)]+)\)/g, (_,alt,url)=>`<img src="${esc(url)}" alt="${esc(alt)}" style="max-width:100%;border-radius:.5rem;margin:.4rem 0;display:block">`);
     const html = art.body.split('\n').map(l=>{
       if(l.startsWith('## ')) return `<h2>${esc(l.slice(3))}</h2>`;
       if(l.startsWith('> ')) return `<blockquote>${esc(l.slice(2))}</blockquote>`;
@@ -1124,60 +1046,35 @@ async function openArticle(id){
       return `<p>${parseLine(esc(l))}</p>`;
     }).join('\n').replace(/(<li>.*?<\/li>\n?)+/gs, m=>`<ul>${m}</ul>`);
     SH('articleBody', html);
-
     const pw = G('promptBoxWrapper');
-    pw.innerHTML = (art.prompt&&art.prompt.trim()) ? `<div class="prompt-box">
-      <div class="prompt-box-header">
-        <span class="prompt-box-label">🤖 AI 提示詞（Prompt）</span>
-        <button class="copy-btn" onclick="copyPrompt(this,'${id}')">📋 複製提示詞</button>
-      </div>
-      <div class="prompt-text" id="pt_${id}">${esc(art.prompt)}</div>
-    </div>` : '';
-
+    pw.innerHTML = (art.prompt&&art.prompt.trim()) ? `<div class="prompt-box"><div class="prompt-box-header"><span class="prompt-box-label">🤖 AI 提示詞（Prompt）</span><button class="copy-btn" onclick="copyPrompt(this,'${id}')">📋 複製提示詞</button></div><div class="prompt-text" id="pt_${id}">${esc(art.prompt)}</div></div>` : '';
     await loadArticleComments(id);
     G('ac-name').value=''; G('ac-body').value='';
   } catch(e){ SH('articleBody','<p style="color:var(--danger)">載入失敗</p>'); }
 }
-
 function copyPrompt(btn, artId){
   const el = G('pt_'+artId); if(!el) return;
-  _copyToClipboard(el.textContent, () => {
-    btn.textContent='✅ 已複製！'; btn.classList.add('copied');
-    setTimeout(()=>{ btn.textContent='📋 複製提示詞'; btn.classList.remove('copied'); },2000);
-  });
+  _copyToClipboard(el.textContent, ()=>{ btn.textContent='✅ 已複製！'; btn.classList.add('copied'); setTimeout(()=>{ btn.textContent='📋 複製提示詞'; btn.classList.remove('copied'); },2000); });
 }
 function backToForum(){
   history.pushState(null, '', '#page=articles');
   G('view-article').classList.remove('active');
   openTheme(currentTheme);
 }
-
 async function loadArticleComments(artId){
   try{
     const coms = await sb('GET','article_comments',{'article_id':'eq.'+artId, order:'created_at.asc'});
     SH('acList', coms.length
-      ? coms.map(x=>`
-        <div class="ac-item">
-          <div class="ac-header">
-            <div class="mini-avatar">${(x.name||'匿')[0]}</div>
-            <span style="font-weight:700;font-size:.83rem;color:var(--navy)">${esc(x.name||'匿名')}</span>
-            <span class="ac-time">${fmtDT(x.created_at)}</span>
-            ${isAdmin?`<button class="btn btn-danger" style="padding:.18rem .42rem;font-size:.7rem" onclick="deleteArticleComment('${x.id}','${artId}')">🗑</button>`:''}
-          </div>
-          <div class="ac-body">${esc(x.body)}</div>
-        </div>`).join('')
+      ? coms.map(x=>`<div class="ac-item"><div class="ac-header"><div class="mini-avatar">${(x.name||'匿')[0]}</div><span style="font-weight:700;font-size:.83rem;color:var(--navy)">${esc(x.name||'匿名')}</span><span class="ac-time">${fmtDT(x.created_at)}</span>${isAdmin?`<button class="btn btn-danger" style="padding:.18rem .42rem;font-size:.7rem" onclick="deleteArticleComment('${x.id}','${artId}')">🗑</button>`:''}</div><div class="ac-body">${esc(x.body)}</div></div>`).join('')
       : '<p style="color:var(--muted);font-size:.83rem;text-align:center;padding:.5rem">尚無留言，歡迎率先發表！</p>');
   } catch(e){ SH('acList','<p style="color:var(--danger);font-size:.82rem">留言載入失敗</p>'); }
 }
-
 async function submitArticleComment(){
-  const body = V('ac-body');
-  if(!body){ showToast('請填寫留言內容','error'); return; }
+  const body=V('ac-body'); if(!body){ showToast('請填寫留言內容','error'); return; }
   try{
     await sb('POST','article_comments',{},{article_id:currentArticleId, name:V('ac-name')||'', body});
     G('ac-name').value=''; G('ac-body').value='';
-    await loadArticleComments(currentArticleId);
-    showToast('✅ 留言已送出');
+    await loadArticleComments(currentArticleId); showToast('✅ 留言已送出');
   } catch(e){ showToast('送出失敗：'+e.message,'error'); }
 }
 async function deleteArticleComment(cId, artId){
@@ -1186,96 +1083,50 @@ async function deleteArticleComment(cId, artId){
   await loadArticleComments(artId); showToast('🗑 留言已刪除');
 }
 
-// ══════════════════════════════════════════════════════
-//  DISCUSS
-// ══════════════════════════════════════════════════════
+// ── DISCUSS ──
 async function renderDiscList(){
-  show('disc-view-list');
-  G('disc-view-detail').classList.remove('active');
+  show('disc-view-list'); G('disc-view-detail').classList.remove('active');
   SH('discList','<div class="loading">載入中...</div>');
   try{
     const rows = await sb('GET','discussions',{order:'created_at.desc'});
     SH('discList', rows.length
-      ? rows.map(d=>`
-        <div class="disc-post">
-          <div class="disc-meta">
-            <span class="disc-tag">討論</span>
-            <span style="font-size:.75rem;color:var(--muted)">👤 ${esc(d.author||'匿名')}</span>
-            <span style="font-size:.72rem;color:var(--muted);margin-left:auto">${fmtDT(d.created_at)}</span>
-          </div>
-          <div class="disc-title" onclick="openDisc('${d.id}')">${esc(d.title)}</div>
-          <div class="disc-preview">${esc(d.body)}</div>
-          <div class="post-footer">
-            <button class="read-more" onclick="openDisc('${d.id}')">繼續閱讀 →</button>
-            <span class="post-views">👁 ${d.views||0}</span>
-          </div>
-        </div>`).join('')
+      ? rows.map(d=>`<div class="disc-post"><div class="disc-meta"><span class="disc-tag">討論</span><span style="font-size:.75rem;color:var(--muted)">👤 ${esc(d.author||'匿名')}</span><span style="font-size:.72rem;color:var(--muted);margin-left:auto">${fmtDT(d.created_at)}</span></div><div class="disc-title" onclick="openDisc('${d.id}')">${esc(d.title)}</div><div class="disc-preview">${esc(d.body)}</div><div class="post-footer"><button class="read-more" onclick="openDisc('${d.id}')">繼續閱讀 →</button><span class="post-views">👁 ${d.views||0}</span></div></div>`).join('')
       : '<div style="background:#fff;border:1px solid var(--border);border-radius:.75rem;padding:2rem;text-align:center;color:var(--muted)">尚無討論，按「✏️ 發起討論」開始第一篇！</div>');
-  } catch(e){ SH('discList','<p style="color:var(--danger);padding:1rem">⚠️ 無法連接 Supabase，請將檔案下載後在本機開啟使用。</p>'); }
+  } catch(e){ SH('discList','<p style="color:var(--danger);padding:1rem">⚠️ 無法連接 Supabase</p>'); }
 }
-
 function openDiscModal(){ G('addDiscModal').classList.add('open'); }
-function closeDiscModal(){
-  G('addDiscModal').classList.remove('open');
-  ['d-name','d-title','d-body'].forEach(i=>G(i).value='');
-}
+function closeDiscModal(){ G('addDiscModal').classList.remove('open'); ['d-name','d-title','d-body'].forEach(i=>G(i).value=''); }
 async function submitDisc(){
-  const title = V('d-title'), body = V('d-body');
-  if(!title||!body){ showToast('請填寫標題與內容','error'); return; }
-  const author = V('d-name') || '匿名';
-  try{
-    await sb('POST','discussions',{},{title, author, body, views:0});
-    closeDiscModal();
-    await renderDiscList();
-    showToast('✅ 討論已發布');
-  } catch(e){ showToast('發布失敗：'+e.message,'error'); }
+  const title=V('d-title'), body=V('d-body'); if(!title||!body){ showToast('請填寫標題與內容','error'); return; }
+  try{ await sb('POST','discussions',{},{title, author:V('d-name')||'匿名', body, views:0}); closeDiscModal(); await renderDiscList(); showToast('✅ 討論已發布'); }
+  catch(e){ showToast('發布失敗：'+e.message,'error'); }
 }
-
 async function openDisc(id){
-  currentDiscId = id;
-  hide('disc-view-list');
-  G('disc-view-detail').classList.add('active');
+  currentDiscId=id; hide('disc-view-list'); G('disc-view-detail').classList.add('active');
   try{
     const rows = await sb('GET','discussions',{'id':'eq.'+id});
-    const d = rows[0]; if(!d) return;
+    const d=rows[0]; if(!d) return;
     try{ await sb('PATCH','discussions',{'id':'eq.'+id},{views:(d.views||0)+1}); }catch(e){}
-    G('discDetailMeta').innerHTML=`<span class="disc-tag">討論</span>`;
-    G('discDetailTitle').textContent = d.title;
-    G('discDetailInfo').textContent = `👤 ${d.author||'匿名'} · 📅 ${(d.created_at||'').slice(0,10)} · 👁 ${(d.views||0)+1}`;
+    G('discDetailMeta').innerHTML='<span class="disc-tag">討論</span>';
+    G('discDetailTitle').textContent=d.title;
+    G('discDetailInfo').textContent=`👤 ${d.author||'匿名'} · 📅 ${(d.created_at||'').slice(0,10)} · 👁 ${(d.views||0)+1}`;
     SH('discDetailBody', d.body.split('\n').map(l=>l.trim()?`<p>${esc(l)}</p>`:'').join(''));
-    await loadDiscComments(id);
-    G('dc-name').value=''; G('dc-body').value='';
+    await loadDiscComments(id); G('dc-name').value=''; G('dc-body').value='';
   } catch(e){ showToast('載入失敗','error'); }
 }
 function backToDiscList(){ G('disc-view-detail').classList.remove('active'); renderDiscList(); }
-
 async function loadDiscComments(discId){
   try{
     const coms = await sb('GET','discussion_comments',{'discussion_id':'eq.'+discId, order:'created_at.asc'});
     SH('dcList', coms.length
-      ? coms.map(x=>`
-        <div class="ac-item">
-          <div class="ac-header">
-            <div class="mini-avatar">${(x.name||'匿')[0]}</div>
-            <span style="font-weight:700;font-size:.83rem;color:var(--navy)">${esc(x.name||'匿名')}</span>
-            <span class="ac-time">${fmtDT(x.created_at)}</span>
-            ${isAdmin?`<button class="btn btn-danger" style="padding:.18rem .42rem;font-size:.7rem" onclick="deleteDiscComment('${x.id}','${discId}')">🗑</button>`:''}
-          </div>
-          <div class="ac-body">${esc(x.body)}</div>
-        </div>`).join('')
+      ? coms.map(x=>`<div class="ac-item"><div class="ac-header"><div class="mini-avatar">${(x.name||'匿')[0]}</div><span style="font-weight:700;font-size:.83rem;color:var(--navy)">${esc(x.name||'匿名')}</span><span class="ac-time">${fmtDT(x.created_at)}</span>${isAdmin?`<button class="btn btn-danger" style="padding:.18rem .42rem;font-size:.7rem" onclick="deleteDiscComment('${x.id}','${discId}')">🗑</button>`:''}</div><div class="ac-body">${esc(x.body)}</div></div>`).join('')
       : '<p style="color:var(--muted);font-size:.83rem;text-align:center;padding:.5rem">尚無回覆，歡迎率先回應！</p>');
   } catch(e){ SH('dcList','<p style="color:var(--danger);font-size:.82rem">回覆載入失敗</p>'); }
 }
-
 async function submitDiscComment(){
-  const body = V('dc-body');
-  if(!body){ showToast('請填寫回覆內容','error'); return; }
-  try{
-    await sb('POST','discussion_comments',{},{discussion_id:currentDiscId, name:V('dc-name')||'', body});
-    G('dc-name').value=''; G('dc-body').value='';
-    await loadDiscComments(currentDiscId);
-    showToast('✅ 回覆已送出');
-  } catch(e){ showToast('送出失敗：'+e.message,'error'); }
+  const body=V('dc-body'); if(!body){ showToast('請填寫回覆內容','error'); return; }
+  try{ await sb('POST','discussion_comments',{},{discussion_id:currentDiscId, name:V('dc-name')||'', body}); G('dc-name').value=''; G('dc-body').value=''; await loadDiscComments(currentDiscId); showToast('✅ 回覆已送出'); }
+  catch(e){ showToast('送出失敗：'+e.message,'error'); }
 }
 async function deleteDiscComment(cId, discId){
   if(!confirm('確定刪除？')) return;
@@ -1283,85 +1134,69 @@ async function deleteDiscComment(cId, discId){
   await loadDiscComments(discId); showToast('🗑 留言已刪除');
 }
 
-// ══════════════════════════════════════════════════════
-//  RESOURCES
-// ══════════════════════════════════════════════════════
+// ── RESOURCES ──
 async function renderResources(){
   SH('resList','<div class="loading">載入中...</div>');
   try{
     const rows = await sb('GET','resources',{order:'created_at.desc'});
     SH('resList', rows.length
-      ? rows.map(r=>`
-        <div class="res-item">
-          <span style="font-size:1.2rem">📄</span>
-          <div style="flex:1">
-            <a href="${esc(r.url)}" target="_blank">${esc(r.title)}</a>
-            <div class="res-meta">${esc(r.category)} · ${(r.created_at||'').slice(0,10)}</div>
-          </div>
-          <span class="chip">${esc(r.category)}</span>
-        </div>`).join('')
+      ? rows.map(r=>`<div class="res-item"><span style="font-size:1.2rem">📄</span><div style="flex:1"><a href="${esc(r.url)}" target="_blank">${esc(r.title)}</a><div class="res-meta">${esc(r.category)} · ${(r.created_at||'').slice(0,10)}</div></div><span class="chip">${esc(r.category)}</span></div>`).join('')
       : '<p style="color:var(--muted);font-size:.84rem;padding:.5rem">尚無資源。</p>');
   } catch(e){ SH('resList','<p style="color:var(--danger);font-size:.84rem;padding:.5rem">載入失敗</p>'); }
 }
 
-// ══════════════════════════════════════════════════════
-//  FEEDBACK & SUBMISSION TAB 切換
-// ══════════════════════════════════════════════════════
+// ── FEEDBACK & SUBMISSION ──
 function switchFeedbackTab(tab){
-  const isFb = tab === 'feedback';
-  G('block-feedback').style.display = isFb ? 'block' : 'none';
-  G('block-submit').style.display = isFb ? 'none' : 'block';
-  G('tab-fb-btn').style.background = isFb ? 'var(--navy3)' : '#f1f5f9';
-  G('tab-fb-btn').style.color = isFb ? '#fff' : 'var(--muted)';
-  G('tab-sub-btn').style.background = isFb ? '#f1f5f9' : 'var(--navy3)';
-  G('tab-sub-btn').style.color = isFb ? 'var(--muted)' : '#fff';
+  const isFb = tab==='feedback';
+  G('block-feedback').style.display = isFb?'block':'none';
+  G('block-submit').style.display = isFb?'none':'block';
+  G('tab-fb-btn').style.background = isFb?'var(--navy3)':'#f1f5f9';
+  G('tab-fb-btn').style.color = isFb?'#fff':'var(--muted)';
+  G('tab-sub-btn').style.background = isFb?'#f1f5f9':'var(--navy3)';
+  G('tab-sub-btn').style.color = isFb?'var(--muted)':'#fff';
 }
-
-// ══════════════════════════════════════════════════════
-//  FEEDBACK
-// ══════════════════════════════════════════════════════
 async function submitFeedback(){
   const email=V('fb-email'), title=V('fb-title'), body=V('fb-body');
   if(!email||!title||!body){ showToast('請填寫 Email、主旨與詳細說明','error'); return; }
   if(!/\S+@\S+\.\S+/.test(email)){ showToast('請輸入有效的 Email 地址','error'); return; }
-  try{
-    await sb('POST','feedbacks',{},{
-      type: G('fb-type').value,
-      name: V('fb-name')||'匿名',
-      email, title, body, done: false
-    });
-    hide('feedbackForm'); show('feedbackSuccess');
-  } catch(e){ showToast('送出失敗：'+e.message,'error'); }
+  try{ await sb('POST','feedbacks',{},{type:G('fb-type').value, name:V('fb-name')||'匿名', email, title, body, done:false}); hide('feedbackForm'); show('feedbackSuccess'); }
+  catch(e){ showToast('送出失敗：'+e.message,'error'); }
 }
-function resetFeedback(){
-  ['fb-title','fb-body','fb-name','fb-email'].forEach(i=>G(i).value='');
-  show('feedbackForm'); hide('feedbackSuccess');
-}
-
-// ── 文章投稿 ──
+function resetFeedback(){ ['fb-title','fb-body','fb-name','fb-email'].forEach(i=>G(i).value=''); show('feedbackForm'); hide('feedbackSuccess'); }
 async function submitSubmission(){
   const email=V('sub-email'), title=V('sub-title'), summary=V('sub-summary'), body=V('sub-body');
   if(!email||!title||!summary||!body){ showToast('請填寫 Email、標題、摘要與內容','error'); return; }
   if(!/\S+@\S+\.\S+/.test(email)){ showToast('請輸入有效的 Email 地址','error'); return; }
-  try{
-    await sb('POST','submissions',{},{
-      theme: G('sub-theme').value,
-      name: V('sub-name')||'匿名',
-      email, title, summary, body,
-      prompt: V('sub-prompt'),
-      status: 'pending'
-    });
-    hide('submissionForm'); G('submissionSuccess').style.display='block';
-  } catch(e){ showToast('送出失敗：'+e.message,'error'); }
+  try{ await sb('POST','submissions',{},{theme:G('sub-theme').value, name:V('sub-name')||'匿名', email, title, summary, body, prompt:V('sub-prompt'), status:'pending'}); hide('submissionForm'); G('submissionSuccess').style.display='block'; }
+  catch(e){ showToast('送出失敗：'+e.message,'error'); }
 }
-function resetSubmission(){
-  ['sub-title','sub-summary','sub-body','sub-name','sub-email','sub-prompt'].forEach(i=>G(i).value='');
-  show('submissionForm'); G('submissionSuccess').style.display='none';
+function resetSubmission(){ ['sub-title','sub-summary','sub-body','sub-name','sub-email','sub-prompt'].forEach(i=>G(i).value=''); show('submissionForm'); G('submissionSuccess').style.display='none'; }
+
+// ── AUTH ──
+async function doLogin(){
+  const u=V('login-user'), p=G('login-pass').value;
+  try{
+    const res = await fetch(`${SB_URL}/rest/v1/rpc/verify_login`,{method:'POST',headers:{...SB_HEADS},body:JSON.stringify({p_username:u,p_password:p})});
+    const data = await res.json();
+    if(Array.isArray(data)&&data.length>0){
+      const acc=data[0]; isAdmin=true; currentAdminId=acc.id;
+      hide('adminLoginGate'); hide('adminForgotGate'); show('adminPanel');
+      G('adminPill').style.display=''; G('loginErr').style.display='none';
+      renderAdmin();
+    } else { G('loginErr').style.display='block'; }
+  } catch(e){ G('loginErr').style.display='block'; }
+}
+function doLogout(){ isAdmin=false; hide('adminPanel'); show('adminLoginGate'); G('adminPill').style.display='none'; }
+function showForgotPwd(){ hide('adminLoginGate'); show('adminForgotGate'); G('forgotMsg').style.display='none'; }
+function showLoginGate(){ show('adminLoginGate'); hide('adminForgotGate'); }
+function doForgotPwd(){
+  const u=V('forgot-user'), acc=adminAccounts.find(a=>a.username===u);
+  const msg=G('forgotMsg'); msg.style.display='block';
+  if(acc){ msg.style.color='var(--success)'; msg.textContent=`✅ 重設連結已模擬傳送至 ${acc.email}`; }
+  else { msg.style.color='var(--danger)'; msg.textContent='找不到此帳號，請確認後再試。'; }
 }
 
-// ══════════════════════════════════════════════════════
-//  ADMIN
-// ══════════════════════════════════════════════════════
+// ── ADMIN ──
 async function renderAdmin(){
   try{
     const [a,d,r,f,s] = await Promise.all([
@@ -1371,48 +1206,31 @@ async function renderAdmin(){
       sb('GET','feedbacks',{done:'eq.false',select:'id'}),
       sb('GET','submissions',{status:'eq.pending',select:'id'}),
     ]);
-    G('statArticles').textContent = a?.length||0;
-    G('statDisc').textContent = d?.length||0;
-    G('statRes').textContent = r?.length||0;
-    G('statFeedback').textContent = f?.length||0;
+    G('statArticles').textContent=a?.length||0;
+    G('statDisc').textContent=d?.length||0;
+    G('statRes').textContent=r?.length||0;
+    G('statFeedback').textContent=f?.length||0;
     updateBadges(f?.length||0, s?.length||0);
   } catch(e){}
   renderAdminAccounts();
   loadAdminAnnounces();
 }
-
 function updateBadges(feedbackCount, submissionCount){
-  // 討論區：抓最近24小時新增的討論數
-  sb('GET','discussions',{
-    created_at: 'gte.' + new Date(Date.now()-24*60*60*1000).toISOString(),
-    select:'id'
-  }).then(rows=>{
-    setBadge('badge-discuss', rows?.length||0);
-  }).catch(()=>{});
-
+  sb('GET','discussions',{created_at:'gte.'+new Date(Date.now()-24*60*60*1000).toISOString(),select:'id'})
+    .then(rows=>{ setBadge('badge-discuss',rows?.length||0); }).catch(()=>{});
   setBadge('badge-feedback', feedbackCount);
   setBadge('badge-submissions', submissionCount);
-
-  // 導覽列總徽章 = 三者加總
-  sb('GET','discussions',{
-    created_at: 'gte.' + new Date(Date.now()-24*60*60*1000).toISOString(),
-    select:'id'
-  }).then(rows=>{
-    const total = (rows?.length||0) + feedbackCount + submissionCount;
-    setBadge('badge-nav-admin', total);
-  }).catch(()=>{ setBadge('badge-nav-admin', feedbackCount + submissionCount); });
+  sb('GET','discussions',{created_at:'gte.'+new Date(Date.now()-24*60*60*1000).toISOString(),select:'id'})
+    .then(rows=>{ setBadge('badge-nav-admin',(rows?.length||0)+feedbackCount+submissionCount); })
+    .catch(()=>{ setBadge('badge-nav-admin',feedbackCount+submissionCount); });
 }
-
 function setBadge(id, count){
-  const el = G(id); if(!el) return;
-  if(count > 0){
-    el.textContent = count > 99 ? '99+' : count;
-    el.style.display = 'inline-flex';
-  } else {
-    el.style.display = 'none';
-  }
+  const el=G(id); if(!el) return;
+  if(count>0){ el.textContent=count>99?'99+':count; el.style.display='inline-flex'; }
+  else { el.style.display='none'; }
 }
 
+// ── 公告管理 ──
 async function loadAdminAnnounces(){
   try{
     const rows = await sb('GET','announces',{order:'date.desc'});
@@ -1420,100 +1238,70 @@ async function loadAdminAnnounces(){
       ? rows.map(r=>`
         <div style="background:var(--bg);border:1px solid var(--border);border-radius:.6rem;padding:.75rem;margin-bottom:.5rem;display:flex;align-items:center;gap:.6rem;flex-wrap:wrap">
           <span class="chip" style="${ANN_STYLE[r.type]||''}">${ANN_ICON[r.type]||'📌'} ${esc(r.type)}</span>
-          <span style="font-size:.84rem;font-weight:600;color:var(--navy);flex:1">${esc(r.body)}</span>
+          <div style="flex:1;min-width:0">
+            <div style="font-size:.84rem;font-weight:600;color:var(--navy)">${esc(r.body)}</div>
+            ${r.content?`<div style="font-size:.76rem;color:var(--muted);margin-top:.15rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(r.content)}</div>`:''}
+          </div>
           <span style="font-size:.73rem;color:var(--muted)">${(r.date||'').slice(0,10)}</span>
           <div style="display:flex;gap:.4rem">
-            <button class="btn btn-warn btn-sm" onclick="openEditAnnounce('${r.id}','${esc(r.type)}','${(r.date||'').slice(0,10)}','${esc(r.body).replace(/'/g,'&#39;')}')">✏️</button>
+            <button class="btn btn-warn btn-sm" onclick="openEditAnnounce('${r.id}','${esc(r.type)}','${(r.date||'').slice(0,10)}','${esc(r.body).replace(/'/g,'&#39;')}','${esc(r.content||'').replace(/'/g,'&#39;')}')">✏️</button>
             <button class="btn btn-danger btn-sm" onclick="deleteAnnounce('${r.id}')">🗑</button>
           </div>
         </div>`).join('')
       : '<p style="color:var(--muted);font-size:.84rem">尚無公告</p>');
   } catch(e){ SH('adminAnnounceList','<p style="color:var(--danger)">載入失敗</p>'); }
 }
-
 async function addAnnounce(){
-  const body = V('ann-body');
-  if(!body){ showToast('請填寫公告內容','error'); return; }
-  const type = G('ann-type').value;
-  const date = G('ann-date').value || today();
+  const body=V('ann-body'); if(!body){ showToast('請填寫公告標題','error'); return; }
+  const type=G('ann-type').value, date=G('ann-date').value||today(), content=V('ann-content');
   try{
-    await sb('POST','announces',{},{type, body, date});
-    G('ann-body').value=''; G('ann-date').value='';
-    await loadAdminAnnounces();
-    await loadAnnounces();
-    showToast('✅ 公告已新增');
+    await sb('POST','announces',{},{type, body, date, content});
+    G('ann-body').value=''; G('ann-date').value=''; G('ann-content').value='';
+    await loadAdminAnnounces(); await loadAnnounces(); showToast('✅ 公告已新增');
   } catch(e){ showToast('新增失敗：'+e.message,'error'); }
 }
-
-function openEditAnnounce(id, type, date, body){
-  G('edit-ann-id').value = id;
-  G('edit-ann-type').value = type;
-  G('edit-ann-date').value = date;
-  G('edit-ann-body').value = body;
+function openEditAnnounce(id, type, date, body, content){
+  G('edit-ann-id').value=id; G('edit-ann-type').value=type;
+  G('edit-ann-date').value=date; G('edit-ann-body').value=body;
+  G('edit-ann-content').value=content||'';
   G('editAnnounceOverlay').classList.add('open');
 }
 async function saveEditAnnounce(){
-  const id = G('edit-ann-id').value;
-  const body = V('edit-ann-body');
-  if(!body){ showToast('請填寫公告內容','error'); return; }
+  const id=G('edit-ann-id').value, body=V('edit-ann-body');
+  if(!body){ showToast('請填寫公告標題','error'); return; }
   try{
-    await sb('PATCH','announces',{'id':'eq.'+id},{
-      type: G('edit-ann-type').value,
-      date: G('edit-ann-date').value || today(),
-      body
-    });
+    await sb('PATCH','announces',{'id':'eq.'+id},{type:G('edit-ann-type').value, date:G('edit-ann-date').value||today(), body, content:V('edit-ann-content')});
     G('editAnnounceOverlay').classList.remove('open');
-    await loadAdminAnnounces(); await loadAnnounces();
-    showToast('✅ 公告已更新');
+    await loadAdminAnnounces(); await loadAnnounces(); showToast('✅ 公告已更新');
   } catch(e){ showToast('更新失敗：'+e.message,'error'); }
 }
 async function deleteAnnounce(id){
   if(!confirm('確定刪除此公告？')) return;
   await sb('DELETE','announces',{'id':'eq.'+id});
-  await loadAdminAnnounces(); await loadAnnounces();
-  showToast('🗑 公告已刪除');
+  await loadAdminAnnounces(); await loadAnnounces(); showToast('🗑 公告已刪除');
 }
 
+// ── 文章管理 ──
 async function loadAdminArticles(){
   try{
     const arts = await sb('GET','articles',{order:'created_at.desc'});
     SH('adminArticleList', arts.length
-      ? arts.map(a=>`
-        <div style="background:var(--bg);border:1px solid var(--border);border-radius:.6rem;padding:.75rem;margin-bottom:.5rem">
-          <div style="font-size:.83rem;font-weight:600;color:var(--navy)">${esc(a.title)}</div>
-          <div style="font-size:.73rem;color:var(--muted);margin:.2rem 0">${esc(THEMES[a.theme]?.label||'')} · ${esc(a.author||'管理員')} · ${(a.created_at||'').slice(0,10)}</div>
-          <div class="item-actions">
-            <button class="btn btn-warn btn-sm" onclick="openEditArticle('${a.id}')">✏️ 編輯</button>
-            <button class="btn btn-danger btn-sm" onclick="deleteArticle('${a.id}')">🗑 刪除</button>
-          </div>
-        </div>`).join('')
+      ? arts.map(a=>`<div style="background:var(--bg);border:1px solid var(--border);border-radius:.6rem;padding:.75rem;margin-bottom:.5rem"><div style="font-size:.83rem;font-weight:600;color:var(--navy)">${esc(a.title)}</div><div style="font-size:.73rem;color:var(--muted);margin:.2rem 0">${esc(THEMES[a.theme]?.label||'')} · ${esc(a.author||'管理員')} · ${(a.created_at||'').slice(0,10)}</div><div class="item-actions"><button class="btn btn-warn btn-sm" onclick="openEditArticle('${a.id}')">✏️ 編輯</button><button class="btn btn-danger btn-sm" onclick="deleteArticle('${a.id}')">🗑 刪除</button></div></div>`).join('')
       : '<p style="color:var(--muted);font-size:.84rem">尚無文章</p>');
   } catch(e){ SH('adminArticleList','<p style="color:var(--danger)">載入失敗</p>'); }
 }
-
 function openAddArticleModal(){ G('addArticleModal').classList.add('open'); }
-function closeModal(){
-  G('addArticleModal').classList.remove('open');
-  ['a-title','a-author','a-summary','a-body','a-prompt'].forEach(i=>G(i).value='');
-}
+function closeModal(){ G('addArticleModal').classList.remove('open'); ['a-title','a-author','a-summary','a-body','a-prompt'].forEach(i=>G(i).value=''); }
 async function submitArticle(){
   const title=V('a-title'), summary=V('a-summary'), body=V('a-body');
   if(!title||!summary||!body){ showToast('請填寫標題、摘要與內容','error'); return; }
-  try{
-    await sb('POST','articles',{},{
-      theme: G('a-theme').value, title,
-      author: V('a-author')||'管理員',
-      summary, body, prompt: V('a-prompt'), views:0
-    });
-    closeModal(); await loadAdminArticles(); showToast('✅ 文章已發布');
-  } catch(e){ showToast('發布失敗：'+e.message,'error'); }
+  try{ await sb('POST','articles',{},{theme:G('a-theme').value, title, author:V('a-author')||'管理員', summary, body, prompt:V('a-prompt'), views:0}); closeModal(); await loadAdminArticles(); showToast('✅ 文章已發布'); }
+  catch(e){ showToast('發布失敗：'+e.message,'error'); }
 }
 async function openEditArticle(id){
-  const arts = await sb('GET','articles',{'id':'eq.'+id});
-  const art = arts[0]; if(!art) return;
-  G('edit-art-id').value=id; G('edit-art-title').value=art.title;
-  G('edit-art-author').value=art.author||''; G('edit-art-summary').value=art.summary;
-  G('edit-art-body').value=art.body; G('edit-art-prompt').value=art.prompt||'';
+  const arts=await sb('GET','articles',{'id':'eq.'+id}); const art=arts[0]; if(!art) return;
+  G('edit-art-id').value=id; G('edit-art-title').value=art.title; G('edit-art-author').value=art.author||'';
+  G('edit-art-summary').value=art.summary; G('edit-art-body').value=art.body; G('edit-art-prompt').value=art.prompt||'';
   G('editArticleOverlay').classList.add('open');
 }
 function closeEditArticle(){ G('editArticleOverlay').classList.remove('open'); }
@@ -1529,25 +1317,17 @@ async function deleteArticle(id){
   await loadAdminArticles(); showToast('🗑 文章已刪除');
 }
 
+// ── 討論管理 ──
 async function loadAdminDiscs(){
   try{
-    const discs = await sb('GET','discussions',{order:'created_at.desc'});
+    const discs=await sb('GET','discussions',{order:'created_at.desc'});
     SH('adminDiscList', discs.length
-      ? discs.map(d=>`
-        <div style="background:var(--bg);border:1px solid var(--border);border-radius:.6rem;padding:.75rem;margin-bottom:.5rem">
-          <div style="font-size:.83rem;font-weight:600;color:var(--navy)">${esc(d.title)}</div>
-          <div style="font-size:.73rem;color:var(--muted);margin:.2rem 0">👤 ${esc(d.author||'匿名')} · ${(d.created_at||'').slice(0,10)}</div>
-          <div class="item-actions">
-            <button class="btn btn-warn btn-sm" onclick="openEditDisc('${d.id}')">✏️ 編輯</button>
-            <button class="btn btn-danger btn-sm" onclick="deleteDisc('${d.id}')">🗑 刪除</button>
-          </div>
-        </div>`).join('')
+      ? discs.map(d=>`<div style="background:var(--bg);border:1px solid var(--border);border-radius:.6rem;padding:.75rem;margin-bottom:.5rem"><div style="font-size:.83rem;font-weight:600;color:var(--navy)">${esc(d.title)}</div><div style="font-size:.73rem;color:var(--muted);margin:.2rem 0">👤 ${esc(d.author||'匿名')} · ${(d.created_at||'').slice(0,10)}</div><div class="item-actions"><button class="btn btn-warn btn-sm" onclick="openEditDisc('${d.id}')">✏️ 編輯</button><button class="btn btn-danger btn-sm" onclick="deleteDisc('${d.id}')">🗑 刪除</button></div></div>`).join('')
       : '<p style="color:var(--muted);font-size:.84rem">尚無討論</p>');
   } catch(e){ SH('adminDiscList','<p style="color:var(--danger)">載入失敗</p>'); }
 }
 async function openEditDisc(id){
-  const rows = await sb('GET','discussions',{'id':'eq.'+id});
-  const d = rows[0]; if(!d) return;
+  const rows=await sb('GET','discussions',{'id':'eq.'+id}); const d=rows[0]; if(!d) return;
   G('edit-disc-id').value=id; G('edit-disc-title').value=d.title; G('edit-disc-body').value=d.body;
   G('editDiscOverlay').classList.add('open');
 }
@@ -1564,16 +1344,12 @@ async function deleteDisc(id){
   await loadAdminDiscs(); showToast('🗑 討論已刪除');
 }
 
+// ── 資源管理 ──
 async function renderAdminResources(){
   try{
-    const res = await sb('GET','resources',{order:'created_at.desc'});
+    const res=await sb('GET','resources',{order:'created_at.desc'});
     SH('adminResList', res.length
-      ? res.map(r=>`
-        <div class="res-item">
-          <span>📄</span>
-          <div style="flex:1"><a href="${esc(r.url)}" target="_blank">${esc(r.title)}</a><div class="res-meta">${esc(r.category)} · ${(r.created_at||'').slice(0,10)}</div></div>
-          <button class="btn btn-danger" onclick="deleteResource('${r.id}')">🗑</button>
-        </div>`).join('')
+      ? res.map(r=>`<div class="res-item"><span>📄</span><div style="flex:1"><a href="${esc(r.url)}" target="_blank">${esc(r.title)}</a><div class="res-meta">${esc(r.category)} · ${(r.created_at||'').slice(0,10)}</div></div><button class="btn btn-danger" onclick="deleteResource('${r.id}')">🗑</button></div>`).join('')
       : '<p style="color:var(--muted);font-size:.84rem">尚無資源</p>');
   } catch(e){ SH('adminResList','<p style="color:var(--danger)">載入失敗</p>'); }
 }
@@ -1590,21 +1366,12 @@ async function deleteResource(id){
   await renderAdminResources(); showToast('🗑 已刪除');
 }
 
+// ── 回饋管理 ──
 async function loadAdminFeedback(){
   try{
-    const fbs = await sb('GET','feedbacks',{done:'eq.false', order:'created_at.desc'});
+    const fbs=await sb('GET','feedbacks',{done:'eq.false', order:'created_at.desc'});
     SH('adminFeedbackList', fbs.length
-      ? fbs.map(f=>`
-        <div style="background:var(--bg);border:1px solid var(--border);border-radius:.6rem;padding:.8rem;margin-bottom:.5rem">
-          <div style="display:flex;align-items:center;gap:.5rem;flex-wrap:wrap;margin-bottom:.35rem">
-            <span class="chip" style="background:#fef9c3;color:#92400e">${esc(f.type)}</span>
-            <span style="font-size:.83rem;font-weight:600;color:var(--navy)">${esc(f.title)}</span>
-            <span style="font-size:.72rem;color:var(--muted);margin-left:auto">${esc(f.name)} · ${(f.created_at||'').slice(0,10)}</span>
-          </div>
-          <div style="font-size:.82rem;color:var(--text);line-height:1.5;margin-bottom:.4rem">${esc(f.body)}</div>
-          <div style="font-size:.76rem;color:var(--accent);margin-bottom:.5rem">📧 ${esc(f.email)}</div>
-          <button class="btn btn-sm" style="background:#dcfce7;color:#166534;font-size:.76rem" onclick="markFeedbackDone('${f.id}')">✅ 標記已處理</button>
-        </div>`).join('')
+      ? fbs.map(f=>`<div style="background:var(--bg);border:1px solid var(--border);border-radius:.6rem;padding:.8rem;margin-bottom:.5rem"><div style="display:flex;align-items:center;gap:.5rem;flex-wrap:wrap;margin-bottom:.35rem"><span class="chip" style="background:#fef9c3;color:#92400e">${esc(f.type)}</span><span style="font-size:.83rem;font-weight:600;color:var(--navy)">${esc(f.title)}</span><span style="font-size:.72rem;color:var(--muted);margin-left:auto">${esc(f.name)} · ${(f.created_at||'').slice(0,10)}</span></div><div style="font-size:.82rem;color:var(--text);line-height:1.5;margin-bottom:.4rem">${esc(f.body)}</div><div style="font-size:.76rem;color:var(--accent);margin-bottom:.5rem">📧 ${esc(f.email)}</div><button class="btn btn-sm" style="background:#dcfce7;color:#166534;font-size:.76rem" onclick="markFeedbackDone('${f.id}')">✅ 標記已處理</button></div>`).join('')
       : '<p style="color:var(--muted);font-size:.84rem">目前無待處理回饋 🎉</p>');
   } catch(e){ SH('adminFeedbackList','<p style="color:var(--danger)">載入失敗</p>'); }
 }
@@ -1616,143 +1383,80 @@ async function markFeedbackDone(id){
 // ── 投稿管理 ──
 async function loadAdminSubmissions(){
   try{
-    const rows = await sb('GET','submissions',{status:'eq.pending', order:'created_at.desc'});
+    const rows=await sb('GET','submissions',{status:'eq.pending', order:'created_at.desc'});
     SH('adminSubmissionList', rows.length
-      ? rows.map(s=>`
-        <div style="background:var(--bg);border:1px solid var(--border);border-radius:.6rem;padding:.8rem;margin-bottom:.6rem">
-          <div style="display:flex;align-items:center;gap:.5rem;flex-wrap:wrap;margin-bottom:.3rem">
-            <span style="display:inline-block;background:${THEMES[s.theme]?.color||'#1e4d8c'};color:#fff;border-radius:99px;padding:.1rem .5rem;font-size:.7rem;font-weight:700">${esc(THEMES[s.theme]?.label||s.theme)}</span>
-            <span style="font-size:.83rem;font-weight:600;color:var(--navy)">${esc(s.title)}</span>
-            <span style="font-size:.72rem;color:var(--muted);margin-left:auto">${esc(s.name||'匿名')} · ${(s.created_at||'').slice(0,10)}</span>
-          </div>
-          <div style="font-size:.8rem;color:var(--text);line-height:1.5;margin-bottom:.3rem;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden">${esc(s.summary)}</div>
-          <div style="font-size:.75rem;color:var(--accent);margin-bottom:.5rem">📧 ${esc(s.email)}</div>
-          <div class="item-actions">
-            <button class="btn btn-warn btn-sm" onclick="openEditSubmission('${s.id}')">✏️ 編輯</button>
-            <button class="btn btn-green btn-sm" onclick="publishSubmission('${s.id}')">🚀 發佈</button>
-            <button class="btn btn-danger btn-sm" onclick="deleteSubmission('${s.id}')">🗑 刪除</button>
-          </div>
-        </div>`).join('')
+      ? rows.map(s=>`<div style="background:var(--bg);border:1px solid var(--border);border-radius:.6rem;padding:.8rem;margin-bottom:.6rem"><div style="display:flex;align-items:center;gap:.5rem;flex-wrap:wrap;margin-bottom:.3rem"><span style="display:inline-block;background:${THEMES[s.theme]?.color||'#1e4d8c'};color:#fff;border-radius:99px;padding:.1rem .5rem;font-size:.7rem;font-weight:700">${esc(THEMES[s.theme]?.label||s.theme)}</span><span style="font-size:.83rem;font-weight:600;color:var(--navy)">${esc(s.title)}</span><span style="font-size:.72rem;color:var(--muted);margin-left:auto">${esc(s.name||'匿名')} · ${(s.created_at||'').slice(0,10)}</span></div><div style="font-size:.8rem;color:var(--text);line-height:1.5;margin-bottom:.3rem;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden">${esc(s.summary)}</div><div style="font-size:.75rem;color:var(--accent);margin-bottom:.5rem">📧 ${esc(s.email)}</div><div class="item-actions"><button class="btn btn-warn btn-sm" onclick="openEditSubmission('${s.id}')">✏️ 編輯</button><button class="btn btn-green btn-sm" onclick="publishSubmission('${s.id}')">🚀 發佈</button><button class="btn btn-danger btn-sm" onclick="deleteSubmission('${s.id}')">🗑 刪除</button></div></div>`).join('')
       : '<p style="color:var(--muted);font-size:.84rem">目前無待審核投稿 🎉</p>');
   } catch(e){ SH('adminSubmissionList','<p style="color:var(--danger)">載入失敗</p>'); }
 }
-
 async function openEditSubmission(id){
-  const rows = await sb('GET','submissions',{'id':'eq.'+id});
-  const s = rows[0]; if(!s) return;
-  G('edit-sub-id').value=id;
-  G('edit-sub-theme').value=s.theme;
-  G('edit-sub-title').value=s.title;
-  G('edit-sub-name').value=s.name||'';
-  G('edit-sub-summary').value=s.summary;
-  G('edit-sub-body').value=s.body;
-  G('edit-sub-prompt').value=s.prompt||'';
+  const rows=await sb('GET','submissions',{'id':'eq.'+id}); const s=rows[0]; if(!s) return;
+  G('edit-sub-id').value=id; G('edit-sub-theme').value=s.theme; G('edit-sub-title').value=s.title;
+  G('edit-sub-name').value=s.name||''; G('edit-sub-summary').value=s.summary;
+  G('edit-sub-body').value=s.body; G('edit-sub-prompt').value=s.prompt||'';
   G('editSubmissionOverlay').classList.add('open');
 }
 function closeEditSubmission(){ G('editSubmissionOverlay').classList.remove('open'); }
 async function saveEditSubmission(){
-  const id=G('edit-sub-id').value;
-  const title=V('edit-sub-title'), summary=V('edit-sub-summary'), body=V('edit-sub-body');
+  const id=G('edit-sub-id').value, title=V('edit-sub-title'), summary=V('edit-sub-summary'), body=V('edit-sub-body');
   if(!title||!summary||!body){ showToast('請填寫標題、摘要與內容','error'); return; }
   try{
-    await sb('PATCH','submissions',{'id':'eq.'+id},{
-      theme:G('edit-sub-theme').value, title,
-      name:V('edit-sub-name'), summary, body,
-      prompt:V('edit-sub-prompt')
-    });
+    await sb('PATCH','submissions',{'id':'eq.'+id},{theme:G('edit-sub-theme').value, title, name:V('edit-sub-name'), summary, body, prompt:V('edit-sub-prompt')});
     closeEditSubmission(); await loadAdminSubmissions(); showToast('✅ 投稿已更新');
   } catch(e){ showToast('更新失敗：'+e.message,'error'); }
 }
-
 async function publishSubmission(id){
   if(!confirm('確定發佈此投稿至文章專區？')) return;
   try{
-    const rows = await sb('GET','submissions',{'id':'eq.'+id});
-    const s = rows[0]; if(!s) return;
-    // 發佈到 articles 資料表
-    await sb('POST','articles',{},{
-      theme:s.theme, title:s.title,
-      author:s.name||'匿名',
-      summary:s.summary, body:s.body,
-      prompt:s.prompt||'', views:0
-    });
-    // 將投稿狀態改為 published
+    const rows=await sb('GET','submissions',{'id':'eq.'+id}); const s=rows[0]; if(!s) return;
+    await sb('POST','articles',{},{theme:s.theme, title:s.title, author:s.name||'匿名', summary:s.summary, body:s.body, prompt:s.prompt||'', views:0});
     await sb('PATCH','submissions',{'id':'eq.'+id},{status:'published'});
-    await loadAdminSubmissions();
-    showToast('🚀 投稿已發佈至文章專區！');
+    await loadAdminSubmissions(); showToast('🚀 投稿已發佈至文章專區！');
   } catch(e){ showToast('發佈失敗：'+e.message,'error'); }
 }
-
 async function deleteSubmission(id){
   if(!confirm('確定刪除此投稿？')) return;
-  try{
-    await sb('DELETE','submissions',{'id':'eq.'+id});
-    await loadAdminSubmissions(); showToast('🗑 投稿已刪除');
-  } catch(e){ showToast('刪除失敗','error'); }
+  try{ await sb('DELETE','submissions',{'id':'eq.'+id}); await loadAdminSubmissions(); showToast('🗑 投稿已刪除'); }
+  catch(e){ showToast('刪除失敗','error'); }
 }
 
+// ── 帳號管理 ──
 async function renderAdminAccounts(){
   try{
-    const rows = await sb('GET','admin_accounts',{order:'created_at.asc'});
-    adminAccounts = rows;
+    const rows=await sb('GET','admin_accounts',{order:'created_at.asc'}); adminAccounts=rows;
     const roles={admin:'管理員',editor:'編輯員',viewer:'檢視者'};
     const rc={admin:'role-admin',editor:'role-editor',viewer:'role-viewer'};
     SH('accTable',`<tr><th>帳號</th><th>Email</th><th>角色</th><th>操作</th></tr>`
-      +adminAccounts.map(a=>`<tr>
-        <td>${esc(a.username)}</td><td style="font-size:.8rem">${esc(a.email)}</td>
-        <td><span class="role-badge ${rc[a.role]||'role-viewer'}">${roles[a.role]||a.role}</span></td>
-        <td style="display:flex;gap:.4rem;flex-wrap:wrap">
-          <button class="btn btn-warn btn-sm" onclick="openChangePwd('${a.id}','${esc(a.username)}')">🔑 改密碼</button>
-          ${a.id!==currentAdminId?`<button class="btn btn-danger btn-sm" onclick="deleteAccount('${a.id}')">🗑</button>`:'<span style="font-size:.72rem;color:var(--muted)">（目前登入）</span>'}
-        </td>
-      </tr>`).join(''));
+      +adminAccounts.map(a=>`<tr><td>${esc(a.username)}</td><td style="font-size:.8rem">${esc(a.email)}</td><td><span class="role-badge ${rc[a.role]||'role-viewer'}">${roles[a.role]||a.role}</span></td><td style="display:flex;gap:.4rem;flex-wrap:wrap"><button class="btn btn-warn btn-sm" onclick="openChangePwd('${a.id}','${esc(a.username)}')">🔑 改密碼</button>${a.id!==currentAdminId?`<button class="btn btn-danger btn-sm" onclick="deleteAccount('${a.id}')">🗑</button>`:'<span style="font-size:.72rem;color:var(--muted)">（目前登入）</span>'}</td></tr>`).join(''));
   } catch(e){ SH('accTable','<p style="color:var(--danger)">載入失敗</p>'); }
 }
-
-function openChangePwd(id, username){
-  G('pwd-acc-id').value = id;
-  G('pwd-acc-name').textContent = username;
-  G('pwd-new').value=''; G('pwd-confirm').value='';
-  G('changePwdOverlay').classList.add('open');
-}
+function openChangePwd(id, username){ G('pwd-acc-id').value=id; G('pwd-acc-name').textContent=username; G('pwd-new').value=''; G('pwd-confirm').value=''; G('changePwdOverlay').classList.add('open'); }
 async function saveChangePwd(){
-  const id = G('pwd-acc-id').value;
-  const np = G('pwd-new').value.trim();
-  const cp = G('pwd-confirm').value.trim();
+  const id=G('pwd-acc-id').value, np=G('pwd-new').value.trim(), cp=G('pwd-confirm').value.trim();
   if(!np){ showToast('請輸入新密碼','error'); return; }
-  if(np !== cp){ showToast('兩次密碼不一致','error'); return; }
-  if(np.length < 6){ showToast('密碼至少需要 6 個字元','error'); return; }
-  try{
-    await sb('PATCH','admin_accounts',{'id':'eq.'+id},{password:np});
-    G('changePwdOverlay').classList.remove('open');
-    showToast('✅ 密碼已更新');
-  } catch(e){ showToast('更新失敗：'+e.message,'error'); }
+  if(np!==cp){ showToast('兩次密碼不一致','error'); return; }
+  if(np.length<6){ showToast('密碼至少需要 6 個字元','error'); return; }
+  try{ await sb('PATCH','admin_accounts',{'id':'eq.'+id},{password:np}); G('changePwdOverlay').classList.remove('open'); showToast('✅ 密碼已更新'); }
+  catch(e){ showToast('更新失敗：'+e.message,'error'); }
 }
 async function addAccount(){
   const u=V('new-acc-user'), e=V('new-acc-email'), p=V('new-acc-pwd');
   if(!u||!e||!p){ showToast('請填寫帳號、Email 與密碼','error'); return; }
-  if(p.length < 6){ showToast('密碼至少需要 6 個字元','error'); return; }
+  if(p.length<6){ showToast('密碼至少需要 6 個字元','error'); return; }
   try{
     await sb('POST','admin_accounts',{},{username:u, password:p, email:e, role:G('new-acc-role').value});
     ['new-acc-user','new-acc-email','new-acc-pwd'].forEach(i=>G(i).value='');
-    await renderAdminAccounts();
-    showToast(`✅ 帳號「${u}」已新增`);
+    await renderAdminAccounts(); showToast(`✅ 帳號「${u}」已新增`);
   } catch(e){ showToast('新增失敗：'+e.message,'error'); }
 }
 async function deleteAccount(id){
   if(!confirm('確定刪除此帳號？')) return;
-  try{
-    await sb('DELETE','admin_accounts',{'id':'eq.'+id});
-    await renderAdminAccounts(); showToast('🗑 帳號已刪除');
-  } catch(e){ showToast('刪除失敗','error'); }
+  try{ await sb('DELETE','admin_accounts',{'id':'eq.'+id}); await renderAdminAccounts(); showToast('🗑 帳號已刪除'); }
+  catch(e){ showToast('刪除失敗','error'); }
 }
 
-// ══════════════════════════════════════════════════════
-//  INIT
-// ══════════════════════════════════════════════════════
+// ── INIT ──
 G('ann-date').value = new Date().toISOString().slice(0,10);
-
-// ✅ 啟動時先嘗試 hash 路由，無 hash 則正常顯示首頁
 (async function init(){
   const handled = await handleHashRoute();
   if(!handled) renderHome();
