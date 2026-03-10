@@ -49,6 +49,8 @@
   .theme-posts{list-style:none;margin-top:.5rem;border-top:1px solid var(--border);padding-top:.5rem;display:flex;flex-direction:column;gap:.3rem}
   .theme-posts li{font-size:.78rem;color:var(--navy2);display:flex;align-items:flex-start;gap:.4rem;cursor:pointer;line-height:1.4}
   .theme-posts li:hover{color:var(--accent)}.theme-posts li::before{content:'›';color:var(--muted);flex-shrink:0}
+  .theme-card.article-mode{cursor:default}
+  .theme-card.article-mode:hover{transform:none;box-shadow:none}
   .theme-count{font-size:.73rem;color:var(--muted);margin-top:.5rem}
   .theme-more{font-size:.75rem;color:var(--accent);margin-top:.4rem;font-weight:600}
   .forum-back{background:none;border:1.5px solid var(--border);border-radius:.5rem;padding:.35rem .8rem;cursor:pointer;font-size:.82rem;color:var(--navy);font-weight:600;transition:.2s}
@@ -931,18 +933,35 @@ async function loadHotArticles(){
           <span class="hot-views">👁 ${a.views||0}</span>
         </div>`).join('')
       : '<p style="color:var(--muted);font-size:.85rem;padding:.5rem">尚無文章</p>');
-    SH('homeThemeGrid', buildThemeCards());
+    SH('homeThemeGrid', buildThemeCards('home'));
   } catch(e){
     SH('homeHotList','<p style="color:var(--danger);font-size:.84rem;padding:.5rem">⚠️ 無法連接 Supabase，請將檔案下載後在本機開啟使用。</p>');
     SH('homeThemeGrid','');
   }
 }
 
-function buildThemeCards(){
+function buildThemeCards(mode='home'){
   return Object.entries(THEMES).map(([t,th])=>{
-    const posts = _articles.filter(a=>a.theme===t).sort((a,b)=>(b.views||0)-(a.views||0)).slice(0,3);
+    const allPosts = _articles.filter(a=>a.theme===t).sort((a,b)=>(b.views||0)-(a.views||0));
+    const posts = mode==='home' ? allPosts.slice(0,3) : allPosts;
+    const total = allPosts.length;
+
+    if(mode==='article'){
+      // 文章專區：展開所有文章，不可點卡片整體，移除「查看全部」
+      const li = posts.map(p=>`
+        <li onclick="openArticle('${p.id}')">
+          <span style="flex:1">${esc(p.title)}</span>
+          <span style="font-size:.7rem;color:var(--muted);white-space:nowrap;margin-left:.4rem">👁 ${p.views||0}</span>
+        </li>`).join('');
+      return `<div class="theme-card ${t} article-mode">
+        <h3>${esc(th.label)}</h3>
+        <ul class="theme-posts">${li||'<li style="color:var(--muted);cursor:default">尚無文章</li>'}</ul>
+        <div class="theme-count">共 ${total} 篇文章</div>
+      </div>`;
+    }
+
+    // 首頁模式：維持原本行為
     const li = posts.map(p=>`<li onclick="event.stopPropagation();goArticle('${p.id}')">${esc(p.title)}</li>`).join('');
-    const total = _articles.filter(a=>a.theme===t).length;
     return `<div class="theme-card ${t}" onclick="openTheme('${t}')">
       <h3>${esc(th.label)}</h3>
       <ul class="theme-posts">${li||'<li style="color:var(--muted);cursor:default">尚無文章</li>'}</ul>
@@ -972,7 +991,7 @@ async function showThemeView(){
     SH('articleThemeGrid','<div class="loading">載入中...</div>');
     try{ _articles = await sb('GET','articles',{order:'views.desc'}); }catch(e){}
   }
-  SH('articleThemeGrid', buildThemeCards());
+  SH('articleThemeGrid', buildThemeCards('article'));
 }
 
 async function openTheme(t){
