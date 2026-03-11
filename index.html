@@ -1147,7 +1147,7 @@ async function loadAnnounces(){
 }
 async function loadHotArticles(){
   try{
-    _articles = await sb('GET','articles',{order:'views.desc'});
+    _articles = await sb('GET','articles',{order:'views.desc',status:'eq.published'});
     const cutoff = new Date(Date.now()-30*24*60*60*1000).toISOString();
     const recent = _articles.filter(a=>(a.updated_at||a.created_at||'')>=cutoff);
     const hot = (recent.length>=3?recent:_articles).slice(0,3);
@@ -1222,7 +1222,7 @@ async function showThemeView(){
   G('view-article').classList.remove('active');
   if(!_articles.length){
     SH('articleThemeGrid','<div class="loading">載入中...</div>');
-    try{ _articles = await sb('GET','articles',{order:'views.desc'}); }catch(e){}
+    try{ _articles = await sb('GET','articles',{order:'views.desc',status:'eq.published'}); }catch(e){}
   }
   SH('articleThemeGrid', buildThemeCards('article'));
 }
@@ -1241,7 +1241,7 @@ function backToThemes(){ showThemeView(); }
 async function renderPosts(t){
   SH('postList','<div class="loading">載入中...</div>');
   try{
-    const posts = await sb('GET','articles',{theme:'eq.'+t, order:'created_at.desc'});
+    const posts = await sb('GET','articles',{theme:'eq.'+t, status:'eq.published', order:'created_at.desc'});
     SH('postList', posts.length
       ? posts.map(p=>`
         <div class="post-item">
@@ -1566,9 +1566,37 @@ async function loadAdminArticles(){
   try{
     const arts = await sb('GET','articles',{order:'created_at.desc'});
     SH('adminArticleList', arts.length
-      ? arts.map(a=>`<div style="background:var(--bg);border:1px solid var(--border);border-radius:.6rem;padding:.75rem;margin-bottom:.5rem"><div style="font-size:.83rem;font-weight:600;color:var(--navy)">${esc(a.title)}</div><div style="font-size:.73rem;color:var(--muted);margin:.2rem 0">${esc(THEMES[a.theme]?.label||'')} · ${esc(a.author||'管理員')} · ${(a.created_at||'').slice(0,10)}</div><div class="item-actions"><button class="btn btn-warn btn-sm" onclick="openEditArticle('${a.id}')">✏️ 編輯</button><button class="btn btn-danger btn-sm" onclick="deleteArticle('${a.id}')">🗑 刪除</button></div></div>`).join('')
+      ? arts.map(a=>{
+          const isHidden = a.status === 'hidden';
+          const statusBadge = isHidden
+            ? `<span style="display:inline-block;background:#fee2e2;color:#991b1b;border-radius:99px;padding:.1rem .5rem;font-size:.68rem;font-weight:700;margin-left:.4rem">⏸ 已下架</span>`
+            : `<span style="display:inline-block;background:#dcfce7;color:#166534;border-radius:99px;padding:.1rem .5rem;font-size:.68rem;font-weight:700;margin-left:.4rem">✅ 上架中</span>`;
+          const toggleBtn = isHidden
+            ? `<button class="btn btn-green btn-sm" onclick="toggleArticleStatus('${a.id}','published')">🔼 重新上架</button>`
+            : `<button class="btn btn-warn btn-sm" onclick="toggleArticleStatus('${a.id}','hidden')">⏸ 暫時下架</button>`;
+          return `<div style="background:${isHidden?'#fff8f8':'var(--bg)'};border:1px solid ${isHidden?'#fecaca':'var(--border)'};border-radius:.6rem;padding:.75rem;margin-bottom:.5rem">
+            <div style="display:flex;align-items:center;flex-wrap:wrap;gap:.3rem">
+              <span style="font-size:.83rem;font-weight:600;color:var(--navy)">${esc(a.title)}</span>${statusBadge}
+            </div>
+            <div style="font-size:.73rem;color:var(--muted);margin:.2rem 0">${esc(THEMES[a.theme]?.label||'')} · ${esc(a.author||'管理員')} · ${(a.created_at||'').slice(0,10)}</div>
+            <div class="item-actions">
+              <button class="btn btn-warn btn-sm" onclick="openEditArticle('${a.id}')">✏️ 編輯</button>
+              ${toggleBtn}
+              <button class="btn btn-danger btn-sm" onclick="deleteArticle('${a.id}')">🗑 刪除</button>
+            </div>
+          </div>`;
+        }).join('')
       : '<p style="color:var(--muted);font-size:.84rem">尚無文章</p>');
   } catch(e){ SH('adminArticleList','<p style="color:var(--danger)">載入失敗</p>'); }
+}
+async function toggleArticleStatus(id, newStatus){
+  const msg = newStatus === 'hidden' ? '確定要下架此文章？下架後前台將不顯示。' : '確定要重新上架此文章？';
+  if(!confirm(msg)) return;
+  try{
+    await sb('PATCH','articles',{'id':'eq.'+id},{status:newStatus});
+    await loadAdminArticles();
+    showToast(newStatus==='hidden' ? '⏸ 文章已下架' : '✅ 文章已重新上架');
+  } catch(e){ showToast('操作失敗：'+e.message,'error'); }
 }
 function openAddArticleModal(){ G('addArticleModal').classList.add('open'); }
 function closeModal(){ G('addArticleModal').classList.remove('open'); ['a-title','a-author','a-summary','a-body','a-prompt'].forEach(i=>G(i).value=''); }
