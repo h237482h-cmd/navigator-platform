@@ -171,6 +171,21 @@
   #changePwdOverlay{display:none;position:fixed;inset:0;background:#0007;z-index:300;align-items:center;justify-content:center;padding:1rem}
   #changePwdOverlay.open{display:flex}
   #installBanner{padding-bottom:max(.75rem,env(safe-area-inset-bottom))}
+
+  /* ── 防機器人驗證區塊 ── */
+  .bot-check{background:#f8faff;border:1.5px solid var(--border);border-radius:.6rem;padding:.7rem .9rem;margin-bottom:.7rem;display:flex;align-items:center;gap:.7rem;flex-wrap:wrap}
+  .bot-check label{font-size:.8rem;font-weight:700;color:var(--navy);margin:0;white-space:nowrap}
+  .bot-check input[type=text]{width:72px;flex-shrink:0;text-align:center;font-size:.95rem;font-weight:700;padding:.35rem .5rem}
+  .bot-check .bc-hint{font-size:.72rem;color:var(--muted);margin-top:.2rem}
+  /* Honeypot：完全隱藏，不能用 display:none（機器人識別得出來），改用視覺隱藏 */
+  .hp-field{position:absolute;left:-9999px;top:-9999px;width:1px;height:1px;overflow:hidden;opacity:0;tab-index:-1}
+
+  /* ── 登入封鎖提示 ── */
+  .login-lock-box{background:#fee2e2;border:1.5px solid var(--danger);border-radius:.6rem;padding:.85rem 1rem;margin-bottom:.8rem;text-align:center;display:none}
+  .login-lock-box .lock-title{font-size:.88rem;font-weight:700;color:#991b1b;margin-bottom:.25rem}
+  .login-lock-box .lock-timer{font-size:1.5rem;font-weight:800;color:var(--danger);font-variant-numeric:tabular-nums}
+  .login-lock-box .lock-sub{font-size:.75rem;color:#b91c1c;margin-top:.2rem}
+  .login-attempts-hint{font-size:.76rem;color:var(--danger);text-align:center;margin-top:.4rem;display:none}
 </style>
 </head>
 <body>
@@ -284,6 +299,15 @@
           <div class="anon-hint">💡 可留空，將以「匿名」發表</div>
         </div>
         <div style="margin-bottom:.6rem"><label>留言內容 *</label><textarea id="ac-body" placeholder="針對本文發表意見或提問..." style="min-height:65px"></textarea></div>
+        <!-- 文章留言防機器人 -->
+        <div id="ac-bot-check" class="bot-check">
+          <span>🤖</span>
+          <label id="ac-bc-label">請計算：</label>
+          <input type="text" id="ac-bc-ans" placeholder="?" autocomplete="off" style="width:72px"/>
+          <span class="bc-hint">請先完成驗證才能留言</span>
+        </div>
+        <!-- Honeypot -->
+        <div class="hp-field" aria-hidden="true"><input type="text" id="ac-hp" tabindex="-1" autocomplete="off"/></div>
         <button class="btn btn-primary btn-sm" onclick="submitArticleComment()">✉️ 送出</button>
       </div>
       <div class="ac-list" id="acList"></div>
@@ -322,6 +346,14 @@
           <div class="anon-hint">💡 可留空，將以「匿名」發表</div>
         </div>
         <div style="margin-bottom:.6rem"><label>回覆內容 *</label><textarea id="dc-body" placeholder="輸入您的回覆..." style="min-height:65px"></textarea></div>
+        <!-- 討論回覆防機器人 -->
+        <div id="dc-bot-check" class="bot-check">
+          <span>🤖</span>
+          <label id="dc-bc-label">請計算：</label>
+          <input type="text" id="dc-bc-ans" placeholder="?" autocomplete="off" style="width:72px"/>
+          <span class="bc-hint">請先完成驗證才能回覆</span>
+        </div>
+        <div class="hp-field" aria-hidden="true"><input type="text" id="dc-hp" tabindex="-1" autocomplete="off"/></div>
         <button class="btn btn-primary btn-sm" onclick="submitDiscComment()">✉️ 送出回覆</button>
       </div>
       <div class="ac-list" id="dcList"></div>
@@ -352,7 +384,8 @@
     <button id="tab-sub-btn" onclick="switchFeedbackTab('submit')" style="flex:1;padding:.55rem;border:none;cursor:pointer;font-size:.85rem;font-weight:700;background:var(--navy3);color:#fff;transition:.2s">✍️ 文章投稿</button>
     <button id="tab-fb-btn" onclick="switchFeedbackTab('feedback')" style="flex:1;padding:.55rem;border:none;cursor:pointer;font-size:.85rem;font-weight:700;background:#f1f5f9;color:var(--muted);transition:.2s">📮 問題建議</button>
   </div>
-  <!-- 文章投稿（預設顯示） -->
+
+  <!-- 文章投稿 -->
   <div id="block-submit">
     <div class="feedback-card" id="submissionForm">
       <div style="margin-bottom:.5rem;padding:.7rem 1rem;background:#eff6ff;border:1px solid var(--accent2);border-radius:.6rem;font-size:.82rem;color:var(--navy2);line-height:1.6">
@@ -370,7 +403,15 @@
       <div style="margin-bottom:.7rem"><label>文章標題 *</label><input id="sub-title" type="text" placeholder="文章標題"/></div>
       <div style="margin-bottom:.7rem"><label>摘要 *</label><textarea id="sub-summary" placeholder="文章摘要，約100字以內..." style="min-height:65px"></textarea></div>
       <div style="margin-bottom:.7rem"><label>完整內容 *</label><textarea id="sub-body" placeholder="完整文章內容..." style="min-height:130px"></textarea></div>
-      <div style="margin-bottom:.9rem"><label>AI 提示詞（選填）</label><textarea id="sub-prompt" placeholder="貼上與本文相關的 AI 提示詞..." style="min-height:75px;font-family:'Courier New',monospace;background:#f8fafc"></textarea><div class="anon-hint">💡 填寫後讀者可一鍵複製使用</div></div>
+      <div style="margin-bottom:.7rem"><label>AI 提示詞（選填）</label><textarea id="sub-prompt" placeholder="貼上與本文相關的 AI 提示詞..." style="min-height:75px;font-family:'Courier New',monospace;background:#f8fafc"></textarea><div class="anon-hint">💡 填寫後讀者可一鍵複製使用</div></div>
+      <!-- 投稿防機器人 -->
+      <div id="sub-bot-check" class="bot-check">
+        <span>🤖</span>
+        <label id="sub-bc-label">請計算：</label>
+        <input type="text" id="sub-bc-ans" placeholder="?" autocomplete="off" style="width:72px"/>
+        <span class="bc-hint">請先完成驗證才能投稿</span>
+      </div>
+      <div class="hp-field" aria-hidden="true"><input type="text" id="sub-hp" tabindex="-1" autocomplete="off"/></div>
       <button class="btn btn-primary" onclick="submitSubmission()">✍️ 送出投稿</button>
     </div>
     <div class="feedback-success" id="submissionSuccess" style="display:none">
@@ -380,7 +421,8 @@
       <button class="btn btn-primary btn-sm" style="margin-top:.9rem" onclick="resetSubmission()">再次投稿</button>
     </div>
   </div>
-  <!-- 問題建議（預設隱藏） -->
+
+  <!-- 問題建議 -->
   <div id="block-feedback" style="display:none">
     <div class="feedback-card" id="feedbackForm">
       <div style="margin-bottom:.7rem"><label>類型 *</label>
@@ -389,8 +431,16 @@
       <div style="margin-bottom:.7rem"><label>姓名或暱稱</label><input id="fb-name" type="text" placeholder="輸入姓名、暱稱，或留空匿名"/><div class="anon-hint">💡 可留空，將以「匿名」提交</div></div>
       <div style="margin-bottom:.7rem"><label>Email（必填，以便我們回覆）*</label><input id="fb-email" type="email" placeholder="your@email.gov.tw"/></div>
       <div style="margin-bottom:.7rem"><label>主旨 *</label><input id="fb-title" type="text" placeholder="簡短描述問題或建議"/></div>
-      <div style="margin-bottom:.9rem"><label>詳細說明 *</label><textarea id="fb-body" placeholder="請詳細描述您的問題或建議..." style="min-height:110px"></textarea></div>
-      <button class="btn btn-primary" onclick="submitFeedback()">📮 送出</button>
+      <div style="margin-bottom:.7rem"><label>詳細說明 *</label><textarea id="fb-body" placeholder="請詳細描述您的問題或建議..." style="min-height:110px"></textarea></div>
+      <!-- 問題回饋防機器人 -->
+      <div id="fb-bot-check" class="bot-check">
+        <span>🤖</span>
+        <label id="fb-bc-label">請計算：</label>
+        <input type="text" id="fb-bc-ans" placeholder="?" autocomplete="off" style="width:72px"/>
+        <span class="bc-hint">請先完成驗證才能送出</span>
+      </div>
+      <div class="hp-field" aria-hidden="true"><input type="text" id="fb-hp" tabindex="-1" autocomplete="off"/></div>
+      <button class="btn btn-primary" onclick="submitFeedback()" style="margin-top:.3rem">📮 送出</button>
     </div>
     <div class="feedback-success" id="feedbackSuccess">
       <div style="font-size:2rem;margin-bottom:.5rem">✅</div>
@@ -406,9 +456,17 @@
   <div id="adminLoginGate">
     <div class="hero" style="padding:1.4rem"><div class="hero-tag">⚙️ 管理員登入</div><h1 style="font-size:1.3rem">後台管理登入</h1></div>
     <div style="max-width:380px;margin:0 auto;background:var(--card);border:1px solid var(--border);border-radius:.9rem;padding:1.5rem">
+      <!-- 封鎖提示 -->
+      <div class="login-lock-box" id="loginLockBox">
+        <div class="lock-title">🔒 登入已暫時封鎖</div>
+        <div class="lock-timer" id="lockTimer">15:00</div>
+        <div class="lock-sub">連續錯誤次數過多，請稍後再試</div>
+      </div>
       <div style="margin-bottom:.7rem"><label>帳號 *</label><input id="login-user" type="text" placeholder="管理員帳號"/></div>
       <div style="margin-bottom:.9rem"><label>密碼 *</label><input id="login-pass" type="password" placeholder="密碼"/></div>
-      <button class="btn btn-primary" style="width:100%;justify-content:center" onclick="doLogin()">🔐 登入</button>
+      <button class="btn btn-primary" id="loginBtn" style="width:100%;justify-content:center" onclick="doLogin()">🔐 登入</button>
+      <!-- 錯誤次數提示 -->
+      <div class="login-attempts-hint" id="loginAttemptsHint"></div>
       <div style="text-align:center;margin-top:.8rem"><button style="background:none;border:none;color:var(--accent);cursor:pointer;font-size:.82rem" onclick="showForgotPwd()">忘記密碼？</button></div>
       <div id="loginErr" style="color:var(--danger);font-size:.8rem;margin-top:.5rem;text-align:center;display:none">帳號或密碼錯誤，請再試一次。</div>
     </div>
@@ -559,6 +617,14 @@
     <div style="margin-bottom:.5rem"><label>姓名或暱稱</label><input id="d-name" type="text" placeholder="輸入姓名、暱稱，或留空匿名"/><div class="anon-hint">💡 可留空，將以「匿名」發表</div></div>
     <div style="margin-bottom:.6rem"><label>標題 *</label><input id="d-title" type="text" placeholder="討論主題標題"/></div>
     <div style="margin-bottom:.6rem"><label>內容 *</label><textarea id="d-body" placeholder="詳細說明您的問題或想法..." style="min-height:100px"></textarea></div>
+    <!-- 發起討論防機器人 -->
+    <div id="disc-bot-check" class="bot-check">
+      <span>🤖</span>
+      <label id="disc-bc-label">請計算：</label>
+      <input type="text" id="disc-bc-ans" placeholder="?" autocomplete="off" style="width:72px"/>
+      <span class="bc-hint">請先完成驗證才能發文</span>
+    </div>
+    <div class="hp-field" aria-hidden="true"><input type="text" id="disc-hp" tabindex="-1" autocomplete="off"/></div>
     <div class="modal-footer">
       <button class="btn" style="background:#f1f5f9;color:var(--text)" onclick="closeDiscModal()">取消</button>
       <button class="btn btn-green" onclick="submitDisc()">✅ 發布</button>
@@ -726,7 +792,179 @@ function detectEnv(){
   catch(e){ G('corsWarnHome').style.display = 'block'; }
 }
 
+// ════════════════════════════════════════════════
+// ── 防機器人核心模組 ──
+// ════════════════════════════════════════════════
+// 每個表單獨立維護：{ answer, ts }
+const _bc = {};
+
+/**
+ * 初始化指定表單的防機器人驗證
+ * @param {string} key     唯一識別字串，對應 HTML 元素 id 的前綴
+ * @param {string} labelId label 元素 id
+ * @param {string} ansId   答案 input 元素 id
+ */
+function initBotCheck(key, labelId, ansId) {
+  const a = Math.ceil(Math.random() * 9);
+  const b = Math.ceil(Math.random() * 9);
+  _bc[key] = { answer: a + b, ts: Date.now() };
+  G(labelId).textContent = `請計算：${a} + ${b} =`;
+  G(ansId).value = '';
+}
+
+/**
+ * 驗證防機器人
+ * @param {string} key    與 initBotCheck 相同的 key
+ * @param {string} ansId  答案 input 的 id
+ * @param {string} hpId   honeypot input 的 id
+ * @param {number} minMs  最少停留毫秒（預設 3000）
+ * @returns {boolean}
+ */
+function checkBot(key, ansId, hpId, minMs = 3000) {
+  const state = _bc[key];
+  if (!state) { showToast('驗證狀態遺失，請重新整理頁面', 'error'); return false; }
+
+  // 1. Honeypot：若有填值，靜默拒絕（不提示，讓機器人以為成功）
+  if (G(hpId) && G(hpId).value.trim() !== '') {
+    console.warn('[BotCheck] Honeypot triggered');
+    // 假裝成功，讓機器人誤判，但實際不執行
+    return false;
+  }
+
+  // 2. 時間戳記：填寫速度太快
+  if (Date.now() - state.ts < minMs) {
+    showToast(`請至少停留 ${minMs/1000} 秒後再送出`, 'error');
+    return false;
+  }
+
+  // 3. 數學答案
+  const userAns = parseInt(G(ansId).value.trim(), 10);
+  if (isNaN(userAns) || userAns !== state.answer) {
+    showToast('驗證碼錯誤，請重新計算', 'error');
+    initBotCheck(key, key + '-bc-label', key + '-bc-ans'); // 重新出題
+    return false;
+  }
+
+  return true;
+}
+
+// 頁面載入時初始化所有表單驗證
+function initAllBotChecks() {
+  initBotCheck('ac',   'ac-bc-label',   'ac-bc-ans');
+  initBotCheck('dc',   'dc-bc-label',   'dc-bc-ans');
+  initBotCheck('disc', 'disc-bc-label', 'disc-bc-ans');
+  initBotCheck('sub',  'sub-bc-label',  'sub-bc-ans');
+  initBotCheck('fb',   'fb-bc-label',   'fb-bc-ans');
+}
+
+// ════════════════════════════════════════════════
+// ── 登入封鎖模組 ──
+// ════════════════════════════════════════════════
+const LOGIN_MAX_ATTEMPTS = 5;    // 最多錯誤次數
+const LOGIN_LOCK_MS      = 15 * 60 * 1000; // 封鎖 15 分鐘
+const LS_ATTEMPTS_KEY    = 'login_attempts';
+const LS_LOCK_UNTIL_KEY  = 'login_lock_until';
+let _lockTimerInterval   = null;
+
+function getLoginState() {
+  return {
+    attempts:  parseInt(localStorage.getItem(LS_ATTEMPTS_KEY)  || '0', 10),
+    lockUntil: parseInt(localStorage.getItem(LS_LOCK_UNTIL_KEY)|| '0', 10),
+  };
+}
+function setLoginAttempts(n)  { localStorage.setItem(LS_ATTEMPTS_KEY,  n); }
+function setLoginLock(until)  { localStorage.setItem(LS_LOCK_UNTIL_KEY, until); }
+function clearLoginLock()     { localStorage.removeItem(LS_ATTEMPTS_KEY); localStorage.removeItem(LS_LOCK_UNTIL_KEY); }
+
+function isLoginLocked() {
+  const { lockUntil } = getLoginState();
+  return lockUntil > Date.now();
+}
+
+/** 每次進入登入頁時呼叫，若仍在封鎖期間啟動倒數 */
+function checkLoginLock() {
+  if (_lockTimerInterval) { clearInterval(_lockTimerInterval); _lockTimerInterval = null; }
+
+  const { lockUntil, attempts } = getLoginState();
+  const now = Date.now();
+
+  if (lockUntil > now) {
+    _startLockCountdown(lockUntil);
+  } else {
+    // 封鎖已過期，自動解除（但保留嘗試次數計錄）
+    if (lockUntil && lockUntil <= now) {
+      localStorage.removeItem(LS_LOCK_UNTIL_KEY);
+    }
+    G('loginLockBox').style.display = 'none';
+    G('loginBtn').disabled = false;
+    G('login-user').disabled = false;
+    G('login-pass').disabled = false;
+    // 若還有剩餘嘗試次數，顯示提示
+    _updateAttemptsHint(attempts);
+  }
+}
+
+function _startLockCountdown(lockUntil) {
+  G('loginLockBox').style.display = 'block';
+  G('loginBtn').disabled = true;
+  G('login-user').disabled = true;
+  G('login-pass').disabled = true;
+  G('loginErr').style.display = 'none';
+  G('loginAttemptsHint').style.display = 'none';
+
+  function tick() {
+    const remain = lockUntil - Date.now();
+    if (remain <= 0) {
+      clearInterval(_lockTimerInterval); _lockTimerInterval = null;
+      localStorage.removeItem(LS_LOCK_UNTIL_KEY);
+      // 解除封鎖後重置嘗試次數
+      setLoginAttempts(0);
+      G('loginLockBox').style.display = 'none';
+      G('loginBtn').disabled = false;
+      G('login-user').disabled = false;
+      G('login-pass').disabled = false;
+      G('lockTimer').textContent = '00:00';
+      showToast('封鎖時間已結束，請重新登入');
+      return;
+    }
+    const m = Math.floor(remain / 60000);
+    const s = Math.floor((remain % 60000) / 1000);
+    G('lockTimer').textContent = `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+  }
+  tick();
+  _lockTimerInterval = setInterval(tick, 1000);
+}
+
+function _updateAttemptsHint(attempts) {
+  const el = G('loginAttemptsHint');
+  if (attempts > 0 && attempts < LOGIN_MAX_ATTEMPTS) {
+    const remain = LOGIN_MAX_ATTEMPTS - attempts;
+    el.textContent = `⚠️ 已錯誤 ${attempts} 次，再錯 ${remain} 次將封鎖 15 分鐘`;
+    el.style.display = 'block';
+  } else {
+    el.style.display = 'none';
+  }
+}
+
+function recordLoginFailure() {
+  let { attempts } = getLoginState();
+  attempts += 1;
+  setLoginAttempts(attempts);
+
+  if (attempts >= LOGIN_MAX_ATTEMPTS) {
+    const lockUntil = Date.now() + LOGIN_LOCK_MS;
+    setLoginLock(lockUntil);
+    G('loginErr').style.display = 'none';
+    _startLockCountdown(lockUntil);
+  } else {
+    _updateAttemptsHint(attempts);
+    G('loginErr').style.display = 'block';
+  }
+}
+
+// ════════════════════════════════════════════════
 // ── 分享 ──
+// ════════════════════════════════════════════════
 function getPageUrl(){ return window.location.href.split('#')[0]; }
 function getArticleUrl(id){ return window.location.href.split('#')[0] + '#article=' + id; }
 function sharePageToLine(){
@@ -861,7 +1099,7 @@ function switchAdminTab(id, el){
 }
 function renderAdminGate(){
   if(isAdmin){ hide('adminLoginGate'); hide('adminForgotGate'); show('adminPanel'); renderAdmin(); }
-  else { show('adminLoginGate'); hide('adminForgotGate'); hide('adminPanel'); }
+  else { show('adminLoginGate'); hide('adminForgotGate'); hide('adminPanel'); checkLoginLock(); }
 }
 
 // ── HOME ──
@@ -1027,6 +1265,8 @@ async function openArticle(id){
   SH('articleBody','<div class="loading">載入中...</div>');
   currentArticleId = id;
   history.pushState(null, '', '#article=' + id);
+  // 重新初始化文章留言驗證（每次開新文章都要重出題）
+  initBotCheck('ac', 'ac-bc-label', 'ac-bc-ans');
   try{
     const arts = await sb('GET','articles',{'id':'eq.'+id});
     const art = arts[0]; if(!art) return;
@@ -1089,10 +1329,12 @@ async function loadArticleComments(artId){
   } catch(e){ SH('acList','<p style="color:var(--danger);font-size:.82rem">留言載入失敗</p>'); }
 }
 async function submitArticleComment(){
+  if(!checkBot('ac', 'ac-bc-ans', 'ac-hp')) return;
   const body=V('ac-body'); if(!body){ showToast('請填寫留言內容','error'); return; }
   try{
     await sb('POST','article_comments',{},{article_id:currentArticleId, name:V('ac-name')||'', body});
     G('ac-name').value=''; G('ac-body').value='';
+    initBotCheck('ac', 'ac-bc-label', 'ac-bc-ans'); // 送出後重新出題
     await loadArticleComments(currentArticleId); showToast('✅ 留言已送出');
   } catch(e){ showToast('送出失敗：'+e.message,'error'); }
 }
@@ -1113,15 +1355,20 @@ async function renderDiscList(){
       : '<div style="background:#fff;border:1px solid var(--border);border-radius:.75rem;padding:2rem;text-align:center;color:var(--muted)">尚無討論，按「✏️ 發起討論」開始第一篇！</div>');
   } catch(e){ SH('discList','<p style="color:var(--danger);padding:1rem">⚠️ 無法連接 Supabase</p>'); }
 }
-function openDiscModal(){ G('addDiscModal').classList.add('open'); }
+function openDiscModal(){
+  G('addDiscModal').classList.add('open');
+  initBotCheck('disc', 'disc-bc-label', 'disc-bc-ans');
+}
 function closeDiscModal(){ G('addDiscModal').classList.remove('open'); ['d-name','d-title','d-body'].forEach(i=>G(i).value=''); }
 async function submitDisc(){
+  if(!checkBot('disc', 'disc-bc-ans', 'disc-hp')) return;
   const title=V('d-title'), body=V('d-body'); if(!title||!body){ showToast('請填寫標題與內容','error'); return; }
   try{ await sb('POST','discussions',{},{title, author:V('d-name')||'匿名', body, views:0}); closeDiscModal(); await renderDiscList(); showToast('✅ 討論已發布'); }
   catch(e){ showToast('發布失敗：'+e.message,'error'); }
 }
 async function openDisc(id){
   currentDiscId=id; hide('disc-view-list'); G('disc-view-detail').classList.add('active');
+  initBotCheck('dc', 'dc-bc-label', 'dc-bc-ans'); // 進入討論時重新出題
   try{
     const rows = await sb('GET','discussions',{'id':'eq.'+id});
     const d=rows[0]; if(!d) return;
@@ -1146,8 +1393,9 @@ async function loadDiscComments(discId){
   } catch(e){ SH('dcList','<p style="color:var(--danger);font-size:.82rem">回覆載入失敗</p>'); }
 }
 async function submitDiscComment(){
+  if(!checkBot('dc', 'dc-bc-ans', 'dc-hp')) return;
   const body=V('dc-body'); if(!body){ showToast('請填寫回覆內容','error'); return; }
-  try{ await sb('POST','discussion_comments',{},{discussion_id:currentDiscId, name:V('dc-name')||'', body}); G('dc-name').value=''; G('dc-body').value=''; await loadDiscComments(currentDiscId); showToast('✅ 回覆已送出'); }
+  try{ await sb('POST','discussion_comments',{},{discussion_id:currentDiscId, name:V('dc-name')||'', body}); G('dc-name').value=''; G('dc-body').value=''; initBotCheck('dc','dc-bc-label','dc-bc-ans'); await loadDiscComments(currentDiscId); showToast('✅ 回覆已送出'); }
   catch(e){ showToast('送出失敗：'+e.message,'error'); }
 }
 async function deleteDiscComment(cId, discId){
@@ -1176,41 +1424,51 @@ function switchFeedbackTab(tab){
   G('tab-sub-btn').style.color = isSub ? '#fff' : 'var(--muted)';
   G('tab-fb-btn').style.background = isSub ? '#f1f5f9' : 'var(--navy3)';
   G('tab-fb-btn').style.color = isSub ? 'var(--muted)' : '#fff';
+  // 切換頁籤時重新出題
+  if(isSub) initBotCheck('sub','sub-bc-label','sub-bc-ans');
+  else       initBotCheck('fb','fb-bc-label','fb-bc-ans');
 }
 async function submitFeedback(){
+  if(!checkBot('fb', 'fb-bc-ans', 'fb-hp')) return;
   const email=V('fb-email'), title=V('fb-title'), body=V('fb-body');
   if(!email||!title||!body){ showToast('請填寫 Email、主旨與詳細說明','error'); return; }
   if(!/\S+@\S+\.\S+/.test(email)){ showToast('請輸入有效的 Email 地址','error'); return; }
   try{ await sb('POST','feedbacks',{},{type:G('fb-type').value, name:V('fb-name')||'匿名', email, title, body, done:false}); hide('feedbackForm'); show('feedbackSuccess'); }
   catch(e){ showToast('送出失敗：'+e.message,'error'); }
 }
-function resetFeedback(){ ['fb-title','fb-body','fb-name','fb-email'].forEach(i=>G(i).value=''); show('feedbackForm'); hide('feedbackSuccess'); }
+function resetFeedback(){ ['fb-title','fb-body','fb-name','fb-email'].forEach(i=>G(i).value=''); show('feedbackForm'); hide('feedbackSuccess'); initBotCheck('fb','fb-bc-label','fb-bc-ans'); }
 async function submitSubmission(){
+  if(!checkBot('sub', 'sub-bc-ans', 'sub-hp')) return;
   const email=V('sub-email'), title=V('sub-title'), summary=V('sub-summary'), body=V('sub-body');
   if(!email||!title||!summary||!body){ showToast('請填寫 Email、標題、摘要與內容','error'); return; }
   if(!/\S+@\S+\.\S+/.test(email)){ showToast('請輸入有效的 Email 地址','error'); return; }
   try{ await sb('POST','submissions',{},{theme:G('sub-theme').value, name:V('sub-name')||'匿名', email, title, summary, body, prompt:V('sub-prompt'), status:'pending'}); hide('submissionForm'); G('submissionSuccess').style.display='block'; }
   catch(e){ showToast('送出失敗：'+e.message,'error'); }
 }
-function resetSubmission(){ ['sub-title','sub-summary','sub-body','sub-name','sub-email','sub-prompt'].forEach(i=>G(i).value=''); show('submissionForm'); G('submissionSuccess').style.display='none'; }
+function resetSubmission(){ ['sub-title','sub-summary','sub-body','sub-name','sub-email','sub-prompt'].forEach(i=>G(i).value=''); show('submissionForm'); G('submissionSuccess').style.display='none'; initBotCheck('sub','sub-bc-label','sub-bc-ans'); }
 
 // ── AUTH ──
 async function doLogin(){
+  if(isLoginLocked()){ showToast('登入已封鎖，請稍後再試','error'); return; }
   const u=V('login-user'), p=G('login-pass').value;
   try{
     const res = await fetch(`${SB_URL}/rest/v1/rpc/verify_login`,{method:'POST',headers:{...SB_HEADS},body:JSON.stringify({p_username:u,p_password:p})});
     const data = await res.json();
     if(Array.isArray(data)&&data.length>0){
       const acc=data[0]; isAdmin=true; currentAdminId=acc.id;
+      clearLoginLock(); // 登入成功，清除封鎖紀錄
       hide('adminLoginGate'); hide('adminForgotGate'); show('adminPanel');
       G('adminPill').style.display=''; G('loginErr').style.display='none';
+      G('loginAttemptsHint').style.display='none';
       renderAdmin();
-    } else { G('loginErr').style.display='block'; }
-  } catch(e){ G('loginErr').style.display='block'; }
+    } else {
+      recordLoginFailure();
+    }
+  } catch(e){ recordLoginFailure(); }
 }
-function doLogout(){ isAdmin=false; hide('adminPanel'); show('adminLoginGate'); G('adminPill').style.display='none'; }
+function doLogout(){ isAdmin=false; hide('adminPanel'); show('adminLoginGate'); G('adminPill').style.display='none'; checkLoginLock(); }
 function showForgotPwd(){ hide('adminLoginGate'); show('adminForgotGate'); G('forgotMsg').style.display='none'; }
-function showLoginGate(){ show('adminLoginGate'); hide('adminForgotGate'); }
+function showLoginGate(){ show('adminLoginGate'); hide('adminForgotGate'); checkLoginLock(); }
 function doForgotPwd(){
   const u=V('forgot-user'), acc=adminAccounts.find(a=>a.username===u);
   const msg=G('forgotMsg'); msg.style.display='block';
@@ -1518,7 +1776,10 @@ window.addEventListener('load', () => {
 });
 
 G('ann-date').value = new Date().toISOString().slice(0,10);
+
+// ── 初始化 ──
 (async function init(){
+  initAllBotChecks(); // 初始化所有防機器人驗證
   const handled = await handleHashRoute();
   if(!handled) renderHome();
 })();
@@ -1542,7 +1803,6 @@ G('ann-date').value = new Date().toISOString().slice(0,10);
     if(!activePage) return;
     const curId = activePage.id.replace('page-','');
 
-    // 文章內頁：右滑回上一頁，左滑不動
     if(curId === 'articles' && G('view-article').classList.contains('active')){
       if(dx > 0) backToForum();
       return;
@@ -1551,12 +1811,10 @@ G('ann-date').value = new Date().toISOString().slice(0,10);
     const curIdx = TABS.indexOf(curId);
 
     if(dx < 0){
-      // 手指向左滑 → 切換到下一個頁籤
       if(curIdx === -1 || curIdx >= TABS.length - 1) return;
       const navBtns = document.querySelectorAll('.nav-tab');
       switchPage(TABS[curIdx + 1], navBtns[curIdx + 1]);
     } else {
-      // 手指向右滑 → 切換到上一個頁籤，首頁時不動
       if(curIdx <= 0) return;
       const navBtns = document.querySelectorAll('.nav-tab');
       switchPage(TABS[curIdx - 1], navBtns[curIdx - 1]);
