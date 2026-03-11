@@ -1328,8 +1328,9 @@ G('ann-date').value=new Date().toISOString().slice(0,10);
   if(!handled)renderHome();
 })();
 
-// fix2: 手勢僅保留文章內頁右滑返回，取消所有頁面切換手勢
+// fix2: 左右滑動切換頁籤，文章內頁右滑返回；取消所有頁面的瀏覽器返回手勢
 (function(){
+  const TABS=['home','articles','discuss','resources','feedback'];
   let startX=0,startY=0;
   document.addEventListener('touchstart',e=>{startX=e.touches[0].clientX;startY=e.touches[0].clientY;},{passive:true});
   document.addEventListener('touchend',e=>{
@@ -1339,8 +1340,22 @@ G('ann-date').value=new Date().toISOString().slice(0,10);
     const activePage=document.querySelector('.page.active');
     if(!activePage)return;
     const curId=activePage.id.replace('page-','');
-    // 只有文章內頁右滑才觸發返回
-    if(curId==='articles'&&G('view-article').classList.contains('active')&&dx>0)backToForum();
+    // 文章內頁：右滑返回文章列表
+    if(curId==='articles'&&G('view-article').classList.contains('active')){
+      if(dx>0)backToForum();
+      return;
+    }
+    // 其他頁面：左右滑動切換頁籤（不觸發瀏覽器返回）
+    const curIdx=TABS.indexOf(curId);
+    if(curIdx===-1)return;
+    if(dx<0&&curIdx<TABS.length-1){
+      const navBtns=document.querySelectorAll('.nav-tab');
+      switchPage(TABS[curIdx+1],navBtns[curIdx+1]);
+    } else if(dx>0&&curIdx>0){
+      const navBtns=document.querySelectorAll('.nav-tab');
+      switchPage(TABS[curIdx-1],navBtns[curIdx-1]);
+    }
+    // curIdx===0 右滑（首頁往左）：不做任何事，避免觸發瀏覽器返回
   },{passive:true});
 })();
 </script>
