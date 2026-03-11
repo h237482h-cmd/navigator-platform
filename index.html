@@ -1036,7 +1036,10 @@ async function openArticle(id){
   try{
     const arts = await sb('GET','articles',{'id':'eq.'+id});
     const art = arts[0]; if(!art) return;
-    try{ await sb('PATCH','articles',{'id':'eq.'+id},{views:(art.views||0)+1}); }catch(e){}
+    const viewedKey = 'viewed_' + id;
+    if(!sessionStorage.getItem(viewedKey)){
+      try{ await sb('PATCH','articles',{'id':'eq.'+id},{views:(art.views||0)+1}); sessionStorage.setItem(viewedKey,'1'); }catch(e){}
+    }
     G('articleMeta').innerHTML=`<span style="display:inline-block;background:${THEMES[art.theme]?.color||'#1e4d8c'};color:#fff;border-radius:99px;padding:.15rem .6rem;font-size:.72rem;font-weight:700">${esc(THEMES[art.theme]?.label||'')}</span>`;
     G('articleTitle').textContent = art.title;
     const shareUrl = getArticleUrl(id);
@@ -1128,7 +1131,10 @@ async function openDisc(id){
   try{
     const rows = await sb('GET','discussions',{'id':'eq.'+id});
     const d=rows[0]; if(!d) return;
-    try{ await sb('PATCH','discussions',{'id':'eq.'+id},{views:(d.views||0)+1}); }catch(e){}
+    const dViewedKey = 'dviewed_' + id;
+    if(!sessionStorage.getItem(dViewedKey)){
+      try{ await sb('PATCH','discussions',{'id':'eq.'+id},{views:(d.views||0)+1}); sessionStorage.setItem(dViewedKey,'1'); }catch(e){}
+    }
     G('discDetailMeta').innerHTML='<span class="disc-tag">討論</span>';
     G('discDetailTitle').textContent=d.title;
     G('discDetailInfo').textContent=`👤 ${d.author||'匿名'} · 📅 ${(d.created_at||'').slice(0,10)} · 👁 ${(d.views||0)+1}`;
