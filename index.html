@@ -1545,19 +1545,24 @@ G('ann-date').value = new Date().toISOString().slice(0,10);
     // 必須是明顯的水平滑動（橫向 > 60px，且橫向幅度大於縱向）
     if(Math.abs(dx) < 60 || Math.abs(dx) < Math.abs(dy) * 1.5) return;
 
+    const activePage = document.querySelector('.page.active');
+    if(!activePage) return;
+    const curId = activePage.id.replace('page-','');
+    const curIdx = TABS.indexOf(curId);
+
     if(dx < 0){
-      // 左滑 → 返回上一頁
-      history.back();
-    } else {
-      // 右滑 → 切換到下一個頁籤
-      const activePage = document.querySelector('.page.active');
-      if(!activePage) return;
-      const curId = activePage.id.replace('page-','');
-      const curIdx = TABS.indexOf(curId);
+      // 手指向左滑 → 切換到下一個頁籤
       if(curIdx === -1 || curIdx >= TABS.length - 1) return;
-      const nextTab = TABS[curIdx + 1];
       const navBtns = document.querySelectorAll('.nav-tab');
-      switchPage(nextTab, navBtns[curIdx + 1]);
+      switchPage(TABS[curIdx + 1], navBtns[curIdx + 1]);
+    } else {
+      // 手指向右滑 → 上一個頁籤，或返回瀏覽紀錄
+      if(curIdx > 0){
+        const navBtns = document.querySelectorAll('.nav-tab');
+        switchPage(TABS[curIdx - 1], navBtns[curIdx - 1]);
+      } else {
+        history.back();
+      }
     }
   }, {passive: true});
 })();
