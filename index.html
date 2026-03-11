@@ -7,6 +7,7 @@
 <meta name="theme-color" content="#0d2b55"/>
 <meta name="apple-mobile-web-app-capable" content="yes"/>
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
 <meta name="apple-mobile-web-app-title" content="領航者"/>
 <link rel="apple-touch-icon" href="apple-touch-icon.png"/>
 <title>領航者：AI 人事共創平台</title>
@@ -170,6 +171,10 @@
   .notif-badge{display:inline-flex;align-items:center;justify-content:center;background:var(--danger);color:#fff;border-radius:99px;font-size:.65rem;font-weight:800;min-width:18px;height:18px;padding:0 .35rem;margin-left:auto;}
   #changePwdOverlay{display:none;position:fixed;inset:0;background:#0007;z-index:300;align-items:center;justify-content:center;padding:1rem}
   #changePwdOverlay.open{display:flex}
+  /* ── Safe Area（PWA 瀏海修正）── */
+  nav{padding-top:env(safe-area-inset-top);padding-left:max(1rem,env(safe-area-inset-left));padding-right:max(1rem,env(safe-area-inset-right))}
+  main{padding-bottom:max(1.2rem,env(safe-area-inset-bottom))}
+  #installBanner{padding-bottom:max(.75rem,env(safe-area-inset-bottom))}
 </style>
 </head>
 <body>
@@ -1522,6 +1527,39 @@ G('ann-date').value = new Date().toISOString().slice(0,10);
 (async function init(){
   const handled = await handleHashRoute();
   if(!handled) renderHome();
+})();
+
+// ── 手勢：左滑返回、右滑切換頁籤 ──
+(function(){
+  const TABS = ['home','articles','discuss','resources','feedback'];
+  let startX = 0, startY = 0;
+
+  document.addEventListener('touchstart', e => {
+    startX = e.touches[0].clientX;
+    startY = e.touches[0].clientY;
+  }, {passive: true});
+
+  document.addEventListener('touchend', e => {
+    const dx = e.changedTouches[0].clientX - startX;
+    const dy = e.changedTouches[0].clientY - startY;
+    // 必須是明顯的水平滑動（橫向 > 60px，且橫向幅度大於縱向）
+    if(Math.abs(dx) < 60 || Math.abs(dx) < Math.abs(dy) * 1.5) return;
+
+    if(dx < 0){
+      // 左滑 → 返回上一頁
+      history.back();
+    } else {
+      // 右滑 → 切換到下一個頁籤
+      const activePage = document.querySelector('.page.active');
+      if(!activePage) return;
+      const curId = activePage.id.replace('page-','');
+      const curIdx = TABS.indexOf(curId);
+      if(curIdx === -1 || curIdx >= TABS.length - 1) return;
+      const nextTab = TABS[curIdx + 1];
+      const navBtns = document.querySelectorAll('.nav-tab');
+      switchPage(nextTab, navBtns[curIdx + 1]);
+    }
+  }, {passive: true});
 })();
 </script>
 </body>
