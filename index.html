@@ -1554,12 +1554,9 @@ G('ann-date').value = new Date().toISOString().slice(0,10);
     if(!activePage) return;
     const curId = activePage.id.replace('page-','');
 
-    // 文章內頁：左滑回首頁，右滑不動
+    // 文章內頁：右滑回上一頁，左滑不動
     if(curId === 'articles' && G('view-article').classList.contains('active')){
-      if(dx < 0){
-        const navBtns = document.querySelectorAll('.nav-tab');
-        switchPage('home', navBtns[0]);
-      }
+      if(dx > 0) backToForum();
       return;
     }
 
