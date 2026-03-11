@@ -3,6 +3,12 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
+<link rel="manifest" href="manifest.json"/>
+<meta name="theme-color" content="#0d2b55"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+<meta name="apple-mobile-web-app-title" content="領航者"/>
+<link rel="apple-touch-icon" href="apple-touch-icon.png"/>
 <title>領航者：AI 人事共創平台</title>
 <style>
   :root{
@@ -192,7 +198,7 @@
     <p>交流 AI 工具應用心得，共同推動人事業務智動化，提升施政效能。</p>
     <div style="display:flex;gap:.5rem;margin-top:1rem;flex-wrap:wrap">
       <button onclick="sharePageToLine()" style="display:inline-flex;align-items:center;gap:.35rem;background:#06C755;color:#fff;border:none;border-radius:.4rem;padding:.35rem .85rem;cursor:pointer;font-size:.78rem;font-weight:600">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="white"><path d="M19.365 9.863c.349 0 .63.285.63.631 0 .345-.281.63-.63.63H17.61v1.125h1.755c.349 0 .63.283.63.630 0 .344-.281.629-.63.629h-2.386c-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.63-.63h2.386c.346 0 .627.285.627.63 0 .349-.281.63-.63.63H17.61v1.125h1.755zm-3.855 3.016c0 .27-.174.51-.432.596-.064.021-.133.031-.199.031-.211 0-.391-.09-.51-.25l-2.443-3.317v2.94c0 .344-.279.629-.631.629-.346 0-.626-.285-.626-.629V8.108c0-.27.173-.51.43-.595.06-.023.136-.033.194-.033.195 0 .375.104.494.25l2.462 3.33V8.108c0-.345.282-.63.63-.63.345 0 .63.285.63.63v4.771zm-5.741 0c0 .344-.282.629-.631.629-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.63-.63.346 0 .628.285.628.63v4.771zm-2.466.629H4.917c-.345 0-.63-.285-.63-.629V8.108c0-.345.285-.63.63-.63.348 0 .63.285.63.63v4.141h1.756c.348 0 .629.283.629.63 0 .344-.281.629-.629.629M24 10.314C24 4.943 18.615.572 12 .572S0 4.943 0 10.314c0 4.811 4.27 8.842 10.035 9.608.391.082.923.258 1.058.59.12.301.079.766.038 1.08l-.164 1.02c-.045.301-.24 1.186 1.049.645 1.291-.539 6.916-4.070 9.436-6.975C23.176 14.393 24 12.458 24 10.314"/></svg>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="white"><path d="M19.365 9.863c.349 0 .63.285.63.631 0 .345-.281.63-.63.63H17.61v1.125h1.755c.349 0 .63.283.63.630 0 .344-.281.629-.63.629h-2.386c-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.63-.63h2.386c.346 0 .627.285.627.63 0 .349-.281.63-.63.63H17.61v1.125h1.755zm-3.855 3.016c0 .27-.174.51-.432.596-.064.021-.133.031-.199.031-.211 0-.391-.09-.51-.25l-2.443-3.317v2.94c0 .344-.279.629-.631.629-.346 0-.626-.285-.626-.629V8.108c0-.27.173-.51.43-.595.06-.023.136-.033.194-.033.195 0 .375.104.494.25l2.462 3.33V8.108c0-.345.282-.63.63-.63.345 0 .63.285.63.63v4.771zm-5.741 0c0 .344-.282.629-.631.629-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.63-.63.346 0 .628.285.628.63v4.771zm-2.466.629H4.917c-.345 0-.63-.285-.63-.629V8.108c0-.345.285-.63.63-.63.348 0 .63.285.63.63v4.141h1.756c.348 0 .629.283.629.630 0 .344-.281.629-.629.629M24 10.314C24 4.943 18.615.572 12 .572S0 4.943 0 10.314c0 4.811 4.27 8.842 10.035 9.608.391.082.923.258 1.058.59.12.301.079.766.038 1.08l-.164 1.02c-.045.301-.24 1.186 1.049.645 1.291-.539 6.916-4.070 9.436-6.975C23.176 14.393 24 12.458 24 10.314"/></svg>
         LINE
       </button>
       <button onclick="sharePageToFB()" style="display:inline-flex;align-items:center;gap:.35rem;background:#1877F2;color:#fff;border:none;border-radius:.4rem;padding:.35rem .85rem;cursor:pointer;font-size:.78rem;font-weight:600">
@@ -628,8 +634,12 @@
     </div>
   </div>
 </div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
 <!-- 安裝提示橫幅 -->
-<div id="installBanner" style="display:none;position:fixed;bottom:0;left:0;right:0;z-index:500;background:var(--navy);color:#fff;padding:.75rem 1rem;box-shadow:0 -2px 12px #0005;display:none">
+<div id="installBanner" style="display:none;position:fixed;bottom:0;left:0;right:0;z-index:500;background:var(--navy);color:#fff;padding:.75rem 1rem;box-shadow:0 -2px 12px #0005;">
   <div style="max-width:960px;margin:0 auto;display:flex;align-items:center;gap:.75rem;flex-wrap:wrap">
     <img src="apple-touch-icon.png" style="width:36px;height:36px;border-radius:.4rem;flex-shrink:0" onerror="this.style.display='none'">
     <div style="flex:1;min-width:0">
@@ -790,7 +800,6 @@ async function handleHashRoute(){
     return false;
   }
 
-  // 公告內頁 hash
   const annMatch = hash.match(/^#announce=(.+)$/);
   if(annMatch){
     const id = annMatch[1];
@@ -851,7 +860,6 @@ function renderAdminGate(){
 // ── HOME ──
 async function renderHome(){
   detectEnv();
-  // 確保公告內頁隱藏、主內容顯示
   hide('ann-detail-view');
   show('home-main-content');
   await Promise.all([loadAnnounces(), loadHotArticles()]);
@@ -863,7 +871,6 @@ function backToHome(){
   show('home-main-content');
 }
 
-// 開啟公告內頁
 function openAnnounce(r){
   hide('home-main-content');
   show('ann-detail-view');
@@ -903,7 +910,6 @@ async function loadHotArticles(){
     const cutoff = new Date(Date.now()-30*24*60*60*1000).toISOString();
     const recent = _articles.filter(a=>(a.updated_at||a.created_at||'')>=cutoff);
     const hot = (recent.length>=3?recent:_articles).slice(0,3);
-    const rc = ['#ef4444','#f97316','#eab308'];
     SH('homeHotList', hot.length
       ? hot.map((a,i)=>`
         <div class="hot-item" onclick="goArticle('${a.id}')">
@@ -1476,7 +1482,6 @@ function closeBanner(){
 
 function showBanner(hint, showBtn){
   if(sessionStorage.getItem('installBannerClosed')) return;
-  // 已是獨立 App 模式（已安裝）就不顯示
   if(window.navigator.standalone || window.matchMedia('(display-mode: standalone)').matches) return;
   G('installHint').textContent = hint;
   const btn = G('installBtn');
@@ -1484,7 +1489,6 @@ function showBanner(hint, showBtn){
   G('installBanner').style.display = 'block';
 }
 
-// Android / 桌機 Chrome：攔截 beforeinstallprompt
 window.addEventListener('beforeinstallprompt', e => {
   e.preventDefault();
   _deferredPrompt = e;
@@ -1498,14 +1502,22 @@ window.addEventListener('beforeinstallprompt', e => {
   };
 });
 
-// iOS Safari：偵測平台後顯示操作提示
 window.addEventListener('load', () => {
+  // iOS Safari 安裝提示
   const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
   const isSafari = /safari/i.test(navigator.userAgent) && !/chrome|crios|fxios/i.test(navigator.userAgent);
   if(isIOS && isSafari){
     showBanner('點下方 分享按鈕（↑）→ 選「加入主畫面」即可！', false);
   }
+
+  // ── Service Worker 註冊 ──
+  if('serviceWorker' in navigator){
+    navigator.serviceWorker.register('./sw.js')
+      .then(reg => console.log('✅ SW registered:', reg.scope))
+      .catch(err => console.warn('⚠️ SW failed:', err));
+  }
 });
+
 G('ann-date').value = new Date().toISOString().slice(0,10);
 (async function init(){
   const handled = await handleHashRoute();
