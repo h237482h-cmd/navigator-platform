@@ -21,7 +21,7 @@
   }
   *{box-sizing:border-box;margin:0;padding:0}
   /* fix1: fixed nav，body 補 padding-top */
-  body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;padding-top:52px}
+  body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;padding-top:calc(52px + env(safe-area-inset-top))}
   nav{background:var(--navy);padding:0 1rem;display:flex;align-items:center;justify-content:space-between;position:fixed;top:0;left:0;right:0;z-index:100;box-shadow:0 2px 12px #0005;flex-wrap:wrap;padding-top:env(safe-area-inset-top);padding-left:max(1rem,env(safe-area-inset-left));padding-right:max(1rem,env(safe-area-inset-right))}
   .nav-brand{display:flex;align-items:center;gap:.5rem;padding:.75rem 0;color:#fff;font-size:.85rem;font-weight:700;line-height:1.3;flex-shrink:0}
   .nav-tabs{display:flex;flex-wrap:wrap}
@@ -184,6 +184,16 @@
   .login-lock-box .lock-timer{font-size:1.5rem;font-weight:800;color:var(--danger);font-variant-numeric:tabular-nums}
   .login-lock-box .lock-sub{font-size:.75rem;color:#b91c1c;margin-top:.2rem}
   .login-attempts-hint{font-size:.76rem;color:var(--danger);text-align:center;margin-top:.4rem;display:none}
+  /* 回覆功能 */
+  .reply-btn{background:none;border:none;color:var(--accent);font-size:.72rem;font-weight:600;cursor:pointer;padding:.1rem .3rem;margin-left:.3rem}
+  .reply-btn:hover{text-decoration:underline}
+  .reply-indent{margin-left:1.8rem;margin-top:.4rem;border-left:2px solid var(--border);padding-left:.8rem;display:flex;flex-direction:column;gap:.4rem}
+  .reply-box{background:#f8faff;border:1.5px solid var(--accent2);border-radius:.6rem;padding:.7rem .9rem;margin-top:.4rem;margin-left:1.8rem}
+  .reply-box label{font-size:.74rem;font-weight:600;color:var(--navy);margin-bottom:.2rem;display:block}
+  .reply-box input,.reply-box textarea{margin-bottom:.4rem}
+  .reply-to-hint{font-size:.74rem;color:var(--accent);font-weight:600;margin-bottom:.4rem}
+  .cancel-reply-btn{background:none;border:none;color:var(--muted);font-size:.74rem;cursor:pointer;margin-left:.5rem}
+  .cancel-reply-btn:hover{color:var(--danger)}
 </style>
 </head>
 <body>
@@ -293,13 +303,6 @@
           <div class="anon-hint">💡 可留空，將以「匿名」發表</div>
         </div>
         <div style="margin-bottom:.6rem"><label>留言內容 *</label><textarea id="ac-body" placeholder="針對本文發表意見或提問..." style="min-height:65px"></textarea></div>
-        <div id="ac-bot-check" class="bot-check">
-          <span>🤖</span>
-          <label id="ac-bc-label">請計算：</label>
-          <input type="text" id="ac-bc-ans" placeholder="?" autocomplete="off" style="width:72px"/>
-          <span class="bc-hint">請先完成驗證才能留言</span>
-        </div>
-        <div class="hp-field" aria-hidden="true"><input type="text" id="ac-hp" tabindex="-1" autocomplete="off"/></div>
         <button class="btn btn-primary btn-sm" onclick="submitArticleComment()">✉️ 送出</button>
       </div>
       <div class="ac-list" id="acList"></div>
@@ -338,13 +341,6 @@
           <div class="anon-hint">💡 可留空，將以「匿名」發表</div>
         </div>
         <div style="margin-bottom:.6rem"><label>回覆內容 *</label><textarea id="dc-body" placeholder="輸入您的回覆..." style="min-height:65px"></textarea></div>
-        <div id="dc-bot-check" class="bot-check">
-          <span>🤖</span>
-          <label id="dc-bc-label">請計算：</label>
-          <input type="text" id="dc-bc-ans" placeholder="?" autocomplete="off" style="width:72px"/>
-          <span class="bc-hint">請先完成驗證才能回覆</span>
-        </div>
-        <div class="hp-field" aria-hidden="true"><input type="text" id="dc-hp" tabindex="-1" autocomplete="off"/></div>
         <button class="btn btn-primary btn-sm" onclick="submitDiscComment()">✉️ 送出回覆</button>
       </div>
       <div class="ac-list" id="dcList"></div>
@@ -719,8 +715,6 @@ function checkBot(key,ansId,hpId,minMs=3000){
   return true;
 }
 function initAllBotChecks(){
-  initBotCheck('ac','ac-bc-label','ac-bc-ans');
-  initBotCheck('dc','dc-bc-label','dc-bc-ans');
   initBotCheck('disc','disc-bc-label','disc-bc-ans');
   initBotCheck('sub','sub-bc-label','sub-bc-ans');
   initBotCheck('fb','fb-bc-label','fb-bc-ans');
@@ -949,7 +943,6 @@ async function openArticle(id){
   hide('view-themes');hide('view-forum');G('view-article').classList.add('active');
   SH('articleBody','<div class="loading">載入中...</div>');
   currentArticleId=id; history.pushState(null,'','#article='+id);
-  initBotCheck('ac','ac-bc-label','ac-bc-ans');
   try{
     const arts=await sb('GET','articles',{'id':'eq.'+id});
     const art=arts[0]; if(!art) return;
@@ -990,14 +983,67 @@ function backToForum(){history.pushState(null,'','#page=articles');G('view-artic
 async function loadArticleComments(artId){
   try{
     const coms=await sb('GET','article_comments',{'article_id':'eq.'+artId,order:'created_at.asc'});
-    SH('acList',coms.length?coms.map(x=>`<div class="ac-item"><div class="ac-header"><div class="mini-avatar">${(x.name||'匿')[0]}</div><span style="font-weight:700;font-size:.83rem;color:var(--navy)">${esc(x.name||'匿名')}</span><span class="ac-time">${fmtDT(x.created_at)}</span>${isAdmin?`<button class="btn btn-danger" style="padding:.18rem .42rem;font-size:.7rem" onclick="deleteArticleComment('${x.id}','${artId}')">🗑</button>`:''}</div><div class="ac-body">${esc(x.body)}</div></div>`).join(''):'<p style="color:var(--muted);font-size:.83rem;text-align:center;padding:.5rem">尚無留言，歡迎率先發表！</p>');
+    const roots=coms.filter(x=>!x.parent_id);
+    const children=coms.filter(x=>x.parent_id);
+    function renderAcItem(x,isReply=false){
+      const replies=children.filter(c=>c.parent_id===x.id);
+      const replyHtml=replies.map(r=>renderAcItem(r,true)).join('');
+      const indent=isReply?'':'';
+      return `<div class="ac-item" id="ac-item-${x.id}">
+        <div class="ac-header">
+          <div class="mini-avatar">${(x.name||'匿')[0]}</div>
+          <span style="font-weight:700;font-size:.83rem;color:var(--navy)">${esc(x.name||'匿名')}</span>
+          <span class="ac-time">${fmtDT(x.created_at)}</span>
+          <button class="reply-btn" onclick="showReplyBox('ac','${x.id}','${esc(x.name||'匿名')}','${artId}')">↩ 回覆</button>
+          ${isAdmin?`<button class="btn btn-danger" style="padding:.18rem .42rem;font-size:.7rem" onclick="deleteArticleComment('${x.id}','${artId}')">🗑</button>`:''}
+        </div>
+        <div class="ac-body">${esc(x.body)}</div>
+        <div id="reply-box-ac-${x.id}"></div>
+        ${replies.length?`<div class="reply-indent">${replyHtml}</div>`:''}
+      </div>`;
+    }
+    SH('acList',roots.length?roots.map(x=>renderAcItem(x)).join(''):'<p style="color:var(--muted);font-size:.83rem;text-align:center;padding:.5rem">尚無留言，歡迎率先發表！</p>');
   }catch(e){SH('acList','<p style="color:var(--danger);font-size:.82rem">留言載入失敗</p>');}
 }
 async function submitArticleComment(){
-  if(!checkBot('ac','ac-bc-ans','ac-hp'))return;
   const body=V('ac-body');if(!body){showToast('請填寫留言內容','error');return;}
-  try{await sb('POST','article_comments',{},{article_id:currentArticleId,name:V('ac-name')||'',body});G('ac-name').value='';G('ac-body').value='';initBotCheck('ac','ac-bc-label','ac-bc-ans');await loadArticleComments(currentArticleId);showToast('✅ 留言已送出');}
+  try{await sb('POST','article_comments',{},{article_id:currentArticleId,name:V('ac-name')||'',body});G('ac-name').value='';G('ac-body').value='';await loadArticleComments(currentArticleId);showToast('✅ 留言已送出');}
   catch(e){showToast('送出失敗：'+e.message,'error');}
+}
+async function submitReply(type,parentId,contextId){
+  const pfx='reply-'+type+'-'+parentId;
+  const body=G(pfx+'-body').value.trim();
+  if(!body){showToast('請填寫回覆內容','error');return;}
+  const name=G(pfx+'-name').value.trim()||'';
+  try{
+    if(type==='ac'){
+      await sb('POST','article_comments',{},{article_id:currentArticleId,name,body,parent_id:parentId});
+      await loadArticleComments(currentArticleId);
+    } else {
+      await sb('POST','discussion_comments',{},{discussion_id:currentDiscId,name,body,parent_id:parentId});
+      await loadDiscComments(currentDiscId);
+    }
+    showToast('✅ 回覆已送出');
+  }catch(e){showToast('送出失敗：'+e.message,'error');}
+}
+function showReplyBox(type,parentId,parentName,contextId){
+  // close any open reply boxes first
+  document.querySelectorAll('[id^="reply-box-"]').forEach(el=>{el.innerHTML='';});
+  const pfx='reply-'+type+'-'+parentId;
+  const html=`<div class="reply-box">
+    <div class="reply-to-hint">↩ 回覆給 ${esc(parentName)} <button class="cancel-reply-btn" onclick="cancelReplyBox('${type}','${parentId}')">✕ 取消</button></div>
+    <label>姓名或暱稱</label>
+    <input id="${pfx}-name" type="text" placeholder="輸入姓名、暱稱，或留空匿名"/>
+    <label>回覆內容 *</label>
+    <textarea id="${pfx}-body" placeholder="輸入回覆..." style="min-height:55px;margin-bottom:.4rem"></textarea>
+    <button class="btn btn-primary btn-sm" onclick="submitReply('${type}','${parentId}','${contextId}')">✉️ 送出回覆</button>
+  </div>`;
+  const box=G('reply-box-'+type+'-'+parentId);
+  if(box) box.innerHTML=html;
+}
+function cancelReplyBox(type,parentId){
+  const box=G('reply-box-'+type+'-'+parentId);
+  if(box) box.innerHTML='';
 }
 async function deleteArticleComment(cId,artId){
   if(!confirm('確定刪除此留言？'))return;
@@ -1023,7 +1069,6 @@ async function submitDisc(){
 }
 async function openDisc(id){
   currentDiscId=id;hide('disc-view-list');G('disc-view-detail').classList.add('active');
-  initBotCheck('dc','dc-bc-label','dc-bc-ans');
   try{
     const rows=await sb('GET','discussions',{'id':'eq.'+id});const d=rows[0];if(!d)return;
     const dk='dviewed_'+id;
@@ -1039,13 +1084,30 @@ function backToDiscList(){G('disc-view-detail').classList.remove('active');rende
 async function loadDiscComments(discId){
   try{
     const coms=await sb('GET','discussion_comments',{'discussion_id':'eq.'+discId,order:'created_at.asc'});
-    SH('dcList',coms.length?coms.map(x=>`<div class="ac-item"><div class="ac-header"><div class="mini-avatar">${(x.name||'匿')[0]}</div><span style="font-weight:700;font-size:.83rem;color:var(--navy)">${esc(x.name||'匿名')}</span><span class="ac-time">${fmtDT(x.created_at)}</span>${isAdmin?`<button class="btn btn-danger" style="padding:.18rem .42rem;font-size:.7rem" onclick="deleteDiscComment('${x.id}','${discId}')">🗑</button>`:''}</div><div class="ac-body">${esc(x.body)}</div></div>`).join(''):'<p style="color:var(--muted);font-size:.83rem;text-align:center;padding:.5rem">尚無回覆，歡迎率先回應！</p>');
+    const roots=coms.filter(x=>!x.parent_id);
+    const children=coms.filter(x=>x.parent_id);
+    function renderDcItem(x,isReply=false){
+      const replies=children.filter(c=>c.parent_id===x.id);
+      const replyHtml=replies.map(r=>renderDcItem(r,true)).join('');
+      return `<div class="ac-item" id="dc-item-${x.id}">
+        <div class="ac-header">
+          <div class="mini-avatar">${(x.name||'匿')[0]}</div>
+          <span style="font-weight:700;font-size:.83rem;color:var(--navy)">${esc(x.name||'匿名')}</span>
+          <span class="ac-time">${fmtDT(x.created_at)}</span>
+          <button class="reply-btn" onclick="showReplyBox('dc','${x.id}','${esc(x.name||'匿名')}','${discId}')">↩ 回覆</button>
+          ${isAdmin?`<button class="btn btn-danger" style="padding:.18rem .42rem;font-size:.7rem" onclick="deleteDiscComment('${x.id}','${discId}')">🗑</button>`:''}
+        </div>
+        <div class="ac-body">${esc(x.body)}</div>
+        <div id="reply-box-dc-${x.id}"></div>
+        ${replies.length?`<div class="reply-indent">${replyHtml}</div>`:''}
+      </div>`;
+    }
+    SH('dcList',roots.length?roots.map(x=>renderDcItem(x)).join(''):'<p style="color:var(--muted);font-size:.83rem;text-align:center;padding:.5rem">尚無回覆，歡迎率先回應！</p>');
   }catch(e){SH('dcList','<p style="color:var(--danger);font-size:.82rem">回覆載入失敗</p>');}
 }
 async function submitDiscComment(){
-  if(!checkBot('dc','dc-bc-ans','dc-hp'))return;
   const body=V('dc-body');if(!body){showToast('請填寫回覆內容','error');return;}
-  try{await sb('POST','discussion_comments',{},{discussion_id:currentDiscId,name:V('dc-name')||'',body});G('dc-name').value='';G('dc-body').value='';initBotCheck('dc','dc-bc-label','dc-bc-ans');await loadDiscComments(currentDiscId);showToast('✅ 回覆已送出');}
+  try{await sb('POST','discussion_comments',{},{discussion_id:currentDiscId,name:V('dc-name')||'',body});G('dc-name').value='';G('dc-body').value='';await loadDiscComments(currentDiscId);showToast('✅ 回覆已送出');}
   catch(e){showToast('送出失敗：'+e.message,'error');}
 }
 async function deleteDiscComment(cId,discId){
@@ -1238,7 +1300,14 @@ async function loadAdminFeedback(){
     SH('adminFeedbackList',fbs.length?fbs.map(f=>`<div style="background:var(--bg);border:1px solid var(--border);border-radius:.6rem;padding:.8rem;margin-bottom:.5rem"><div style="display:flex;align-items:center;gap:.5rem;flex-wrap:wrap;margin-bottom:.35rem"><span class="chip" style="background:#fef9c3;color:#92400e">${esc(f.type)}</span><span style="font-size:.83rem;font-weight:600;color:var(--navy)">${esc(f.title)}</span><span style="font-size:.72rem;color:var(--muted);margin-left:auto">${esc(f.name)} · ${(f.created_at||'').slice(0,10)}</span></div><div style="font-size:.82rem;color:var(--text);line-height:1.5;margin-bottom:.4rem">${esc(f.body)}</div><div style="font-size:.76rem;color:var(--accent);margin-bottom:.5rem">📧 ${esc(f.email)}</div><button class="btn btn-sm" style="background:#dcfce7;color:#166534;font-size:.76rem" onclick="markFeedbackDone('${f.id}')">✅ 標記已處理</button></div>`).join(''):'<p style="color:var(--muted);font-size:.84rem">目前無待處理回饋 🎉</p>');
   }catch(e){SH('adminFeedbackList','<p style="color:var(--danger)">載入失敗</p>');}
 }
-async function markFeedbackDone(id){await sb('PATCH','feedbacks',{'id':'eq.'+id},{done:true});await loadAdminFeedback();showToast('已標記為處理完成');}
+async function refreshAdminBadges(){
+  try{
+    const[f,s]=await Promise.all([sb('GET','feedbacks',{done:'eq.false',select:'id'}),sb('GET','submissions',{status:'eq.pending',select:'id'})]);
+    updateBadges(f?.length||0,s?.length||0);
+    G('statFeedback').textContent=f?.length||0;
+  }catch(e){}
+}
+async function markFeedbackDone(id){await sb('PATCH','feedbacks',{'id':'eq.'+id},{done:true});await loadAdminFeedback();showToast('已標記為處理完成');refreshAdminBadges();}
 
 async function loadAdminSubmissions(){
   try{
@@ -1264,12 +1333,12 @@ async function publishSubmission(id){
   try{
     const rows=await sb('GET','submissions',{'id':'eq.'+id});const s=rows[0];if(!s)return;
     await sb('POST','articles',{},{theme:s.theme,title:s.title,author:s.name||'匿名',summary:s.summary,body:s.body,prompt:s.prompt||'',views:0});
-    await sb('PATCH','submissions',{'id':'eq.'+id},{status:'published'});await loadAdminSubmissions();showToast('🚀 投稿已發佈至文章專區！');
+    await sb('PATCH','submissions',{'id':'eq.'+id},{status:'published'});await loadAdminSubmissions();showToast('🚀 投稿已發佈至文章專區！');refreshAdminBadges();
   }catch(e){showToast('發佈失敗：'+e.message,'error');}
 }
 async function deleteSubmission(id){
   if(!confirm('確定刪除此投稿？'))return;
-  try{await sb('DELETE','submissions',{'id':'eq.'+id});await loadAdminSubmissions();showToast('🗑 投稿已刪除');}
+  try{await sb('DELETE','submissions',{'id':'eq.'+id});await loadAdminSubmissions();showToast('🗑 投稿已刪除');refreshAdminBadges();}
   catch(e){showToast('刪除失敗','error');}
 }
 
@@ -1331,7 +1400,7 @@ G('ann-date').value=new Date().toISOString().slice(0,10);
 (function(){
   const TABS=['home','articles','discuss','resources','feedback'];
   let startX=0,startY=0;
-  document.addEventListener('touchstart',e=>{startX=e.touches[0].clientX;startY=e.touches[0].clientY;},{passive:true});
+  document.addEventListener('touchstart',e=>{startX=e.touches[0].clientX;startY=e.touches[0].clientY;if(startX<20){startX=-9999;}},{passive:true});
   document.addEventListener('touchend',e=>{
     const dx=e.changedTouches[0].clientX-startX;
     const dy=e.changedTouches[0].clientY-startY;
