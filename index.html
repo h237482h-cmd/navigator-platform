@@ -21,7 +21,7 @@
   }
   *{box-sizing:border-box;margin:0;padding:0}
   /* fix1: fixed nav，body 補 padding-top */
-  body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;padding-top:calc(52px + env(safe-area-inset-top))}
+  body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;padding-top:52px}
   nav{background:var(--navy);padding:0 1rem;display:flex;align-items:center;justify-content:space-between;position:fixed;top:0;left:0;right:0;z-index:100;box-shadow:0 2px 12px #0005;flex-wrap:wrap;padding-top:env(safe-area-inset-top);padding-left:max(1rem,env(safe-area-inset-left));padding-right:max(1rem,env(safe-area-inset-right))}
   .nav-brand{display:flex;align-items:center;gap:.5rem;padding:.75rem 0;color:#fff;font-size:.85rem;font-weight:700;line-height:1.3;flex-shrink:0}
   .nav-tabs{display:flex;flex-wrap:wrap}
@@ -958,7 +958,6 @@ async function openArticle(id){
     G('articleMeta').innerHTML=`<span style="display:inline-block;background:${THEMES[art.theme]?.color||'#1e4d8c'};color:#fff;border-radius:99px;padding:.15rem .6rem;font-size:.72rem;font-weight:700">${esc(THEMES[art.theme]?.label||'')}</span>`;
     G('articleTitle').textContent=art.title;
     G('articleInfo').innerHTML=`<span>👤 ${esc(art.author||'管理員')}</span><span>📅 ${(art.created_at||'').slice(0,10)}</span><span>👁 ${(art.views||0)+1}</span>`;
-    // fix1: 文章分享按鈕統一樣式
     const existingShare=G('shareButtonArea'); if(existingShare)existingShare.remove();
     const shareUrl=getArticleUrl(id);
     const shareDiv=document.createElement('div');
@@ -1328,7 +1327,7 @@ G('ann-date').value=new Date().toISOString().slice(0,10);
   if(!handled)renderHome();
 })();
 
-// fix2: 左右滑動切換頁籤，文章內頁右滑返回；取消所有頁面的瀏覽器返回手勢
+// fix2: 左右滑動切換頁籤
 (function(){
   const TABS=['home','articles','discuss','resources','feedback'];
   let startX=0,startY=0;
@@ -1340,12 +1339,10 @@ G('ann-date').value=new Date().toISOString().slice(0,10);
     const activePage=document.querySelector('.page.active');
     if(!activePage)return;
     const curId=activePage.id.replace('page-','');
-    // 文章內頁：右滑返回文章列表
     if(curId==='articles'&&G('view-article').classList.contains('active')){
       if(dx>0)backToForum();
       return;
     }
-    // 其他頁面：左右滑動切換頁籤（不觸發瀏覽器返回）
     const curIdx=TABS.indexOf(curId);
     if(curIdx===-1)return;
     if(dx<0&&curIdx<TABS.length-1){
@@ -1355,9 +1352,19 @@ G('ann-date').value=new Date().toISOString().slice(0,10);
       const navBtns=document.querySelectorAll('.nav-tab');
       switchPage(TABS[curIdx-1],navBtns[curIdx-1]);
     }
-    // curIdx===0 右滑（首頁往左）：不做任何事，避免觸發瀏覽器返回
   },{passive:true});
 })();
+
+// ── 動態修正 nav 高度（手機標籤列折行時）──
+function adjustBodyPadding(){
+  var nav=document.querySelector('nav');
+  if(!nav)return;
+  document.body.style.paddingTop=nav.getBoundingClientRect().height+'px';
+}
+adjustBodyPadding();
+window.addEventListener('resize',adjustBodyPadding);
+window.addEventListener('orientationchange',function(){setTimeout(adjustBodyPadding,200);});
 </script>
+
 </body>
 </html>
