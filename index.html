@@ -1064,7 +1064,13 @@ async function renderDiscList(){
   SH('discList','<div class="loading">載入中...</div>');
   try{
     const rows=await sb('GET','discussions',{order:'created_at.desc'});
-    SH('discList',rows.length?rows.map(d=>`<div class="disc-post"><div class="disc-meta"><span class="disc-tag">討論</span><span style="font-size:.75rem;color:var(--muted)">👤 ${esc(d.author||'匿名')}</span><span style="font-size:.72rem;color:var(--muted);margin-left:auto">${fmtDT(d.created_at)}</span></div><div class="disc-title" onclick="openDisc('${d.id}')">${esc(d.title)}</div><div class="disc-preview">${esc(d.body)}</div><div class="post-footer"><button class="read-more" onclick="openDisc('${d.id}')">繼續閱讀 →</button><span class="post-views">👁 ${d.views||0}</span></div></div>`).join(''):'<div style="background:#fff;border:1px solid var(--border);border-radius:.75rem;padding:2rem;text-align:center;color:var(--muted)">尚無討論，按「✏️ 發起討論」開始第一篇！</div>');
+    // 一次查詢所有討論的留言數
+    let countMap={};
+    try{
+      const counts=await sb('GET','discussion_comments',{select:'discussion_id'});
+      counts.forEach(c=>{countMap[c.discussion_id]=(countMap[c.discussion_id]||0)+1;});
+    }catch(e){}
+    SH('discList',rows.length?rows.map(d=>`<div class="disc-post"><div class="disc-meta"><span class="disc-tag">討論</span><span style="font-size:.75rem;color:var(--muted)">👤 ${esc(d.author||'匿名')}</span><span style="font-size:.72rem;color:var(--muted);margin-left:auto">${fmtDT(d.created_at)}</span></div><div class="disc-title" onclick="openDisc('${d.id}')">${esc(d.title)}</div><div class="disc-preview">${esc(d.body)}</div><div class="post-footer"><button class="read-more" onclick="openDisc('${d.id}')">繼續閱讀 →</button><span class="post-views">👁 ${d.views||0}</span><span class="post-views">💬 ${countMap[d.id]||0}</span></div></div>`).join(''):'<div style="background:#fff;border:1px solid var(--border);border-radius:.75rem;padding:2rem;text-align:center;color:var(--muted)">尚無討論，按「✏️ 發起討論」開始第一篇！</div>');
   }catch(e){SH('discList','<p style="color:var(--danger);padding:1rem">⚠️ 無法連接 Supabase</p>');}
 }
 function openDiscModal(){G('addDiscModal').classList.add('open');initBotCheck('disc','disc-bc-label','disc-bc-ans');}
@@ -1083,7 +1089,8 @@ async function openDisc(id){
     if(!sessionStorage.getItem(dk)){try{await sb('PATCH','discussions',{'id':'eq.'+id},{views:(d.views||0)+1});sessionStorage.setItem(dk,'1');}catch(e){}}
     G('discDetailMeta').innerHTML='<span class="disc-tag">討論</span>';
     G('discDetailTitle').textContent=d.title;
-    G('discDetailInfo').textContent=`👤 ${d.author||'匿名'} · 📅 ${(d.created_at||'').slice(0,10)} · 👁 ${(d.views||0)+1}`;
+    const cCount=await sb('GET','discussion_comments',{'discussion_id':'eq.'+id,select:'id'}).then(r=>r?.length||0).catch(()=>0);
+    G('discDetailInfo').textContent=`👤 ${d.author||'匿名'} · 📅 ${(d.created_at||'').slice(0,10)} · 👁 ${(d.views||0)+1} · 💬 ${cCount}`;
     SH('discDetailBody',d.body.split('\n').map(l=>l.trim()?`<p>${esc(l)}</p>`:'').join(''));
     await loadDiscComments(id);G('dc-name').value='';G('dc-body').value='';
   }catch(e){showToast('載入失敗','error');}
@@ -1416,10 +1423,13 @@ G('ann-date').value=new Date().toISOString().slice(0,10);
     const activePage=document.querySelector('.page.active');
     if(!activePage)return;
     const curId=activePage.id.replace('page-','');
+    // 文章內頁：右滑返回文章列表
     if(curId==='articles'&&G('view-article').classList.contains('active')){
       if(dx>0)backToForum();
       return;
     }
+    // 討論區內文：停用左右滑動
+    if(curId==='discuss'&&G('disc-view-detail').classList.contains('active'))return;
     const curIdx=TABS.indexOf(curId);
     if(curIdx===-1)return;
     if(dx<0&&curIdx<TABS.length-1){
