@@ -869,13 +869,12 @@ function renderAdminGate(){
 async function renderHome(){detectEnv();hide('ann-detail-view');show('home-main-content');await Promise.all([loadAnnounces(),loadHotArticles()]);trackVisit();}
 async function trackVisit(){
   try{
-    if(!sessionStorage.getItem('visited')){
-      sessionStorage.setItem('visited','1');
-      // 先取目前數值再加 1
-      const rows=await sb('GET','site_visits',{'id':'eq.1'});
-      if(rows&&rows[0]){
-        await sb('PATCH','site_visits',{'id':'eq.1'},{count:(rows[0].count||0)+1});
-      }
+    const today=new Date().toISOString().slice(0,10);
+    if(localStorage.getItem('visited_date')===today) return fetchVisitCount();
+    localStorage.setItem('visited_date',today);
+    const rows=await sb('GET','site_visits',{'id':'eq.1'});
+    if(rows&&rows[0]){
+      await sb('PATCH','site_visits',{'id':'eq.1'},{count:(rows[0].count||0)+1});
     }
     fetchVisitCount();
   }catch(e){}
