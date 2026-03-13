@@ -143,7 +143,7 @@
   .role-badge{display:inline-block;border-radius:99px;padding:.1rem .5rem;font-size:.7rem;font-weight:700;color:#fff}
   .role-admin{background:var(--tagA)}.role-editor{background:var(--tagB)}.role-viewer{background:#64748b}
   label{display:block;font-size:.76rem;font-weight:600;color:var(--navy);margin-bottom:.25rem}
-  input,textarea,select{width:100%;border:1.5px solid var(--border);border-radius:.5rem;padding:.5rem .7rem;font-size:.86rem;color:var(--text);outline:none;transition:.2s;background:#fff;font-family:inherit}
+  input,textarea,select{width:100%;border:1.5px solid var(--border);border-radius:.5rem;padding:.5rem .7rem;font-size:max(16px,.86rem);color:var(--text);outline:none;transition:.2s;background:#fff;font-family:inherit}
   input:focus,textarea:focus,select:focus{border-color:var(--accent);box-shadow:0 0 0 3px #3b82f618}
   textarea{resize:vertical;min-height:75px}
   .btn{display:inline-flex;align-items:center;gap:.35rem;padding:.5rem 1.1rem;border-radius:.5rem;border:none;cursor:pointer;font-size:.85rem;font-weight:600;transition:.2s}
@@ -228,11 +228,10 @@
 
 <!-- HOME -->
 <div class="page active" id="page-home">
-  <div class="hero">
-    <div class="hero-tag">📋 2026 人事業務智動化計畫</div>
+  <div class="hero" style="padding:1.1rem 1.4rem">
     <h1>領航者：AI 人事共創平台</h1>
-    <p>交流 AI 工具應用心得，共同推動人事業務智動化，提升施政效能。</p>
-    <div style="display:flex;gap:.5rem;margin-top:1rem;flex-wrap:wrap">
+    <div style="font-size:.75rem;color:#93c5fd;margin-top:.3rem">👥 累計來訪 <span id="visitCount">—</span> 人次</div>
+    <div style="display:flex;gap:.5rem;margin-top:.8rem;flex-wrap:wrap">
       <button onclick="sharePageToLine()" style="display:inline-flex;align-items:center;gap:.35rem;background:#06C755;color:#fff;border:none;border-radius:.4rem;padding:.35rem .85rem;cursor:pointer;font-size:.78rem;font-weight:600">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="white"><path d="M19.365 9.863c.349 0 .63.285.63.631 0 .345-.281.63-.63.63H17.61v1.125h1.755c.349 0 .63.283.63.630 0 .344-.281.629-.63.629h-2.386c-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.63-.63h2.386c.346 0 .627.285.627.63 0 .349-.281.63-.63.63H17.61v1.125h1.755zm-3.855 3.016c0 .27-.174.51-.432.596-.064.021-.133.031-.199.031-.211 0-.391-.09-.51-.25l-2.443-3.317v2.94c0 .344-.279.629-.631.629-.346 0-.626-.285-.626-.629V8.108c0-.27.173-.51.43-.595.06-.023.136-.033.194-.033.195 0 .375.104.494.25l2.462 3.33V8.108c0-.345.282-.63.63-.63.345 0 .63.285.63.63v4.771zm-5.741 0c0 .344-.282.629-.631.629-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.63-.63.346 0 .628.285.628.63v4.771zm-2.466.629H4.917c-.345 0-.63-.285-.63-.629V8.108c0-.345.285-.63.63-.63.348 0 .63.285.63.63v4.141h1.756c.348 0 .629.283.629.630 0 .344-.281.629-.629.629M24 10.314C24 4.943 18.615.572 12 .572S0 4.943 0 10.314c0 4.811 4.27 8.842 10.035 9.608.391.082.923.258 1.058.59.12.301.079.766.038 1.08l-.164 1.02c-.045.301-.24 1.186 1.049.645 1.291-.539 6.916-4.070 9.436-6.975C23.176 14.393 24 12.458 24 10.314"/></svg>
         LINE
@@ -472,8 +471,8 @@
       <div class="admin-sidebar">
         <div class="admin-sidebar-item active" onclick="switchAdminTab('tab-announce',this)">📢 公告管理</div>
         <div class="admin-sidebar-item" onclick="switchAdminTab('tab-accounts',this)">👤 帳號管理</div>
-        <div class="admin-sidebar-item" onclick="switchAdminTab('tab-articles',this)">📝 文章管理</div>
-        <div class="admin-sidebar-item" onclick="switchAdminTab('tab-discuss',this)">🗣️ 討論管理 <span class="notif-badge" id="badge-discuss" style="display:none"></span></div>
+        <div class="admin-sidebar-item" onclick="switchAdminTab('tab-articles',this)">📝 文章管理 <span class="notif-badge" id="badge-article-comments" style="display:none"></span></div>
+        <div class="admin-sidebar-item" onclick="switchAdminTab('tab-discuss',this)">🗣️ 討論管理 <span class="notif-badge" id="badge-discuss" style="display:none"></span><span class="notif-badge" id="badge-disc-comments" style="display:none"></span></div>
         <div class="admin-sidebar-item" onclick="switchAdminTab('tab-resources',this)">📦 資源管理</div>
         <div class="admin-sidebar-item" onclick="switchAdminTab('tab-feedback',this)">📮 問題回饋 <span class="notif-badge" id="badge-feedback" style="display:none"></span></div>
         <div class="admin-sidebar-item" onclick="switchAdminTab('tab-submissions',this)">✍️ 投稿管理 <span class="notif-badge" id="badge-submissions" style="display:none"></span></div>
@@ -487,7 +486,7 @@
               <div><label>顯示日期</label><input id="ann-date" type="date"/></div>
             </div>
             <div style="margin-bottom:.6rem"><label>公告標題 *</label><input id="ann-body" type="text" placeholder="公告標題文字"/></div>
-            <div style="margin-bottom:.6rem"><label>公告內文</label><input id="ann-content" type="text" placeholder="點進公告後顯示的詳細內容（選填）"/></div>
+            <div style="margin-bottom:.6rem"><label>公告內文</label><textarea id="ann-content" placeholder="點進公告後顯示的詳細內容（選填）" style="min-height:80px"></textarea></div>
             <button class="btn btn-green btn-sm" onclick="addAnnounce()">+ 新增公告</button>
           </div>
           <div class="admin-card"><div class="admin-header"><span>📋</span><h2>現有公告列表</h2></div><div id="adminAnnounceList"><div class="loading">載入中...</div></div></div>
@@ -610,7 +609,7 @@
     <div style="margin-bottom:.6rem"><label>公告類型</label><select id="edit-ann-type"><option value="最新">🆕 最新</option><option value="公告">📌 公告</option><option value="資源">📎 資源</option><option value="注意">⚠️ 注意</option></select></div>
     <div style="margin-bottom:.6rem"><label>顯示日期</label><input id="edit-ann-date" type="date"/></div>
     <div style="margin-bottom:.6rem"><label>公告標題 *</label><input id="edit-ann-body" type="text"/></div>
-    <div style="margin-bottom:.6rem"><label>公告內文</label><input id="edit-ann-content" type="text" placeholder="點進公告後顯示的詳細內容（選填）"/></div>
+    <div style="margin-bottom:.6rem"><label>公告內文</label><textarea id="edit-ann-content" placeholder="點進公告後顯示的詳細內容（選填）" style="min-height:80px"></textarea></div>
     <div class="modal-footer">
       <button class="btn" style="background:#f1f5f9;color:var(--text)" onclick="document.getElementById('editAnnounceOverlay').classList.remove('open')">取消</button>
       <button class="btn btn-green" onclick="saveEditAnnounce()">💾 儲存</button>
@@ -687,7 +686,7 @@ const SH=(id,h)=>G(id).innerHTML=h;
 const show=id=>G(id).style.display='block';
 const hide=id=>G(id).style.display='none';
 function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
-function fmtDT(iso){return(iso||'').slice(0,16).replace('T',' ');}
+function fmtDT(iso){if(!iso)return'';const d=new Date(iso);return d.toLocaleString('zh-TW',{timeZone:'Asia/Taipei',year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',hour12:false}).replace(/\//g,'-');}
 function today(){return new Date().toISOString().slice(0,10);}
 function showToast(msg,type='success'){
   const t=G('toast'); t.textContent=msg;
@@ -855,8 +854,8 @@ function switchAdminTab(id,el){
   document.querySelectorAll('.admin-panel-section').forEach(s=>s.classList.remove('active'));
   document.querySelectorAll('.admin-sidebar-item').forEach(s=>s.classList.remove('active'));
   G(id).classList.add('active'); el.classList.add('active');
-  if(id==='tab-announce')loadAdminAnnounces();if(id==='tab-articles')loadAdminArticles();
-  if(id==='tab-discuss')loadAdminDiscs();if(id==='tab-resources')renderAdminResources();
+  if(id==='tab-announce')loadAdminAnnounces();if(id==='tab-articles'){loadAdminArticles();clearArticleCommentBadge();}
+  if(id==='tab-discuss'){loadAdminDiscs();clearDiscBadge();clearDiscCommentBadge();}if(id==='tab-resources')renderAdminResources();
   if(id==='tab-feedback')loadAdminFeedback();if(id==='tab-submissions')loadAdminSubmissions();
 }
 function renderAdminGate(){
@@ -865,7 +864,26 @@ function renderAdminGate(){
 }
 
 // ── HOME ──
-async function renderHome(){detectEnv();hide('ann-detail-view');show('home-main-content');await Promise.all([loadAnnounces(),loadHotArticles()]);}
+async function renderHome(){detectEnv();hide('ann-detail-view');show('home-main-content');await Promise.all([loadAnnounces(),loadHotArticles()]);trackVisit();}
+async function trackVisit(){
+  try{
+    if(!sessionStorage.getItem('visited')){
+      sessionStorage.setItem('visited','1');
+      // 先取目前數值再加 1
+      const rows=await sb('GET','site_visits',{'id':'eq.1'});
+      if(rows&&rows[0]){
+        await sb('PATCH','site_visits',{'id':'eq.1'},{count:(rows[0].count||0)+1});
+      }
+    }
+    fetchVisitCount();
+  }catch(e){}
+}
+async function fetchVisitCount(){
+  try{
+    const rows=await sb('GET','site_visits',{'id':'eq.1'});
+    if(rows&&rows[0]){const el=G('visitCount');if(el)el.textContent=Number(rows[0].count).toLocaleString();}
+  }catch(e){}
+}
 function backToHome(){history.pushState(null,'','#page=home');hide('ann-detail-view');show('home-main-content');}
 function openAnnounce(r){
   hide('home-main-content');show('ann-detail-view');history.pushState(null,'','#announce='+r.id);
@@ -879,7 +897,7 @@ async function loadAnnounces(){
     const rows=await sb('GET','announces',{order:'date.desc'});
     SH('announceList',rows.length?rows.map(r=>`<div class="announce-item" onclick='openAnnounce(${JSON.stringify(r)})'><span class="chip" style="${ANN_STYLE[r.type]||ANN_STYLE['公告']}">${ANN_ICON[r.type]||'📌'} ${esc(r.type)}</span><span class="ann-title">${esc(r.body)}</span><span class="date">${(r.date||'').slice(0,10)}</span><span class="ann-arrow">›</span></div>`).join(''):'<p style="color:var(--muted);font-size:.85rem;padding:.5rem">尚無公告</p>');
   }catch(e){
-    SH('announceList',`<div class="announce-item"><span class="chip" style="background:#fef9c3;color:#92400e">🆕 最新</span><span class="ann-title">115年度人事業務績效考核 AI 導入說明會開放報名</span><span class="date">2026-03-01</span><span class="ann-arrow">›</span></div><div class="announce-item"><span class="chip" style="background:#dcfce7;color:#166534">📌 公告</span><span class="ann-title">2026人事業務智動化計畫推動指引（第一版）發布</span><span class="date">2026-02-15</span><span class="ann-arrow">›</span></div><p style="font-size:.75rem;color:var(--muted);margin-top:.5rem">⚠️ 目前顯示靜態預設公告</p>`);
+    SH('announceList','<p style="color:var(--muted);font-size:.84rem;text-align:center;padding:1rem">⚠️ 公告載入失敗，請檢查網路連線後重新整理。</p>');
   }
 }
 async function loadHotArticles(){
@@ -892,7 +910,7 @@ async function loadHotArticles(){
     const newest=[..._articles].sort((a,b)=>((b.created_at||'')>(a.created_at||'')?1:-1)).slice(0,3);
     SH('homeNewList',newest.length?newest.map((a,i)=>`<div class="hot-item" onclick="goArticle('${a.id}')"><div class="hot-rank" style="background:${THEMES[a.theme]?.color||'var(--navy2)'}">${i+1}</div><div class="hot-info"><div class="title">${esc(a.title)}</div><div class="meta">${esc(a.author||'管理員')} · ${(a.created_at||'').slice(0,10)}</div></div><span class="hot-views">👁 ${a.views||0}</span></div>`).join(''):'<p style="color:var(--muted);font-size:.85rem;padding:.5rem">尚無文章</p>');
     SH('homeThemeGrid',buildThemeCards('home'));
-  }catch(e){SH('homeHotList','<p style="color:var(--danger);font-size:.84rem;padding:.5rem">⚠️ 無法連接 Supabase，請將檔案下載後在本機開啟使用。</p>');SH('homeNewList','');SH('homeThemeGrid','');}
+  }catch(e){SH('homeHotList','<p style="color:var(--muted);font-size:.84rem;text-align:center;padding:1rem">⚠️ 載入失敗，請檢查網路連線後重新整理。</p>');SH('homeNewList','');SH('homeThemeGrid','');}
 }
 function buildThemeCards(mode='home'){
   return Object.entries(THEMES).map(([t,th])=>{
@@ -937,7 +955,7 @@ async function renderPosts(t){
   try{
     const posts=await sb('GET','articles',{theme:'eq.'+t,status:'eq.published',order:'created_at.desc'});
     SH('postList',posts.length?posts.map(p=>`<div class="post-item"><div class="post-meta"><span class="post-author">👤 ${esc(p.author||'管理員')}</span><span class="post-date">${(p.created_at||'').slice(0,10)}</span></div><div class="post-title" onclick="openArticle('${p.id}')">${esc(p.title)}</div><div class="post-summary">${esc(p.summary)}</div><div class="post-footer"><button class="read-more" onclick="openArticle('${p.id}')">繼續閱讀 →</button><span class="post-views">👁 ${p.views||0}</span></div></div>`).join(''):'<div style="background:#fff;border:1px solid var(--border);border-radius:.75rem;padding:2rem;text-align:center;color:var(--muted)">此主題尚無文章。</div>');
-  }catch(e){SH('postList','<p style="color:var(--danger);padding:1rem">載入失敗</p>');}
+  }catch(e){SH('postList','<p style="color:var(--muted);font-size:.84rem;text-align:center;padding:1rem">⚠️ 載入失敗，請檢查網路連線後重新整理。</p>');}
 }
 async function openArticle(id){
   hide('view-themes');hide('view-forum');G('view-article').classList.add('active');
@@ -973,7 +991,7 @@ async function openArticle(id){
     pw.innerHTML=(art.prompt&&art.prompt.trim())?`<div class="prompt-box"><div class="prompt-box-header"><span class="prompt-box-label">🤖 AI 提示詞（Prompt）</span><button class="copy-btn" onclick="copyPrompt(this,'${id}')">📋 複製提示詞</button></div><div class="prompt-text" id="pt_${id}">${esc(art.prompt)}</div></div>`:'';
     await loadArticleComments(id);
     G('ac-name').value='';G('ac-body').value='';
-  }catch(e){SH('articleBody','<p style="color:var(--danger)">載入失敗</p>');}
+  }catch(e){SH('articleBody','<p style="color:var(--muted);font-size:.84rem;text-align:center;padding:1rem">⚠️ 載入失敗，請檢查網路連線後重新整理。</p>');}
 }
 function copyPrompt(btn,artId){
   const el=G('pt_'+artId);if(!el)return;
@@ -1003,7 +1021,7 @@ async function loadArticleComments(artId){
       </div>`;
     }
     SH('acList',roots.length?roots.map(x=>renderAcItem(x)).join(''):'<p style="color:var(--muted);font-size:.83rem;text-align:center;padding:.5rem">尚無留言，歡迎率先發表！</p>');
-  }catch(e){SH('acList','<p style="color:var(--danger);font-size:.82rem">留言載入失敗</p>');}
+  }catch(e){SH('acList','<p style="color:var(--muted);font-size:.84rem;text-align:center;padding:1rem">⚠️ 載入失敗，請檢查網路連線後重新整理。</p>');}
 }
 async function submitArticleComment(){
   const body=V('ac-body');if(!body){showToast('請填寫留言內容','error');return;}
@@ -1071,7 +1089,7 @@ async function renderDiscList(){
       counts.forEach(c=>{countMap[c.discussion_id]=(countMap[c.discussion_id]||0)+1;});
     }catch(e){}
     SH('discList',rows.length?rows.map(d=>`<div class="disc-post"><div class="disc-meta"><span class="disc-tag">討論</span><span style="font-size:.75rem;color:var(--muted)">👤 ${esc(d.author||'匿名')}</span><span style="font-size:.72rem;color:var(--muted);margin-left:auto">${fmtDT(d.created_at)}</span></div><div class="disc-title" onclick="openDisc('${d.id}')">${esc(d.title)}</div><div class="disc-preview">${esc(d.body)}</div><div class="post-footer"><button class="read-more" onclick="openDisc('${d.id}')">繼續閱讀 →</button><span class="post-views">👁 ${d.views||0}</span><span class="post-views">💬 ${countMap[d.id]||0}</span></div></div>`).join(''):'<div style="background:#fff;border:1px solid var(--border);border-radius:.75rem;padding:2rem;text-align:center;color:var(--muted)">尚無討論，按「✏️ 發起討論」開始第一篇！</div>');
-  }catch(e){SH('discList','<p style="color:var(--danger);padding:1rem">⚠️ 無法連接 Supabase</p>');}
+  }catch(e){SH('discList','<p style="color:var(--muted);font-size:.84rem;text-align:center;padding:1rem">⚠️ 載入失敗，請檢查網路連線後重新整理。</p>');}
 }
 function openDiscModal(){G('addDiscModal').classList.add('open');initBotCheck('disc','disc-bc-label','disc-bc-ans');}
 function closeDiscModal(){G('addDiscModal').classList.remove('open');['d-name','d-title','d-body'].forEach(i=>G(i).value='');}
@@ -1118,7 +1136,7 @@ async function loadDiscComments(discId){
       </div>`;
     }
     SH('dcList',roots.length?roots.map(x=>renderDcItem(x)).join(''):'<p style="color:var(--muted);font-size:.83rem;text-align:center;padding:.5rem">尚無回覆，歡迎率先回應！</p>');
-  }catch(e){SH('dcList','<p style="color:var(--danger);font-size:.82rem">回覆載入失敗</p>');}
+  }catch(e){SH('dcList','<p style="color:var(--muted);font-size:.84rem;text-align:center;padding:1rem">⚠️ 載入失敗，請檢查網路連線後重新整理。</p>');}
 }
 async function submitDiscComment(){
   const body=V('dc-body');if(!body){showToast('請填寫回覆內容','error');return;}
@@ -1136,7 +1154,7 @@ async function renderResources(){
   try{
     const rows=await sb('GET','resources',{order:'created_at.desc'});
     SH('resList',rows.length?rows.map(r=>`<div class="res-item"><span style="font-size:1.2rem">📄</span><div style="flex:1"><a href="${esc(r.url)}" target="_blank">${esc(r.title)}</a><div class="res-meta">${esc(r.category)} · ${(r.created_at||'').slice(0,10)}</div></div><span class="chip">${esc(r.category)}</span></div>`).join(''):'<p style="color:var(--muted);font-size:.84rem;padding:.5rem">尚無資源。</p>');
-  }catch(e){SH('resList','<p style="color:var(--danger);font-size:.84rem;padding:.5rem">載入失敗</p>');}
+  }catch(e){SH('resList','<p style="color:var(--muted);font-size:.84rem;text-align:center;padding:1rem">⚠️ 載入失敗，請檢查網路連線後重新整理。</p>');}
 }
 
 // ── FEEDBACK ──
@@ -1201,17 +1219,30 @@ async function renderAdmin(){
   renderAdminAccounts();loadAdminAnnounces();
 }
 function updateBadges(fc,sc){
-  sb('GET','discussions',{created_at:'gte.'+new Date(Date.now()-24*60*60*1000).toISOString(),select:'id'}).then(rows=>{setBadge('badge-discuss',rows?.length||0);}).catch(()=>{});
+  const lastSeen=localStorage.getItem('disc_last_seen')||'1970-01-01T00:00:00Z';
+  const lastSeenAC=localStorage.getItem('ac_last_seen')||'1970-01-01T00:00:00Z';
+  const lastSeenDC=localStorage.getItem('dc_last_seen')||'1970-01-01T00:00:00Z';
+  sb('GET','discussions',{created_at:'gt.'+lastSeen,select:'id'}).then(rows=>{setBadge('badge-discuss',rows?.length||0);}).catch(()=>{});
+  sb('GET','article_comments',{created_at:'gt.'+lastSeenAC,select:'id'}).then(rows=>{setBadge('badge-article-comments',rows?.length||0);}).catch(()=>{});
+  sb('GET','discussion_comments',{created_at:'gt.'+lastSeenDC,select:'id'}).then(rows=>{setBadge('badge-disc-comments',rows?.length||0);}).catch(()=>{});
   setBadge('badge-feedback',fc);setBadge('badge-submissions',sc);
-  sb('GET','discussions',{created_at:'gte.'+new Date(Date.now()-24*60*60*1000).toISOString(),select:'id'}).then(rows=>{setBadge('badge-nav-admin',(rows?.length||0)+fc+sc);}).catch(()=>{setBadge('badge-nav-admin',fc+sc);});
+  // 導覽列總燈號
+  Promise.all([
+    sb('GET','discussions',{created_at:'gt.'+lastSeen,select:'id'}).catch(()=>[]),
+    sb('GET','article_comments',{created_at:'gt.'+lastSeenAC,select:'id'}).catch(()=>[]),
+    sb('GET','discussion_comments',{created_at:'gt.'+lastSeenDC,select:'id'}).catch(()=>[]),
+  ]).then(([d,ac,dc])=>{setBadge('badge-nav-admin',(d?.length||0)+(ac?.length||0)+(dc?.length||0)+fc+sc);});
 }
+function clearDiscBadge(){localStorage.setItem('disc_last_seen',new Date().toISOString());setBadge('badge-discuss',0);}
+function clearArticleCommentBadge(){localStorage.setItem('ac_last_seen',new Date().toISOString());setBadge('badge-article-comments',0);}
+function clearDiscCommentBadge(){localStorage.setItem('dc_last_seen',new Date().toISOString());setBadge('badge-disc-comments',0);}
 function setBadge(id,count){const el=G(id);if(!el)return;if(count>0){el.textContent=count>99?'99+':count;el.style.display='inline-flex';}else{el.style.display='none';}}
 
 async function loadAdminAnnounces(){
   try{
     const rows=await sb('GET','announces',{order:'date.desc'});
     SH('adminAnnounceList',rows.length?rows.map(r=>`<div style="background:var(--bg);border:1px solid var(--border);border-radius:.6rem;padding:.75rem;margin-bottom:.5rem;display:flex;align-items:center;gap:.6rem;flex-wrap:wrap"><span class="chip" style="${ANN_STYLE[r.type]||''}">${ANN_ICON[r.type]||'📌'} ${esc(r.type)}</span><div style="flex:1;min-width:0"><div style="font-size:.84rem;font-weight:600;color:var(--navy)">${esc(r.body)}</div>${r.content?`<div style="font-size:.76rem;color:var(--muted);margin-top:.15rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(r.content)}</div>`:''}</div><span style="font-size:.73rem;color:var(--muted)">${(r.date||'').slice(0,10)}</span><div style="display:flex;gap:.4rem"><button class="btn btn-warn btn-sm" onclick="openEditAnnounce('${r.id}','${esc(r.type)}','${(r.date||'').slice(0,10)}','${esc(r.body).replace(/'/g,"&#39;")}','${esc(r.content||'').replace(/'/g,"&#39;")}')">✏️</button><button class="btn btn-danger btn-sm" onclick="deleteAnnounce('${r.id}')">🗑</button></div></div>`).join(''):'<p style="color:var(--muted);font-size:.84rem">尚無公告</p>');
-  }catch(e){SH('adminAnnounceList','<p style="color:var(--danger)">載入失敗</p>');}
+  }catch(e){SH('adminAnnounceList','<p style="color:var(--muted);font-size:.84rem;text-align:center;padding:1rem">⚠️ 載入失敗，請檢查網路連線後重新整理。</p>');}
 }
 async function addAnnounce(){
   const body=V('ann-body');if(!body){showToast('請填寫公告標題','error');return;}
@@ -1250,7 +1281,7 @@ async function loadAdminArticles(){
         </div>
       </div>`;
     }).join(''):'<p style="color:var(--muted);font-size:.84rem">尚無文章</p>');
-  }catch(e){SH('adminArticleList','<p style="color:var(--danger)">載入失敗</p>');}
+  }catch(e){SH('adminArticleList','<p style="color:var(--muted);font-size:.84rem;text-align:center;padding:1rem">⚠️ 載入失敗，請檢查網路連線後重新整理。</p>');}
 }
 async function toggleArticleStatus(id,newStatus){
   const msg=newStatus==='hidden'?'確定要下架此文章？下架後前台將不顯示。':'確定要重新上架此文章？';
@@ -1285,7 +1316,7 @@ async function loadAdminDiscs(){
   try{
     const discs=await sb('GET','discussions',{order:'created_at.desc'});
     SH('adminDiscList',discs.length?discs.map(d=>`<div style="background:var(--bg);border:1px solid var(--border);border-radius:.6rem;padding:.75rem;margin-bottom:.5rem"><div style="font-size:.83rem;font-weight:600;color:var(--navy)">${esc(d.title)}</div><div style="font-size:.73rem;color:var(--muted);margin:.2rem 0">👤 ${esc(d.author||'匿名')} · ${(d.created_at||'').slice(0,10)}</div><div class="item-actions"><button class="btn btn-warn btn-sm" onclick="openEditDisc('${d.id}')">✏️ 編輯</button><button class="btn btn-danger btn-sm" onclick="deleteDisc('${d.id}')">🗑 刪除</button></div></div>`).join(''):'<p style="color:var(--muted);font-size:.84rem">尚無討論</p>');
-  }catch(e){SH('adminDiscList','<p style="color:var(--danger)">載入失敗</p>');}
+  }catch(e){SH('adminDiscList','<p style="color:var(--muted);font-size:.84rem;text-align:center;padding:1rem">⚠️ 載入失敗，請檢查網路連線後重新整理。</p>');}
 }
 async function openEditDisc(id){const rows=await sb('GET','discussions',{'id':'eq.'+id});const d=rows[0];if(!d)return;G('edit-disc-id').value=id;G('edit-disc-title').value=d.title;G('edit-disc-body').value=d.body;G('editDiscOverlay').classList.add('open');}
 function closeEditDisc(){G('editDiscOverlay').classList.remove('open');}
@@ -1300,7 +1331,7 @@ async function renderAdminResources(){
   try{
     const res=await sb('GET','resources',{order:'created_at.desc'});
     SH('adminResList',res.length?res.map(r=>`<div class="res-item"><span>📄</span><div style="flex:1"><a href="${esc(r.url)}" target="_blank">${esc(r.title)}</a><div class="res-meta">${esc(r.category)} · ${(r.created_at||'').slice(0,10)}</div></div><button class="btn btn-danger" onclick="deleteResource('${r.id}')">🗑</button></div>`).join(''):'<p style="color:var(--muted);font-size:.84rem">尚無資源</p>');
-  }catch(e){SH('adminResList','<p style="color:var(--danger)">載入失敗</p>');}
+  }catch(e){SH('adminResList','<p style="color:var(--muted);font-size:.84rem;text-align:center;padding:1rem">⚠️ 載入失敗，請檢查網路連線後重新整理。</p>');}
 }
 async function addResource(){
   const title=V('r-title'),cat=V('r-cat'),url=V('r-url');
@@ -1313,7 +1344,7 @@ async function loadAdminFeedback(){
   try{
     const fbs=await sb('GET','feedbacks',{done:'eq.false',order:'created_at.desc'});
     SH('adminFeedbackList',fbs.length?fbs.map(f=>`<div style="background:var(--bg);border:1px solid var(--border);border-radius:.6rem;padding:.8rem;margin-bottom:.5rem"><div style="display:flex;align-items:center;gap:.5rem;flex-wrap:wrap;margin-bottom:.35rem"><span class="chip" style="background:#fef9c3;color:#92400e">${esc(f.type)}</span><span style="font-size:.83rem;font-weight:600;color:var(--navy)">${esc(f.title)}</span><span style="font-size:.72rem;color:var(--muted);margin-left:auto">${esc(f.name)} · ${(f.created_at||'').slice(0,10)}</span></div><div style="font-size:.82rem;color:var(--text);line-height:1.5;margin-bottom:.4rem">${esc(f.body)}</div><div style="font-size:.76rem;color:var(--accent);margin-bottom:.5rem">📧 ${esc(f.email)}</div><button class="btn btn-sm" style="background:#dcfce7;color:#166534;font-size:.76rem" onclick="markFeedbackDone('${f.id}')">✅ 標記已處理</button></div>`).join(''):'<p style="color:var(--muted);font-size:.84rem">目前無待處理回饋 🎉</p>');
-  }catch(e){SH('adminFeedbackList','<p style="color:var(--danger)">載入失敗</p>');}
+  }catch(e){SH('adminFeedbackList','<p style="color:var(--muted);font-size:.84rem;text-align:center;padding:1rem">⚠️ 載入失敗，請檢查網路連線後重新整理。</p>');}
 }
 async function refreshAdminBadges(){
   try{
@@ -1328,7 +1359,7 @@ async function loadAdminSubmissions(){
   try{
     const rows=await sb('GET','submissions',{status:'eq.pending',order:'created_at.desc'});
     SH('adminSubmissionList',rows.length?rows.map(s=>`<div style="background:var(--bg);border:1px solid var(--border);border-radius:.6rem;padding:.8rem;margin-bottom:.6rem"><div style="display:flex;align-items:center;gap:.5rem;flex-wrap:wrap;margin-bottom:.3rem"><span style="display:inline-block;background:${THEMES[s.theme]?.color||'#1e4d8c'};color:#fff;border-radius:99px;padding:.1rem .5rem;font-size:.7rem;font-weight:700">${esc(THEMES[s.theme]?.label||s.theme)}</span><span style="font-size:.83rem;font-weight:600;color:var(--navy)">${esc(s.title)}</span><span style="font-size:.72rem;color:var(--muted);margin-left:auto">${esc(s.name||'匿名')} · ${(s.created_at||'').slice(0,10)}</span></div><div style="font-size:.8rem;color:var(--text);line-height:1.5;margin-bottom:.3rem;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden">${esc(s.summary)}</div><div style="font-size:.75rem;color:var(--accent);margin-bottom:.5rem">📧 ${esc(s.email)}</div><div class="item-actions"><button class="btn btn-warn btn-sm" onclick="openEditSubmission('${s.id}')">✏️ 編輯</button><button class="btn btn-green btn-sm" onclick="publishSubmission('${s.id}')">🚀 發佈</button><button class="btn btn-danger btn-sm" onclick="deleteSubmission('${s.id}')">🗑 刪除</button></div></div>`).join(''):'<p style="color:var(--muted);font-size:.84rem">目前無待審核投稿 🎉</p>');
-  }catch(e){SH('adminSubmissionList','<p style="color:var(--danger)">載入失敗</p>');}
+  }catch(e){SH('adminSubmissionList','<p style="color:var(--muted);font-size:.84rem;text-align:center;padding:1rem">⚠️ 載入失敗，請檢查網路連線後重新整理。</p>');}
 }
 async function openEditSubmission(id){
   const rows=await sb('GET','submissions',{'id':'eq.'+id});const s=rows[0];if(!s)return;
@@ -1362,7 +1393,7 @@ async function renderAdminAccounts(){
     const rows=await sb('GET','admin_accounts',{order:'created_at.asc'});adminAccounts=rows;
     const roles={admin:'管理員',editor:'編輯員',viewer:'檢視者'},rc={admin:'role-admin',editor:'role-editor',viewer:'role-viewer'};
     SH('accTable','<tr><th>帳號</th><th>Email</th><th>角色</th><th>操作</th></tr>'+adminAccounts.map(a=>`<tr><td>${esc(a.username)}</td><td style="font-size:.8rem">${esc(a.email)}</td><td><span class="role-badge ${rc[a.role]||'role-viewer'}">${roles[a.role]||a.role}</span></td><td style="display:flex;gap:.4rem;flex-wrap:wrap"><button class="btn btn-warn btn-sm" onclick="openChangePwd('${a.id}','${esc(a.username)}')">🔑 改密碼</button>${a.id!==currentAdminId?`<button class="btn btn-danger btn-sm" onclick="deleteAccount('${a.id}')">🗑</button>`:'<span style="font-size:.72rem;color:var(--muted)">（目前登入）</span>'}</td></tr>`).join(''));
-  }catch(e){SH('accTable','<p style="color:var(--danger)">載入失敗</p>');}
+  }catch(e){SH('accTable','<p style="color:var(--muted);font-size:.84rem;text-align:center;padding:1rem">⚠️ 載入失敗，請檢查網路連線後重新整理。</p>');}
 }
 function openChangePwd(id,username){G('pwd-acc-id').value=id;G('pwd-acc-name').textContent=username;G('pwd-new').value='';G('pwd-confirm').value='';G('changePwdOverlay').classList.add('open');}
 async function saveChangePwd(){
