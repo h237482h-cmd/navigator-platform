@@ -484,7 +484,7 @@
             <div class="admin-header"><span>📢</span><h2>新增公告</h2></div>
             <div class="form-grid2">
               <div><label>公告類型</label><select id="ann-type"><option value="最新">🆕 最新</option><option value="公告">📌 公告</option><option value="資源">📎 資源</option><option value="注意">⚠️ 注意</option></select></div>
-              <div><label>顯示日期</label><input id="ann-date" type="date"/></div>
+              <div style="min-width:0"><label>顯示日期</label><input id="ann-date" type="date" style="max-width:100%"/></div>
             </div>
             <div style="margin-bottom:.6rem"><label>公告標題 *</label><input id="ann-body" type="text" placeholder="公告標題文字"/></div>
             <div style="margin-bottom:.6rem"><label>公告內文</label><textarea id="ann-content" placeholder="點進公告後顯示的詳細內容（選填）" style="min-height:80px"></textarea></div>
@@ -608,7 +608,7 @@
     <h3>✏️ 編輯公告</h3>
     <input type="hidden" id="edit-ann-id"/>
     <div style="margin-bottom:.6rem"><label>公告類型</label><select id="edit-ann-type"><option value="最新">🆕 最新</option><option value="公告">📌 公告</option><option value="資源">📎 資源</option><option value="注意">⚠️ 注意</option></select></div>
-    <div style="margin-bottom:.6rem"><label>顯示日期</label><input id="edit-ann-date" type="date"/></div>
+    <div style="margin-bottom:.6rem"><label>顯示日期</label><input id="edit-ann-date" type="date" style="max-width:100%"/></div>
     <div style="margin-bottom:.6rem"><label>公告標題 *</label><input id="edit-ann-body" type="text"/></div>
     <div style="margin-bottom:.6rem"><label>公告內文</label><textarea id="edit-ann-content" placeholder="點進公告後顯示的詳細內容（選填）" style="min-height:80px"></textarea></div>
     <div class="modal-footer">
@@ -868,6 +868,7 @@ function renderAdminGate(){
 // ── HOME ──
 async function renderHome(){detectEnv();hide('ann-detail-view');show('home-main-content');await Promise.all([loadAnnounces(),loadHotArticles()]);trackVisit();}
 async function trackVisit(){
+  if(isAdmin) return fetchVisitCount();
   try{
     const today=new Date().toISOString().slice(0,10);
     if(localStorage.getItem('visited_date')===today) return fetchVisitCount();
@@ -911,7 +912,7 @@ async function loadHotArticles(){
     const newest=[..._articles].sort((a,b)=>((b.created_at||'')>(a.created_at||'')?1:-1)).slice(0,3);
     SH('homeNewList',newest.length?newest.map((a,i)=>`<div class="hot-item" onclick="goArticle('${a.id}')"><div class="hot-rank" style="background:${THEMES[a.theme]?.color||'var(--navy2)'}">${i+1}</div><div class="hot-info"><div class="title">${esc(a.title)}</div><div class="meta">${esc(a.author||'管理員')} · ${(a.created_at||'').slice(0,10)}</div></div><span class="hot-views">👁 ${a.views||0}</span></div>`).join(''):'<p style="color:var(--muted);font-size:.85rem;padding:.5rem">尚無文章</p>');
     SH('homeThemeGrid',buildThemeCards('home'));
-  }catch(e){SH('homeHotList','<p style="color:var(--muted);font-size:.84rem;text-align:center;padding:1rem">⚠️ 載入失敗，請檢查網路連線後重新整理。</p>');SH('homeNewList','');SH('homeThemeGrid','');}
+  }catch(e){SH('homeHotList','<p style="color:var(--muted);font-size:.84rem;text-align:center;padding:1rem">⚠️ 載入失敗，請檢查網路連線後重新整理。</p>');SH('homeNewList','<p style="color:var(--muted);font-size:.84rem;text-align:center;padding:1rem">⚠️ 載入失敗，請檢查網路連線後重新整理。</p>');SH('homeThemeGrid','<p style="color:var(--muted);font-size:.84rem;text-align:center;padding:1rem">⚠️ 載入失敗，請檢查網路連線後重新整理。</p>');}
 }
 function buildThemeCards(mode='home'){
   return Object.entries(THEMES).map(([t,th])=>{
@@ -966,7 +967,7 @@ async function openArticle(id){
     const arts=await sb('GET','articles',{'id':'eq.'+id});
     const art=arts[0]; if(!art) return;
     const vk='viewed_'+id;
-    if(!sessionStorage.getItem(vk)){try{await sb('PATCH','articles',{'id':'eq.'+id},{views:(art.views||0)+1});sessionStorage.setItem(vk,'1');}catch(e){}}
+    if(!isAdmin&&!sessionStorage.getItem(vk)){try{await sb('PATCH','articles',{'id':'eq.'+id},{views:(art.views||0)+1});sessionStorage.setItem(vk,'1');}catch(e){}}
     G('articleMeta').innerHTML=`<span style="display:inline-block;background:${THEMES[art.theme]?.color||'#1e4d8c'};color:#fff;border-radius:99px;padding:.15rem .6rem;font-size:.72rem;font-weight:700">${esc(THEMES[art.theme]?.label||'')}</span>`;
     G('articleTitle').textContent=art.title;
     G('articleInfo').innerHTML=`<span>👤 ${esc(art.author||'管理員')}</span><span>📅 ${(art.created_at||'').slice(0,10)}</span><span>👁 ${(art.views||0)+1}</span>`;
@@ -1105,7 +1106,7 @@ async function openDisc(id){
   try{
     const rows=await sb('GET','discussions',{'id':'eq.'+id});const d=rows[0];if(!d)return;
     const dk='dviewed_'+id;
-    if(!sessionStorage.getItem(dk)){try{await sb('PATCH','discussions',{'id':'eq.'+id},{views:(d.views||0)+1});sessionStorage.setItem(dk,'1');}catch(e){}}
+    if(!isAdmin&&!sessionStorage.getItem(dk)){try{await sb('PATCH','discussions',{'id':'eq.'+id},{views:(d.views||0)+1});sessionStorage.setItem(dk,'1');}catch(e){}}
     G('discDetailMeta').innerHTML='<span class="disc-tag">討論</span>';
     G('discDetailTitle').textContent=d.title;
     const cCount=await sb('GET','discussion_comments',{'discussion_id':'eq.'+id,select:'id'}).then(r=>r?.length||0).catch(()=>0);
@@ -1277,18 +1278,25 @@ async function deleteAnnounce(id){if(!confirm('確定刪除此公告？'))return
 
 async function loadAdminArticles(){
   try{
-    const arts=await sb('GET','articles',{order:'created_at.desc'});
+    const lastSeenAC=localStorage.getItem('ac_last_seen')||'1970-01-01T00:00:00Z';
+    const [arts, newComments]=await Promise.all([
+      sb('GET','articles',{order:'created_at.desc'}),
+      sb('GET','article_comments',{created_at:'gt.'+lastSeenAC,select:'article_id'}).catch(()=>[])
+    ]);
+    const newCommentArticleIds=new Set((newComments||[]).map(c=>c.article_id));
     SH('adminArticleList',arts.length?arts.map(a=>{
       const isHidden=a.status==='hidden';
+      const hasNew=newCommentArticleIds.has(a.id);
       const statusBadge=isHidden
         ?`<span style="display:inline-block;background:#fee2e2;color:#991b1b;border-radius:99px;padding:.1rem .5rem;font-size:.68rem;font-weight:700;margin-left:.4rem">⏸ 已下架</span>`
         :`<span style="display:inline-block;background:#dcfce7;color:#166534;border-radius:99px;padding:.1rem .5rem;font-size:.68rem;font-weight:700;margin-left:.4rem">✅ 上架中</span>`;
+      const newBadge=hasNew?`<span style="display:inline-block;background:#ef4444;color:#fff;border-radius:99px;padding:.1rem .5rem;font-size:.68rem;font-weight:700;margin-left:.4rem">💬 新留言</span>`:'';
       const toggleBtn=isHidden
         ?`<button class="btn btn-green btn-sm" onclick="toggleArticleStatus('${a.id}','published')">🔼 重新上架</button>`
         :`<button class="btn btn-warn btn-sm" onclick="toggleArticleStatus('${a.id}','hidden')">⏸ 暫時下架</button>`;
-      return `<div style="background:${isHidden?'#fff8f8':'var(--bg)'};border:1px solid ${isHidden?'#fecaca':'var(--border)'};border-radius:.6rem;padding:.75rem;margin-bottom:.5rem">
+      return `<div style="background:${isHidden?'#fff8f8':hasNew?'#fff7ed':'var(--bg)'};border:1px solid ${isHidden?'#fecaca':hasNew?'#fed7aa':'var(--border)'};border-radius:.6rem;padding:.75rem;margin-bottom:.5rem">
         <div style="display:flex;align-items:center;flex-wrap:wrap;gap:.3rem">
-          <span style="font-size:.83rem;font-weight:600;color:var(--navy)">${esc(a.title)}</span>${statusBadge}
+          <span style="font-size:.83rem;font-weight:600;color:var(--navy)">${esc(a.title)}</span>${statusBadge}${newBadge}
         </div>
         <div style="font-size:.73rem;color:var(--muted);margin:.2rem 0">${esc(THEMES[a.theme]?.label||'')} · ${esc(a.author||'管理員')} · ${(a.created_at||'').slice(0,10)}</div>
         <div class="item-actions">
@@ -1331,8 +1339,23 @@ async function deleteArticle(id){if(!confirm('確定刪除此文章？'))return;
 
 async function loadAdminDiscs(){
   try{
-    const discs=await sb('GET','discussions',{order:'created_at.desc'});
-    SH('adminDiscList',discs.length?discs.map(d=>`<div style="background:var(--bg);border:1px solid var(--border);border-radius:.6rem;padding:.75rem;margin-bottom:.5rem"><div style="font-size:.83rem;font-weight:600;color:var(--navy)">${esc(d.title)}</div><div style="font-size:.73rem;color:var(--muted);margin:.2rem 0">👤 ${esc(d.author||'匿名')} · ${(d.created_at||'').slice(0,10)}</div><div class="item-actions"><button class="btn btn-warn btn-sm" onclick="openEditDisc('${d.id}')">✏️ 編輯</button><button class="btn btn-danger btn-sm" onclick="deleteDisc('${d.id}')">🗑 刪除</button></div></div>`).join(''):'<p style="color:var(--muted);font-size:.84rem">尚無討論</p>');
+    const lastSeenDC=localStorage.getItem('dc_last_seen')||'1970-01-01T00:00:00Z';
+    const [discs,newComments]=await Promise.all([
+      sb('GET','discussions',{order:'created_at.desc'}),
+      sb('GET','discussion_comments',{created_at:'gt.'+lastSeenDC,select:'discussion_id'}).catch(()=>[])
+    ]);
+    const newCommentDiscIds=new Set((newComments||[]).map(c=>c.discussion_id));
+    SH('adminDiscList',discs.length?discs.map(d=>{
+      const hasNew=newCommentDiscIds.has(d.id);
+      const newBadge=hasNew?`<span style="display:inline-block;background:#ef4444;color:#fff;border-radius:99px;padding:.1rem .5rem;font-size:.68rem;font-weight:700;margin-left:.4rem">💬 新留言</span>`:'';
+      return `<div style="background:${hasNew?'#fff7ed':'var(--bg)'};border:1px solid ${hasNew?'#fed7aa':'var(--border)'};border-radius:.6rem;padding:.75rem;margin-bottom:.5rem">
+        <div style="display:flex;align-items:center;flex-wrap:wrap;gap:.3rem">
+          <span style="font-size:.83rem;font-weight:600;color:var(--navy)">${esc(d.title)}</span>${newBadge}
+        </div>
+        <div style="font-size:.73rem;color:var(--muted);margin:.2rem 0">👤 ${esc(d.author||'匿名')} · ${(d.created_at||'').slice(0,10)}</div>
+        <div class="item-actions"><button class="btn btn-warn btn-sm" onclick="openEditDisc('${d.id}')">✏️ 編輯</button><button class="btn btn-danger btn-sm" onclick="deleteDisc('${d.id}')">🗑 刪除</button></div>
+      </div>`;
+    }).join(''):'<p style="color:var(--muted);font-size:.84rem">尚無討論</p>');
   }catch(e){SH('adminDiscList','<p style="color:var(--muted);font-size:.84rem;text-align:center;padding:1rem">⚠️ 載入失敗，請檢查網路連線後重新整理。</p>');}
 }
 async function openEditDisc(id){const rows=await sb('GET','discussions',{'id':'eq.'+id});const d=rows[0];if(!d)return;G('edit-disc-id').value=id;G('edit-disc-title').value=d.title;G('edit-disc-body').value=d.body;G('editDiscOverlay').classList.add('open');}
