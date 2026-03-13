@@ -1030,16 +1030,24 @@ function showReplyBox(type,parentId,parentName,contextId){
   // close any open reply boxes first
   document.querySelectorAll('[id^="reply-box-"]').forEach(el=>{el.innerHTML='';});
   const pfx='reply-'+type+'-'+parentId;
-  const html=`<div class="reply-box">
-    <div class="reply-to-hint">↩ 回覆給 ${esc(parentName)} <button class="cancel-reply-btn" onclick="cancelReplyBox('${type}','${parentId}')">✕ 取消</button></div>
-    <label>姓名或暱稱</label>
-    <input id="${pfx}-name" type="text" placeholder="輸入姓名、暱稱，或留空匿名"/>
-    <label>回覆內容 *</label>
-    <textarea id="${pfx}-body" placeholder="輸入回覆..." style="min-height:55px;margin-bottom:.4rem"></textarea>
-    <button class="btn btn-primary btn-sm" onclick="submitReply('${type}','${parentId}','${contextId}')">✉️ 送出回覆</button>
-  </div>`;
   const box=G('reply-box-'+type+'-'+parentId);
-  if(box) box.innerHTML=html;
+  if(!box)return;
+  // build DOM directly to avoid quote-escaping issues in onclick attributes
+  const wrap=document.createElement('div');wrap.className='reply-box';
+  const hint=document.createElement('div');hint.className='reply-to-hint';
+  hint.textContent='↩ 回覆給 '+parentName+' ';
+  const cancelBtn=document.createElement('button');cancelBtn.className='cancel-reply-btn';cancelBtn.textContent='✕ 取消';
+  cancelBtn.onclick=()=>cancelReplyBox(type,parentId);
+  hint.appendChild(cancelBtn);
+  const lblName=document.createElement('label');lblName.textContent='姓名或暱稱';
+  const inputName=document.createElement('input');inputName.id=pfx+'-name';inputName.type='text';inputName.placeholder='輸入姓名、暱稱，或留空匿名';
+  const lblBody=document.createElement('label');lblBody.textContent='回覆內容 *';
+  const textarea=document.createElement('textarea');textarea.id=pfx+'-body';textarea.placeholder='輸入回覆...';textarea.style.cssText='min-height:55px;margin-bottom:.4rem';
+  const submitBtn=document.createElement('button');submitBtn.className='btn btn-primary btn-sm';submitBtn.textContent='✉️ 送出回覆';
+  submitBtn.onclick=()=>submitReply(type,parentId,contextId);
+  wrap.append(hint,lblName,inputName,lblBody,textarea,submitBtn);
+  box.innerHTML='';box.appendChild(wrap);
+  textarea.focus();
 }
 function cancelReplyBox(type,parentId){
   const box=G('reply-box-'+type+'-'+parentId);
@@ -1428,11 +1436,23 @@ G('ann-date').value=new Date().toISOString().slice(0,10);
 function adjustBodyPadding(){
   var nav=document.querySelector('nav');
   if(!nav)return;
-  document.body.style.paddingTop=nav.getBoundingClientRect().height+'px';
+  var h=nav.getBoundingClientRect().height;
+  if(h>0) document.body.style.paddingTop=h+'px';
 }
 adjustBodyPadding();
+// 字體/圖片載入完成後再量一次
+window.addEventListener('load',function(){
+  adjustBodyPadding();
+  setTimeout(adjustBodyPadding,300);
+});
 window.addEventListener('resize',adjustBodyPadding);
-window.addEventListener('orientationchange',function(){setTimeout(adjustBodyPadding,200);});
+window.addEventListener('orientationchange',function(){setTimeout(adjustBodyPadding,300);});
+// 用 ResizeObserver 監聽 nav 本身高度變化（最可靠）
+(function(){
+  var nav=document.querySelector('nav');
+  if(!nav||!window.ResizeObserver)return;
+  new ResizeObserver(function(){adjustBodyPadding();}).observe(nav);
+})();
 </script>
 
 </body>
