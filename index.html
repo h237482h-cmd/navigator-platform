@@ -782,7 +782,13 @@ function sharePageToFB(){
 }
 function copyPageLink(){
   const btn=G('copyPageBtn');
-  _copyToClipboard(getPageUrl(),()=>{btn.textContent='✅ 已複製！';setTimeout(()=>{btn.innerHTML='🔗 複製連結';},2000);},()=>{prompt('請手動複製此連結：',getPageUrl());});
+  const url=getPageUrl();
+  // iOS PWA 優先用原生分享
+  if(navigator.share){
+    navigator.share({title:'領航者：AI 人事共創平台',url}).catch(()=>{});
+    return;
+  }
+  _copyToClipboard(url,()=>{btn.textContent='✅ 已複製！';setTimeout(()=>{btn.innerHTML='🔗 複製連結';},2000);},()=>{prompt('請手動複製此連結：',url);});
 }
 function _copyToClipboard(text,onSuccess,onFail){
   if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(text).then(onSuccess).catch(()=>_legacyCopy(text,onSuccess,onFail));}
