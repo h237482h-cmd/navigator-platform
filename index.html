@@ -20,7 +20,6 @@
     --tagA:#1e4d8c;--tagB:#065f46;--tagC:#7c3aed;--tagD:#b45309;
   }
   *{box-sizing:border-box;margin:0;padding:0}
-  /* fix1: fixed nav，body 補 padding-top */
   body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;padding-top:calc(52px + env(safe-area-inset-top))}
   nav{background:var(--navy);padding:0 1rem;display:flex;align-items:center;justify-content:space-between;position:fixed;top:0;left:0;right:0;z-index:100;box-shadow:0 2px 12px #0005;flex-wrap:wrap;padding-top:env(safe-area-inset-top);padding-left:max(1rem,env(safe-area-inset-left));padding-right:max(1rem,env(safe-area-inset-right))}
   .nav-brand{display:flex;align-items:center;gap:.5rem;padding:.75rem 0;color:#fff;font-size:.85rem;font-weight:700;line-height:1.3;flex-shrink:0}
@@ -173,19 +172,16 @@
   #changePwdOverlay{display:none;position:fixed;inset:0;background:#0007;z-index:300;align-items:center;justify-content:center;padding:1rem}
   #changePwdOverlay.open{display:flex}
   #installBanner{padding-bottom:max(.75rem,env(safe-area-inset-bottom))}
-  /* 防機器人 */
   .bot-check{background:#f8faff;border:1.5px solid var(--border);border-radius:.6rem;padding:.7rem .9rem;margin-bottom:.7rem;display:flex;align-items:center;gap:.7rem;flex-wrap:wrap}
   .bot-check label{font-size:.8rem;font-weight:700;color:var(--navy);margin:0;white-space:nowrap}
   .bot-check input[type=text]{width:72px;flex-shrink:0;text-align:center;font-size:.95rem;font-weight:700;padding:.35rem .5rem}
   .bot-check .bc-hint{font-size:.72rem;color:var(--muted);margin-top:.2rem}
   .hp-field{position:absolute;left:-9999px;top:-9999px;width:1px;height:1px;overflow:hidden;opacity:0;tab-index:-1}
-  /* 登入封鎖 */
   .login-lock-box{background:#fee2e2;border:1.5px solid var(--danger);border-radius:.6rem;padding:.85rem 1rem;margin-bottom:.8rem;text-align:center;display:none}
   .login-lock-box .lock-title{font-size:.88rem;font-weight:700;color:#991b1b;margin-bottom:.25rem}
   .login-lock-box .lock-timer{font-size:1.5rem;font-weight:800;color:var(--danger);font-variant-numeric:tabular-nums}
   .login-lock-box .lock-sub{font-size:.75rem;color:#b91c1c;margin-top:.2rem}
   .login-attempts-hint{font-size:.76rem;color:var(--danger);text-align:center;margin-top:.4rem;display:none}
-  /* 回覆功能 */
   .reply-btn{background:none;border:none;color:var(--accent);font-size:.72rem;font-weight:600;cursor:pointer;padding:.1rem .3rem;margin-left:.3rem}
   .reply-btn:hover{text-decoration:underline}
   .reply-indent{margin-left:1.8rem;margin-top:.4rem;border-left:2px solid var(--border);padding-left:.8rem;display:flex;flex-direction:column;gap:.4rem}
@@ -780,16 +776,32 @@ function sharePageToLine(){
 function sharePageToFB(){
   const a=document.createElement('a');a.href=`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(getPageUrl())}`;a.target='_blank';a.rel='noopener noreferrer';document.body.appendChild(a);a.click();document.body.removeChild(a);
 }
+
+// ── 複製連結（修正版）──
 function copyPageLink(){
-  const btn=G('copyPageBtn');
   const url=getPageUrl();
-  // iOS PWA 優先用原生分享
   if(navigator.share){
-    navigator.share({title:'領航者：AI 人事共創平台',url}).catch(()=>{});
+    navigator.share({title:'領航者：AI 人事共創平台',url}).catch(function(){_fallbackCopy(url);});
     return;
   }
-  _copyToClipboard(url,()=>{btn.textContent='✅ 已複製！';setTimeout(()=>{btn.innerHTML='🔗 複製連結';},2000);},()=>{prompt('請手動複製此連結：',url);});
+  _fallbackCopy(url);
 }
+function _fallbackCopy(url){
+  const btn=G('copyPageBtn');
+  const onSuccess=function(){
+    if(btn){btn.innerHTML='✅ 已複製！';setTimeout(function(){btn.innerHTML='🔗 複製連結';},2000);}
+    showToast('✅ 連結已複製到剪貼簿');
+  };
+  const onFail=function(){
+    try{prompt('請手動複製此連結：',url);}catch(e){}
+  };
+  if(navigator.clipboard&&typeof navigator.clipboard.writeText==='function'){
+    navigator.clipboard.writeText(url).then(onSuccess).catch(function(){_legacyCopy(url,onSuccess,onFail);});
+  }else{
+    _legacyCopy(url,onSuccess,onFail);
+  }
+}
+
 function _copyToClipboard(text,onSuccess,onFail){
   if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(text).then(onSuccess).catch(()=>_legacyCopy(text,onSuccess,onFail));}
   else{_legacyCopy(text,onSuccess,onFail);}
@@ -984,7 +996,7 @@ async function openArticle(id){
     shareDiv.innerHTML=`
       <button onclick="(function(){var a=document.createElement('a');a.href='https://social-plugins.line.me/lineit/share?url='+encodeURIComponent('${shareUrl}')+'&text='+encodeURIComponent('${(art.title+' — 領航者：AI 人事共創平台').replace(/'/g,"\\'")}');a.target='_blank';a.rel='noopener noreferrer';document.body.appendChild(a);a.click();document.body.removeChild(a);})()" style="display:inline-flex;align-items:center;gap:.35rem;background:#06C755;color:#fff;border:none;border-radius:.4rem;padding:.35rem .85rem;cursor:pointer;font-size:.78rem;font-weight:600"><svg width="14" height="14" viewBox="0 0 24 24" fill="white"><path d="M19.365 9.863c.349 0 .63.285.63.631 0 .345-.281.63-.63.63H17.61v1.125h1.755c.349 0 .63.283.63.630 0 .344-.281.629-.63.629h-2.386c-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.63-.63h2.386c.346 0 .627.285.627.63 0 .349-.281.63-.63.63H17.61v1.125h1.755zm-3.855 3.016c0 .27-.174.51-.432.596-.064.021-.133.031-.199.031-.211 0-.391-.09-.51-.25l-2.443-3.317v2.94c0 .344-.279.629-.631.629-.346 0-.626-.285-.626-.629V8.108c0-.27.173-.51.43-.595.06-.023.136-.033.194-.033.195 0 .375.104.494.25l2.462 3.33V8.108c0-.345.282-.63.63-.63.345 0 .63.285.63.63v4.771zm-5.741 0c0 .344-.282.629-.631.629-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.63-.63.346 0 .628.285.628.63v4.771zm-2.466.629H4.917c-.345 0-.63-.285-.63-.629V8.108c0-.345.285-.63.63-.63.348 0 .63.285.63.63v4.141h1.756c.348 0 .629.283.629.630 0 .344-.281.629-.629.629M24 10.314C24 4.943 18.615.572 12 .572S0 4.943 0 10.314c0 4.811 4.27 8.842 10.035 9.608.391.082.923.258 1.058.59.12.301.079.766.038 1.08l-.164 1.02c-.045.301-.24 1.186 1.049.645 1.291-.539 6.916-4.070 9.436-6.975C23.176 14.393 24 12.458 24 10.314"/></svg> LINE</button>
       <button onclick="(function(){var a=document.createElement('a');a.href='https://www.facebook.com/sharer/sharer.php?u='+encodeURIComponent('${shareUrl}');a.target='_blank';a.rel='noopener noreferrer';document.body.appendChild(a);a.click();document.body.removeChild(a);})()" style="display:inline-flex;align-items:center;gap:.35rem;background:#1877F2;color:#fff;border:none;border-radius:.4rem;padding:.35rem .85rem;cursor:pointer;font-size:.78rem;font-weight:600"><svg width="14" height="14" viewBox="0 0 24 24" fill="white"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg> Facebook</button>
-      <button id="artCopyBtn" onclick="(function(btn){_copyToClipboard('${shareUrl}',function(){btn.innerHTML='✅ 已複製！';setTimeout(function(){btn.innerHTML='🔗 複製連結';},2000);},function(){prompt('請手動複製此連結：','${shareUrl}');});})(this)" style="display:inline-flex;align-items:center;gap:.35rem;background:#ffffff30;color:#fff;border:1px solid #ffffff50;border-radius:.4rem;padding:.35rem .85rem;cursor:pointer;font-size:.78rem;font-weight:600;background:var(--navy2)">🔗 複製連結</button>`;
+      <button id="artCopyBtn" onclick="(function(btn){_fallbackCopy('${shareUrl}');})(this)" style="display:inline-flex;align-items:center;gap:.35rem;background:var(--navy2);color:#fff;border:1px solid #ffffff30;border-radius:.4rem;padding:.35rem .85rem;cursor:pointer;font-size:.78rem;font-weight:600">🔗 複製連結</button>`;
     G('articleHeader_inner').appendChild(shareDiv);
     const parseLine=l=>l.replace(/!\[([^\]]*)\]\((https?:\/\/[^\)]+)\)/g,(_,alt,url)=>`<img src="${esc(url)}" alt="${esc(alt)}" style="max-width:100%;border-radius:.5rem;margin:.4rem 0;display:block">`);
     const html=art.body.split('\n').map(l=>{
@@ -1014,7 +1026,6 @@ async function loadArticleComments(artId){
     function renderAcItem(x,isReply=false){
       const replies=children.filter(c=>c.parent_id===x.id);
       const replyHtml=replies.map(r=>renderAcItem(r,true)).join('');
-      const indent=isReply?'':'';
       return `<div class="ac-item" id="ac-item-${x.id}">
         <div class="ac-header">
           <div class="mini-avatar">${(x.name||'匿')[0]}</div>
@@ -1053,12 +1064,10 @@ async function submitReply(type,parentId,contextId){
   }catch(e){showToast('送出失敗：'+e.message,'error');}
 }
 function showReplyBox(type,parentId,parentName,contextId){
-  // close any open reply boxes first
   document.querySelectorAll('[id^="reply-box-"]').forEach(el=>{el.innerHTML='';});
   const pfx='reply-'+type+'-'+parentId;
   const box=G('reply-box-'+type+'-'+parentId);
   if(!box)return;
-  // build DOM directly to avoid quote-escaping issues in onclick attributes
   const wrap=document.createElement('div');wrap.className='reply-box';
   const hint=document.createElement('div');hint.className='reply-to-hint';
   hint.textContent='↩ 回覆給 '+parentName+' ';
@@ -1090,7 +1099,6 @@ async function renderDiscList(){
   SH('discList','<div class="loading">載入中...</div>');
   try{
     const rows=await sb('GET','discussions',{order:'created_at.desc'});
-    // 一次查詢所有討論的留言數
     let countMap={};
     try{
       const counts=await sb('GET','discussion_comments',{select:'discussion_id'});
@@ -1213,7 +1221,6 @@ function doLogout(){
   localStorage.removeItem('admin_session');
   hide('adminPanel');hide('adminForgotGate');show('adminLoginGate');
   G('adminPill').style.display='none';
-  // 確保切換到管理頁面並顯示登入框
   const adminTab=document.querySelector('.nav-tab[onclick*="admin"]');
   switchPage('admin',adminTab);
   checkLoginLock();
@@ -1250,7 +1257,6 @@ function updateBadges(fc,sc){
   sb('GET','article_comments',{created_at:'gt.'+lastSeenAC,select:'id'}).then(rows=>{setBadge('badge-article-comments',rows?.length||0);}).catch(()=>{});
   sb('GET','discussion_comments',{created_at:'gt.'+lastSeenDC,select:'id'}).then(rows=>{setBadge('badge-disc-comments',rows?.length||0);}).catch(()=>{});
   setBadge('badge-feedback',fc);setBadge('badge-submissions',sc);
-  // 導覽列總燈號
   Promise.all([
     sb('GET','discussions',{created_at:'gt.'+lastSeen,select:'id'}).catch(()=>[]),
     sb('GET','article_comments',{created_at:'gt.'+lastSeenAC,select:'id'}).catch(()=>[]),
@@ -1488,7 +1494,7 @@ G('ann-date').value=new Date().toISOString().slice(0,10);
   if(!handled)renderHome();
 })();
 
-// fix2: 左右滑動切換頁籤
+// ── 左右滑動切換頁籤 ──
 (function(){
   const TABS=['home','articles','discuss','resources','feedback'];
   let startX=0,startY=0;
@@ -1500,12 +1506,10 @@ G('ann-date').value=new Date().toISOString().slice(0,10);
     const activePage=document.querySelector('.page.active');
     if(!activePage)return;
     const curId=activePage.id.replace('page-','');
-    // 文章內頁：右滑返回文章列表
     if(curId==='articles'&&G('view-article').classList.contains('active')){
       if(dx>0)backToForum();
       return;
     }
-    // 討論區內文：停用左右滑動
     if(curId==='discuss'&&G('disc-view-detail').classList.contains('active'))return;
     const curIdx=TABS.indexOf(curId);
     if(curIdx===-1)return;
@@ -1519,7 +1523,7 @@ G('ann-date').value=new Date().toISOString().slice(0,10);
   },{passive:true});
 })();
 
-// ── 動態修正 nav 高度（手機標籤列折行時）──
+// ── 動態修正 nav 高度 ──
 function adjustBodyPadding(){
   var nav=document.querySelector('nav');
   if(!nav)return;
@@ -1527,20 +1531,17 @@ function adjustBodyPadding(){
   if(h>0) document.body.style.paddingTop=h+'px';
 }
 adjustBodyPadding();
-// 字體/圖片載入完成後再量一次
 window.addEventListener('load',function(){
   adjustBodyPadding();
   setTimeout(adjustBodyPadding,300);
 });
 window.addEventListener('resize',adjustBodyPadding);
 window.addEventListener('orientationchange',function(){setTimeout(adjustBodyPadding,300);});
-// 用 ResizeObserver 監聽 nav 本身高度變化（最可靠）
 (function(){
   var nav=document.querySelector('nav');
   if(!nav||!window.ResizeObserver)return;
   new ResizeObserver(function(){adjustBodyPadding();}).observe(nav);
 })();
 </script>
-
 </body>
 </html>
