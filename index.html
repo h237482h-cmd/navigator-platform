@@ -777,21 +777,25 @@ function sharePageToFB(){
   const a=document.createElement('a');a.href=`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(getPageUrl())}`;a.target='_blank';a.rel='noopener noreferrer';document.body.appendChild(a);a.click();document.body.removeChild(a);
 }
 
-// ── 複製連結（修正版）──
+// ── 複製連結（debug 版）──
 function copyPageLink(){
+  alert('1: copyPageLink called');
   _fallbackCopy(getPageUrl());
 }
 function _fallbackCopy(url){
+  alert('2: _fallbackCopy called, url=' + url);
   const btn=G('copyPageBtn');
   const onSuccess=function(){
+    alert('3: onSuccess!');
     if(btn){btn.innerHTML='✅ 已複製！';setTimeout(function(){btn.innerHTML='🔗 複製連結';},2000);}
     showToast('✅ 連結已複製到剪貼簿');
   };
   const onFail=function(){
+    alert('4: onFail - showing prompt');
     try{prompt('請手動複製此連結：',url);}catch(e){}
   };
-  // 優先用同步寫法（iOS 相容），失敗才試 async clipboard API
   _legacyCopy(url,onSuccess,function(){
+    alert('5: legacyCopy failed, trying clipboard API');
     if(navigator.clipboard&&typeof navigator.clipboard.writeText==='function'){
       navigator.clipboard.writeText(url).then(onSuccess).catch(onFail);
     }else{
@@ -799,12 +803,12 @@ function _fallbackCopy(url){
     }
   });
 }
-
 function _copyToClipboard(text,onSuccess,onFail){
   if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(text).then(onSuccess).catch(()=>_legacyCopy(text,onSuccess,onFail));}
   else{_legacyCopy(text,onSuccess,onFail);}
 }
 function _legacyCopy(text,onSuccess,onFail){
+  alert('6: _legacyCopy called');
   const ta=document.createElement('input');
   ta.value=text;
   ta.style.cssText='position:fixed;opacity:0;top:0;left:0;width:1px;height:1px;font-size:16px';
@@ -813,12 +817,52 @@ function _legacyCopy(text,onSuccess,onFail){
   ta.setSelectionRange(0,99999);
   try{
     const ok=document.execCommand('copy');
+    alert('7: execCommand result=' + ok);
     document.body.removeChild(ta);
     if(ok)onSuccess();else if(onFail)onFail();
   }catch(e){
+    alert('8: execCommand threw: ' + e);
     document.body.removeChild(ta);
     if(onFail)onFail();else try{prompt('請手動複製此連結：',text);}catch(e2){}
   }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 }
 
 // ── Hash 路由 ──
