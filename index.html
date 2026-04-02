@@ -237,7 +237,7 @@
         <svg width="14" height="14" viewBox="0 0 24 24" fill="white"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
         Facebook
       </button>
-      <button onclick="alert('btn clicked');copyPageLink();" id="copyPageBtn" style="display:inline-flex;align-items:center;gap:.35rem;background:#06C755;color:#fff;border:none;border-radius:.4rem;padding:.35rem .85rem;cursor:pointer;font-size:.78rem;font-weight:600;-webkit-tap-highlight-color:rgba(0,0,0,0.1)">
+      <button onclick="copyPageLink();" id="copyPageBtn" style="display:inline-flex;align-items:center;gap:.35rem;background:#ffffff30;color:#fff;border:1px solid #ffffff50;border-radius:.4rem;padding:.35rem .85rem;cursor:pointer;font-size:.78rem;font-weight:600">
         🔗 複製連結
       </button>
     </div>
@@ -777,25 +777,24 @@ function sharePageToFB(){
   const a=document.createElement('a');a.href=`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(getPageUrl())}`;a.target='_blank';a.rel='noopener noreferrer';document.body.appendChild(a);a.click();document.body.removeChild(a);
 }
 
-// ── 複製連結（debug 版）──
+// ── 複製連結 ──
 function copyPageLink(){
-  alert('1: copyPageLink called');
+  
   _fallbackCopy(getPageUrl());
 }
 function _fallbackCopy(url){
-  alert('2: _fallbackCopy called, url=' + url);
   const btn=G('copyPageBtn');
   const onSuccess=function(){
-    alert('3: onSuccess!');
+    
     if(btn){btn.innerHTML='✅ 已複製！';setTimeout(function(){btn.innerHTML='🔗 複製連結';},2000);}
     showToast('✅ 連結已複製到剪貼簿');
   };
   const onFail=function(){
-    alert('4: onFail - showing prompt');
+    
     try{prompt('請手動複製此連結：',url);}catch(e){}
   };
   _legacyCopy(url,onSuccess,function(){
-    alert('5: legacyCopy failed, trying clipboard API');
+    
     if(navigator.clipboard&&typeof navigator.clipboard.writeText==='function'){
       navigator.clipboard.writeText(url).then(onSuccess).catch(onFail);
     }else{
@@ -808,7 +807,7 @@ function _copyToClipboard(text,onSuccess,onFail){
   else{_legacyCopy(text,onSuccess,onFail);}
 }
 function _legacyCopy(text,onSuccess,onFail){
-  alert('6: _legacyCopy called');
+  
   const ta=document.createElement('input');
   ta.value=text;
   ta.style.cssText='position:fixed;opacity:0;top:0;left:0;width:1px;height:1px;font-size:16px';
@@ -817,11 +816,9 @@ function _legacyCopy(text,onSuccess,onFail){
   ta.setSelectionRange(0,99999);
   try{
     const ok=document.execCommand('copy');
-    alert('7: execCommand result=' + ok);
     document.body.removeChild(ta);
     if(ok)onSuccess();else if(onFail)onFail();
   }catch(e){
-    alert('8: execCommand threw: ' + e);
     document.body.removeChild(ta);
     if(onFail)onFail();else try{prompt('請手動複製此連結：',text);}catch(e2){}
   }
