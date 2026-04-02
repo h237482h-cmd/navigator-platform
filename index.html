@@ -779,12 +779,7 @@ function sharePageToFB(){
 
 // ── 複製連結（修正版）──
 function copyPageLink(){
-  const url=getPageUrl();
-  if(navigator.share){
-    navigator.share({title:'領航者：AI 人事共創平台',url}).catch(function(){_fallbackCopy(url);});
-    return;
-  }
-  _fallbackCopy(url);
+  _fallbackCopy(getPageUrl());
 }
 function _fallbackCopy(url){
   const btn=G('copyPageBtn');
@@ -795,11 +790,14 @@ function _fallbackCopy(url){
   const onFail=function(){
     try{prompt('請手動複製此連結：',url);}catch(e){}
   };
-  if(navigator.clipboard&&typeof navigator.clipboard.writeText==='function'){
-    navigator.clipboard.writeText(url).then(onSuccess).catch(function(){_legacyCopy(url,onSuccess,onFail);});
-  }else{
-    _legacyCopy(url,onSuccess,onFail);
-  }
+  // 優先用同步寫法（iOS 相容），失敗才試 async clipboard API
+  _legacyCopy(url,onSuccess,function(){
+    if(navigator.clipboard&&typeof navigator.clipboard.writeText==='function'){
+      navigator.clipboard.writeText(url).then(onSuccess).catch(onFail);
+    }else{
+      onFail();
+    }
+  });
 }
 
 function _copyToClipboard(text,onSuccess,onFail){
@@ -807,10 +805,31 @@ function _copyToClipboard(text,onSuccess,onFail){
   else{_legacyCopy(text,onSuccess,onFail);}
 }
 function _legacyCopy(text,onSuccess,onFail){
-  const ta=document.createElement('textarea');ta.value=text;ta.style.cssText='position:fixed;opacity:0;top:0;left:0';
-  document.body.appendChild(ta);ta.focus();ta.select();
-  try{const ok=document.execCommand('copy');document.body.removeChild(ta);if(ok)onSuccess();else if(onFail)onFail();}
-  catch(e){document.body.removeChild(ta);if(onFail)onFail();else prompt('請手動複製：',text);}
+  const isIOS=/iphone|ipad|ipod/i.test(navigator.userAgent);
+  const ta=document.createElement(isIOS?'input':'textarea');
+  ta.value=text;
+  ta.style.cssText='position:fixed;opacity:0;top:0;left:0;width:1px;height:1px;font-size:16px';
+  document.body.appendChild(ta);
+  if(isIOS){
+    ta.contentEditable=true;
+    ta.readOnly=false;
+    const range=document.createRange();
+    range.selectNodeContents(ta);
+    const sel=window.getSelection();
+    sel.removeAllRanges();
+    sel.addRange(range);
+    ta.setSelectionRange(0,99999);
+  }else{
+    ta.focus();ta.select();
+  }
+  try{
+    const ok=document.execCommand('copy');
+    document.body.removeChild(ta);
+    if(ok)onSuccess();else if(onFail)onFail();
+  }catch(e){
+    document.body.removeChild(ta);
+    if(onFail)onFail();else try{prompt('請手動複製此連結：',text);}catch(e2){}
+  }
 }
 
 // ── Hash 路由 ──
