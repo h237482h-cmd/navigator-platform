@@ -805,23 +805,12 @@ function _copyToClipboard(text,onSuccess,onFail){
   else{_legacyCopy(text,onSuccess,onFail);}
 }
 function _legacyCopy(text,onSuccess,onFail){
-  const isIOS=/iphone|ipad|ipod/i.test(navigator.userAgent);
-  const ta=document.createElement(isIOS?'input':'textarea');
+  const ta=document.createElement('input');
   ta.value=text;
   ta.style.cssText='position:fixed;opacity:0;top:0;left:0;width:1px;height:1px;font-size:16px';
   document.body.appendChild(ta);
-  if(isIOS){
-    ta.contentEditable=true;
-    ta.readOnly=false;
-    const range=document.createRange();
-    range.selectNodeContents(ta);
-    const sel=window.getSelection();
-    sel.removeAllRanges();
-    sel.addRange(range);
-    ta.setSelectionRange(0,99999);
-  }else{
-    ta.focus();ta.select();
-  }
+  ta.focus();
+  ta.setSelectionRange(0,99999);
   try{
     const ok=document.execCommand('copy');
     document.body.removeChild(ta);
